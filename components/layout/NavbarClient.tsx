@@ -1,0 +1,262 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  ChevronDown,
+  Menu,
+  X,
+  Phone,
+  Building2,
+  Landmark,
+  Home,
+} from "lucide-react";
+import { useEnquiry } from "@/components/enquiry/EnquiryProvider";
+import type { SiteNavPayload } from "@/lib/cms/types";
+
+export default function NavbarClient({ nav }: { nav: SiteNavPayload }) {
+  const { openEnquiry } = useEnquiry();
+  const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileProjectsOpen, setMobileProjectsOpen] = useState(false);
+  const [mobileResOpen, setMobileResOpen] = useState(false);
+  const [mobileComOpen, setMobileComOpen] = useState(false);
+
+  const { residentialProjects, commercialProjects, mainLinks, topBar } = nav;
+
+  useEffect(() => {
+    setMobileOpen(false);
+    setMobileProjectsOpen(false);
+    setMobileResOpen(false);
+    setMobileComOpen(false);
+  }, [pathname]);
+
+  const active = (href: string) =>
+    href === "/"
+      ? pathname === "/"
+      : pathname === href || pathname.startsWith(`${href}/`);
+
+  const projectActive = [...residentialProjects, ...commercialProjects].some(
+    (p) => pathname === p.href || pathname.startsWith(`${p.href}/`)
+  );
+
+  return (
+    <>
+      <div className="bg-lux-navy text-[11px] font-medium uppercase tracking-[0.2em] text-white/70">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-6 lg:px-8">
+          <a
+            href={topBar.phoneHref}
+            className="inline-flex items-center gap-2 text-white/90 transition hover:text-lux-gold-bright"
+          >
+            <Phone className="h-3.5 w-3.5 text-lux-gold" />
+            {topBar.phone}
+          </a>
+          <div className="flex items-center gap-5">
+            {topBar.regionLabel ? (
+              <span className="hidden sm:inline">{topBar.regionLabel}</span>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => openEnquiry()}
+              className="text-lux-gold-bright transition hover:text-white"
+            >
+              {topBar.enquireLabel ?? "Enquire"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <header className="sticky top-0 z-100 border-b border-stone-200/80 bg-white/90 shadow-sm backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8 lg:py-4">
+          <Link
+            href="/"
+            className="relative z-10 flex shrink-0 flex-col leading-none"
+          >
+            <span className="font-display text-[1.35rem] font-semibold tracking-tight text-lux-navy sm:text-2xl">
+              Karyan
+            </span>
+            <span className="text-[9px] font-semibold uppercase tracking-[0.35em] text-lux-gold-dim">
+              Infratech
+            </span>
+          </Link>
+
+          <nav className="hidden items-center gap-1 lg:flex">
+            {mainLinks.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={`rounded-md px-3 py-2 text-sm font-medium transition ${
+                  active(l.href)
+                    ? "text-lux-gold-dim"
+                    : "text-stone-700 hover:text-lux-navy"
+                }`}
+              >
+                {l.label}
+              </Link>
+            ))}
+
+            <div className="group/p relative px-1">
+              <button
+                type="button"
+                className={`flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition ${
+                  projectActive
+                    ? "text-lux-gold-dim"
+                    : "text-stone-700 hover:text-lux-navy"
+                }`}
+              >
+                Projects
+                <ChevronDown className="h-4 w-4 opacity-60 transition group-hover/p:rotate-180" />
+              </button>
+              <div className="invisible absolute right-0 top-full z-50 w-[min(100vw-2rem,560px)] pt-3 opacity-0 transition group-hover/p:visible group-hover/p:opacity-100">
+                <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-stone-200/90 bg-white shadow-2xl ring-1 ring-black/5">
+                  <div className="border-r border-stone-100 bg-stone-50/90 p-5">
+                    <div className="mb-1 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-lux-gold-dim">
+                      <Home className="h-3.5 w-3.5 shrink-0" />
+                      Residential
+                    </div>
+                    <p className="mb-4 text-xs text-stone-500">Premium residences</p>
+                    <div className="flex flex-col gap-1">
+                      {residentialProjects.map((p) => (
+                        <Link
+                          key={p.href}
+                          href={p.href}
+                          className="rounded-lg border border-transparent px-3 py-2.5 text-sm font-medium text-lux-navy transition hover:border-lux-gold/25 hover:bg-white"
+                        >
+                          {p.name}
+                          <span className="mt-0.5 block text-[11px] font-normal text-stone-500">
+                            {p.tag}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <div className="mb-1 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-lux-gold-dim">
+                      <Landmark className="h-3.5 w-3.5 shrink-0" />
+                      Commercial
+                    </div>
+                    <p className="mb-4 text-xs text-stone-500">Retail, offices & malls</p>
+                    <div className="flex flex-col gap-1">
+                      {commercialProjects.map((p) => (
+                        <Link
+                          key={p.href}
+                          href={p.href}
+                          className="rounded-lg border border-transparent px-3 py-2.5 text-sm font-medium text-lux-navy transition hover:border-lux-gold/25 hover:bg-lux-cream/60"
+                        >
+                          {p.name}
+                          <span className="mt-0.5 block text-[11px] font-normal text-stone-500">
+                            {p.tag}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => openEnquiry()}
+              className="hidden rounded-md bg-lux-navy px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-lux-navy-soft sm:inline-block"
+            >
+              Book visit
+            </button>
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-md border border-stone-200 p-2.5 text-lux-navy lg:hidden"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              onClick={() => setMobileOpen((o) => !o)}
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+
+        {mobileOpen && (
+          <div className="border-t border-stone-100 bg-white px-4 py-5 lg:hidden">
+            <div className="mx-auto flex max-w-lg flex-col gap-1">
+              {mainLinks.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="rounded-lg px-3 py-3 text-base font-medium text-stone-800 hover:bg-lux-cream"
+                >
+                  {l.label}
+                </Link>
+              ))}
+              <button
+                type="button"
+                onClick={() => setMobileProjectsOpen((v) => !v)}
+                className="flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-base font-medium text-stone-800 hover:bg-lux-cream"
+              >
+                Projects
+                <ChevronDown
+                  className={`h-4 w-4 transition ${mobileProjectsOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+              {mobileProjectsOpen && (
+                <div className="ml-2 border-l-2 border-lux-gold/40 pl-3">
+                  <button
+                    type="button"
+                    onClick={() => setMobileResOpen((v) => !v)}
+                    className="flex w-full items-center justify-between py-2 text-sm font-semibold uppercase tracking-wide text-lux-gold-dim"
+                  >
+                    Residential
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 ${mobileResOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {mobileResOpen &&
+                    residentialProjects.map((p) => (
+                      <Link
+                        key={p.href}
+                        href={p.href}
+                        className="block py-2 pl-2 text-sm text-stone-700"
+                      >
+                        {p.name}
+                      </Link>
+                    ))}
+                  <button
+                    type="button"
+                    onClick={() => setMobileComOpen((v) => !v)}
+                    className="mt-2 flex w-full items-center justify-between py-2 text-sm font-semibold uppercase tracking-wide text-lux-gold-dim"
+                  >
+                    Commercial
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 ${mobileComOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {mobileComOpen &&
+                    commercialProjects.map((p) => (
+                      <Link
+                        key={p.href}
+                        href={p.href}
+                        className="block py-2 pl-2 text-sm text-stone-700"
+                      >
+                        {p.name}
+                      </Link>
+                    ))}
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  openEnquiry();
+                }}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-lux-navy py-3 text-sm font-semibold uppercase tracking-widest text-white"
+              >
+                <Building2 className="h-4 w-4" />
+                Book a site visit
+              </button>
+            </div>
+          </div>
+        )}
+      </header>
+    </>
+  );
+}

@@ -1,0 +1,48 @@
+import Link from "next/link";
+import { getAdminSession } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
+import AdminShell from "@/components/admin/AdminShell";
+import { ArrowRight } from "lucide-react";
+
+const projects = [
+  { slug: "karyan-square", label: "Karyan Square", blurb: "Retail & offices — Wave City" },
+  { slug: "karyan-citywalk", label: "Karyan CityWalk", blurb: "High-street retail — expressway" },
+  { slug: "karyan-trevana", label: "Karyan Trevana", blurb: "Residential towers — NH-24" },
+  { slug: "karyan-avenue-iv", label: "Avenue IV", blurb: "Flagship commercial — Wave City" },
+];
+
+export default async function AdminProjectsIndex() {
+  const session = await getAdminSession();
+  if (!session) redirect("/admin/login");
+
+  return (
+    <AdminShell
+      title="Project pages"
+      subtitle="Choose a development to edit its public detail page — photos, copy, and enquiry area."
+      breadcrumbs={[{ label: "Overview", href: "/admin" }, { label: "Project pages" }]}
+      userEmail={session.email}
+    >
+      <div className="grid gap-4 sm:grid-cols-2">
+        {projects.map((p) => (
+          <Link
+            key={p.slug}
+            href={`/admin/projects/${p.slug}`}
+            className="group flex flex-col justify-between rounded-2xl border border-stone-200 bg-gradient-to-br from-white to-stone-50/80 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <div>
+              <h2 className="font-display text-lg font-semibold text-lux-navy">{p.label}</h2>
+              <p className="mt-1 text-sm text-stone-600">{p.blurb}</p>
+              <p className="mt-3 text-xs text-stone-500">
+                Live URL: <span className="font-mono text-stone-700">/{p.slug}</span>
+              </p>
+            </div>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-lux-navy">
+              Edit this project
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+            </span>
+          </Link>
+        ))}
+      </div>
+    </AdminShell>
+  );
+}

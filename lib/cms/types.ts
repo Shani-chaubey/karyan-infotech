@@ -1,0 +1,142 @@
+export type NavLink = { label: string; href: string };
+export type NavProject = { name: string; href: string; tag: string };
+
+export type SiteNavPayload = {
+  topBar: {
+    phone: string;
+    phoneHref: string;
+    regionLabel?: string;
+    enquireLabel?: string;
+  };
+  mainLinks: NavLink[];
+  residentialProjects: NavProject[];
+  commercialProjects: NavProject[];
+};
+
+export type SiteFooterPayload = {
+  tagline: string;
+  explore: NavLink[];
+  residential: NavLink[];
+  commercial: NavLink[];
+  contactPhone: string;
+  contactPhoneHref: string;
+  social: { label: string; href: string }[];
+  legalLine: string;
+  disclaimerExtra?: string;
+};
+
+export type SiteSettingsBundle = {
+  nav: SiteNavPayload;
+  footer: SiteFooterPayload;
+};
+
+export type HomeCapability = { title: string; text: string; icon: string };
+export type HomePillar = { title: string; text: string; icon: string };
+export type HomeHeroSlide = {
+  bg: string;
+  title: string;
+  subtitle: string;
+  tag: string;
+  project: string;
+  exploreHref: string;
+};
+
+export type HomePayload = {
+  heroSlides: HomeHeroSlide[];
+  heroSideStats: { label: string; value: string; hint: string }[];
+  statCards: { value: string; label: string; sub: string }[];
+  philosophy: { badge: string; title: string; body: string };
+  capabilitiesIntro: { eyebrow: string; title: string };
+  capabilities: HomeCapability[];
+  portfolioIntro: { eyebrow: string; title: string };
+  portfolio: { name: string; href: string; tag: string; blurb: string }[];
+  whyIntro: { eyebrow: string; title: string };
+  pillars: HomePillar[];
+  promisesIntro: { eyebrow: string; title: string };
+  promises: string[];
+  processIntro: { eyebrow: string; title: string };
+  process: { step: string; title: string; body: string }[];
+  testimonialsIntro: { eyebrow: string; title: string; badge: string };
+  testimonials: { quote: string; name: string; role: string }[];
+  faqIntro: { eyebrow: string; title: string };
+  faqs: { q: string; a: string }[];
+  location: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    bullets: { icon: string; text: string }[];
+    corridorsTitle: string;
+    corridors: { corridor: string; projects: string }[];
+  };
+  amenitiesIntro: { eyebrow: string; title: string };
+  amenities: string[];
+  journalIntro: { eyebrow: string; title: string; ctaLabel: string; ctaHref: string };
+  journalTeasers: { title: string; href: string; hint: string }[];
+  ecosystem: { eyebrow: string; body: string; tags: string[] };
+  splitCta: {
+    leftEyebrow: string;
+    leftTitle: string;
+    phone: string;
+    phoneHref: string;
+    hours: string;
+    rightTitle: string;
+    rightBody: string;
+    rightCtaLabel: string;
+  };
+  finalCta: { title: string; body: string; primaryLabel: string; secondaryLabel: string; secondaryHref: string };
+};
+
+export type ProjectHighlight = {
+  icon: string;
+  title: string;
+  value: string;
+  description: string;
+};
+
+export type ProjectPayload = {
+  metadata: { title: string; description: string };
+  header: {
+    title: string;
+    breadcrumbs: { label: string; href?: string }[];
+    bgImage: string;
+  };
+  investmentHighlights: ProjectHighlight[];
+  mainTitle: string;
+  introParagraphs: string[];
+  benefitsTitle?: string;
+  benefits?: string[];
+  unitTypesTitle?: string;
+  unitTypes?: { size: string; area: string; ideal: string }[];
+  architectsTitle?: string;
+  architects?: { name: string; role: string; description: string }[];
+  gallery: { src: string; alt: string }[];
+  leasingBox?: { title: string; intro: string; bullets: string[] };
+  specs: { label: string; value: string }[];
+  locationSidebar?: {
+    title: string;
+    body: string;
+    badges?: { icon: string; text: string }[];
+  };
+  sidebarFormTitle: string;
+  cta: {
+    title: string;
+    description: string;
+    enquiryProject?: string;
+    primaryLabel?: string;
+    secondaryLabel?: string;
+    secondaryHref?: string;
+  };
+};
+
+export type BlogPostPayload = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  /** Optional long-form body for the article page; falls back to excerpt if empty. */
+  body?: string;
+  date: string;
+  category: string;
+  href: string;
+  image: string;
+  order?: number;
+};

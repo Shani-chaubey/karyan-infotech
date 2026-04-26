@@ -1,0 +1,123 @@
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
+
+export interface PageHeaderBreadcrumb {
+  label: string;
+  href?: string;
+}
+
+interface PageHeaderProps {
+  title: string;
+  breadcrumbs?: PageHeaderBreadcrumb[];
+  /** Optional cover image (e.g. project hero). Falls back to rich navy gradient. */
+  bgImage?: string;
+  /** Short line under the title */
+  description?: string;
+}
+
+export default function PageHeader({
+  title,
+  breadcrumbs = [],
+  bgImage,
+  description,
+}: PageHeaderProps) {
+  return (
+    <header className="relative overflow-hidden border-b border-white/10">
+      {bgImage ? (
+        <>
+          <div
+            className="absolute inset-0 scale-105 bg-cover bg-center"
+            style={{ backgroundImage: `url(${bgImage})` }}
+            aria-hidden
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-lux-navy via-lux-navy/88 to-lux-navy/55"
+            aria-hidden
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-t from-lux-navy/95 via-lux-navy/25 to-lux-navy/40"
+            aria-hidden
+          />
+        </>
+      ) : (
+        <>
+          <div
+            className="absolute inset-0 bg-gradient-to-br from-lux-navy via-lux-navy-mid to-[#0d1a2e]"
+            aria-hidden
+          />
+          <div
+            className="absolute -right-24 -top-24 h-[28rem] w-[28rem] rounded-full bg-lux-gold/10 blur-3xl"
+            aria-hidden
+          />
+          <div
+            className="absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-lux-gold-bright/5 blur-3xl"
+            aria-hidden
+          />
+          <div
+            className="absolute inset-0 opacity-[0.07]"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e4c76b' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+            aria-hidden
+          />
+        </>
+      )}
+
+      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
+          <div className="max-w-3xl">
+            <div
+              className="mb-5 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.32em] text-lux-gold-bright/90"
+              aria-hidden
+            >
+              <span className="h-px w-8 bg-lux-gold-bright/80" />
+              Karyan Infratech
+            </div>
+            <h1 className="font-display text-3xl font-medium leading-[1.1] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-[3.25rem]">
+              {title}
+            </h1>
+            {description ? (
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-stone-300 sm:text-base">
+                {description}
+              </p>
+            ) : (
+              <div className="mt-5 h-1 w-14 rounded-full bg-gradient-to-r from-lux-gold-bright to-lux-gold/30" />
+            )}
+          </div>
+
+          <nav
+            aria-label="Breadcrumb"
+            className="flex flex-wrap items-center gap-x-1 gap-y-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50"
+          >
+            <Link
+              href="/"
+              className="rounded-md px-2 py-1 text-white/70 transition hover:bg-white/10 hover:text-lux-gold-bright"
+            >
+              Home
+            </Link>
+            {breadcrumbs.map((crumb, i) => (
+              <span key={i} className="flex items-center gap-1">
+                <ChevronRight
+                  className="h-3.5 w-3.5 shrink-0 text-lux-gold-dim/80"
+                  aria-hidden
+                />
+                {crumb.href ? (
+                  <Link
+                    href={crumb.href}
+                    className="rounded-md px-2 py-1 text-white/70 transition hover:bg-white/10 hover:text-lux-gold-bright"
+                  >
+                    {crumb.label}
+                  </Link>
+                ) : (
+                  <span className="rounded-md px-2 py-1 text-lux-gold-bright">
+                    {crumb.label}
+                  </span>
+                )}
+              </span>
+            ))}
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
+}

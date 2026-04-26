@@ -1,0 +1,19 @@
+/* Next.js + React compatibility with TheRoof / Elementor markup */
+#__next,
+body > div:first-of-type {
+  min-height: 0;
+}
+
+/* Mobile menu: show flat topnav when hamburger opens (theme hides .mainmenu-nav at ≤1024px) */
+@media only screen and (max-width: 1024px) {
+  .nav-holder.main-menu.vismobmenu .mainmenu-nav {
+    display: block !important;
+  }
+  .nav-holder.main-menu.vismobmenu .mainmenu-nav ul.topnav-menu {
+    display: block !important;
+  }
+  .nav-holder.main-menu.vismobmenu .mainmenu-nav li {
+    float: none;
+    width: 100%;
+  }
+}
