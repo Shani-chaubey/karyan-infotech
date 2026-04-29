@@ -61,7 +61,7 @@ export default async function BlogPostPage({ params }: Props) {
             </span>
           </div>
 
-          <div className="bg-white p-8 shadow-sm sm:p-10">
+          <div className="bg-lux-ivory p-8 shadow-sm sm:p-10">
             <BlogArticleBody html={mainContent} />
           </div>
 

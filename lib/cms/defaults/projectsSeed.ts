@@ -17,7 +17,10 @@ const IMG_AV =
 const IMG_AV_ALT =
   "https://karyaninfratech.co.in/wp-content/uploads/2024/11/Karyan-Square.jpg";
 
-export const DEFAULT_PROJECT_PAGES: { slug: string; payload: ProjectPayload }[] = [
+export const DEFAULT_PROJECT_PAGES: {
+  slug: string;
+  payload: ProjectPayload;
+}[] = [
   {
     slug: "karyan-square",
     payload: {
@@ -51,7 +54,8 @@ export const DEFAULT_PROJECT_PAGES: { slug: string; payload: ProjectPayload }[] 
           icon: "MapPin",
           title: "Location",
           value: "Wave City, NH-24",
-          description: "Strategic placement in Delhi NCR's fastest-growing township",
+          description:
+            "Strategic placement in Delhi NCR's fastest-growing township",
         },
       ],
       mainTitle: "A Landmark Commercial Destination",
@@ -133,7 +137,8 @@ export const DEFAULT_PROJECT_PAGES: { slug: string; payload: ProjectPayload }[] 
           icon: "TrendingUp",
           title: "Expressway catchment",
           value: "DME · Ghaziabad",
-          description: "High visibility corridor with rising residential density",
+          description:
+            "High visibility corridor with rising residential density",
         },
         {
           icon: "MapPin",
@@ -150,9 +155,21 @@ export const DEFAULT_PROJECT_PAGES: { slug: string; payload: ProjectPayload }[] 
       ],
       unitTypesTitle: "Available Unit Types",
       unitTypes: [
-        { size: "Small Units", area: "150 – 500 sq. ft.", ideal: "Boutiques, Cafes, Services" },
-        { size: "Medium Units", area: "500 – 1500 sq. ft.", ideal: "Fashion, Electronics, F&B" },
-        { size: "Large Units", area: "1500 – 3000 sq. ft.", ideal: "Anchors, Showrooms, Gyms" },
+        {
+          size: "Small Units",
+          area: "150 – 500 sq. ft.",
+          ideal: "Boutiques, Cafes, Services",
+        },
+        {
+          size: "Medium Units",
+          area: "500 – 1500 sq. ft.",
+          ideal: "Fashion, Electronics, F&B",
+        },
+        {
+          size: "Large Units",
+          area: "1500 – 3000 sq. ft.",
+          ideal: "Anchors, Showrooms, Gyms",
+        },
       ],
       benefitsTitle: "Key Benefits",
       benefits: [
@@ -221,7 +238,8 @@ export const DEFAULT_PROJECT_PAGES: { slug: string; payload: ProjectPayload }[] 
           icon: "Home",
           title: "Configurations",
           value: "3 & 4 BHK",
-          description: "Spacious plans with daylight and cross-ventilation focus",
+          description:
+            "Spacious plans with daylight and cross-ventilation focus",
         },
         {
           icon: "Layers",
@@ -322,7 +340,8 @@ export const DEFAULT_PROJECT_PAGES: { slug: string; payload: ProjectPayload }[] 
           icon: "Store",
           title: "Retail mix",
           value: "700+ shops",
-          description: "Multi-level retail, dining, and entertainment in one landmark",
+          description:
+            "Multi-level retail, dining, and entertainment in one landmark",
         },
         {
           icon: "TrendingUp",

@@ -19,7 +19,7 @@ function BentoProjectCard({ project, layout }: { project: Project; layout: "wide
   return (
     <Link
       href={project.href}
-      className={`group relative flex flex-col overflow-hidden rounded-3xl border border-stone-200/70 bg-white shadow-[0_24px_50px_-28px_rgba(10,22,40,0.15)] ring-1 ring-black/[0.03] transition duration-300 hover:-translate-y-1 hover:border-lux-gold/35 hover:shadow-[0_28px_60px_-24px_rgba(198,160,82,0.18)] sm:col-span-1 ${
+      className={`group relative flex flex-col overflow-hidden rounded-3xl border border-stone-200/70 bg-lux-ivory shadow-[0_24px_50px_-28px_rgba(10,22,40,0.15)] ring-1 ring-black/[0.03] transition duration-300 hover:-translate-y-1 hover:border-lux-gold/35 hover:shadow-[0_28px_60px_-24px_rgba(198,160,82,0.18)] sm:col-span-1 ${
         isWide ? "sm:col-span-2 sm:min-h-[260px] sm:flex-row" : ""
       }`}
     >
@@ -114,7 +114,7 @@ export default function HomeSiteProjectsSection({ payload }: { payload: Projects
   const chunks = chunkProjects(projects, 4);
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white via-lux-cream/50 to-lux-ivory py-20 lg:py-28">
+    <section className="relative overflow-hidden bg-gradient-to-b from-lux-ivory via-lux-cream/70 to-lux-cream py-20 lg:py-28">
       <SectionBgStack
         grain
         bottomGlow
@@ -146,7 +146,7 @@ export default function HomeSiteProjectsSection({ payload }: { payload: Projects
           </div>
           <Link
             href="/projects"
-            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-lux-navy/15 bg-white px-6 py-3 text-xs font-semibold uppercase tracking-widest text-lux-navy shadow-sm transition hover:border-lux-gold/40 hover:bg-lux-cream"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-lux-navy/15 bg-lux-ivory px-6 py-3 text-xs font-semibold uppercase tracking-widest text-lux-navy shadow-sm transition hover:border-lux-gold/40 hover:bg-lux-cream"
           >
             Full portfolio
             <ArrowRight className="h-4 w-4" />

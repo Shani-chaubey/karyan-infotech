@@ -38,7 +38,7 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
     <>
       <PageHeader title={header.title} breadcrumbs={header.breadcrumbs} bgImage={header.bgImage} />
 
-      <section className="bg-white py-20">
+      <section className="bg-lux-ivory py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="-mt-8 mb-16 grid grid-cols-1 gap-6 sm:grid-cols-3">
             {investmentHighlights.map((item) => {
@@ -46,7 +46,7 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
               return (
                 <div
                   key={item.title}
-                  className="flex gap-4 rounded-sm border-t-4 border-[#c9a84c] bg-white p-6 shadow-lg"
+                  className="flex gap-4 rounded-sm border-t-4 border-[#c9a84c] bg-lux-ivory p-6 shadow-lg"
                 >
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-[#1a1a2e]">
                     <Icon className="h-5 w-5 text-[#c9a84c]" />

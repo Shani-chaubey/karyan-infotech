@@ -30,24 +30,24 @@ export default function WpStyles() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-:root{--themecolor:#d8cfc5}
-body{background-color:#ffffff;color:#292929}
-p{color:#5e646a}
-a{color:#F7B90F}
-a:hover{color:#F7B90F}
-.gray-bg{background-color:#f5f5f5}
+:root{--themecolor:#655e56}
+body{background-color:#e7e3df;color:#2f2c29}
+p{color:#7a736c}
+a{color:#655e56}
+a:hover{color:#4f4943}
+.gray-bg{background-color:#d9d3cd}
 .top-bar{background-color:rgba(101,94,86,1)}
-.header-inner{background-color:#ffffff}
-.nav-holder nav li ul{background-color:#292929}
-.vismobmenu{background-color:#292929}
-.nav-holder nav li a{color:#222222}
+.header-inner{background-color:#f0edea}
+.nav-holder nav li ul{background-color:#3d3934}
+.vismobmenu{background-color:#3d3934}
+.nav-holder nav li a{color:#2f2c29}
 .nav-holder nav li a:hover{color:rgba(101,94,86,1)}
 .nav-holder nav li.current-menu-item>a,.nav-holder nav li.current-menu-ancestor>a,.nav-holder nav li.current-menu-parent>a{color:rgba(101,94,86,1)}
 .nav-holder nav li ul a{color:#ffffff}
-.nav-holder nav li ul a:hover{color:#F7B90F}
-.nav-holder nav li ul li.current-menu-item>a,.nav-holder nav li ul li.current-menu-ancestor>a,.nav-holder nav li ul li.current-menu-parent>a{color:#F7B90F}
+.nav-holder nav li ul a:hover{color:#a29c95}
+.nav-holder nav li ul li.current-menu-item>a,.nav-holder nav li ul li.current-menu-ancestor>a,.nav-holder nav li ul li.current-menu-parent>a{color:#a29c95}
 .menusb a{color:#ffffff}
-.vismobmenu nav li.current-menu-item>a,.vismobmenu nav li.current-menu-ancestor>a,.vismobmenu nav li.current-menu-parent>a{color:#F7B90F}
+.vismobmenu nav li.current-menu-item>a,.vismobmenu nav li.current-menu-ancestor>a,.vismobmenu nav li.current-menu-parent>a{color:#a29c95}
 .sub-footer{display:none;}
 `,
         }}
