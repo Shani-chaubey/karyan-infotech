@@ -36,7 +36,7 @@ export default function SiteBrandLogo({
 
   const img = (
     <Image
-      src={resolvedSrc}
+      src={"/images/logo.png"}
       alt={resolvedAlt}
       width={width}
       height={height}
