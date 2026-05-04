@@ -3,6 +3,7 @@ import { EnquiryTrigger } from "@/components/enquiry/EnquiryProvider";
 import { ArrowRight, Award, CheckCircle2, Phone } from "lucide-react";
 import HeroSlider from "@/components/home/HeroSlider";
 import HomeSiteProjectsSection from "@/components/home/HomeSiteProjectsSection";
+import OurPresenceBlock from "@/components/home/OurPresenceBlock";
 import SectionBgStack from "@/components/decor/SectionBgStack";
 import SectionWave from "@/components/decor/SectionWave";
 import type { ProjectsListPayload } from "@/components/site/ProjectsPageContent";
@@ -263,29 +264,9 @@ export default function LuxuryHomeView({
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="mt-14 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-            {data.portfolio.map((p) => (
-              <Link
-                key={p.href}
-                href={p.href}
-                className="group relative flex flex-col overflow-hidden rounded-3xl border border-stone-200/60 bg-lux-ivory p-6 shadow-md ring-1 ring-black/[0.04] transition duration-300 hover:-translate-y-1 hover:border-lux-gold/40 hover:shadow-xl"
-              >
-                <span className="relative z-10 text-[10px] font-bold uppercase tracking-[0.22em] text-lux-gold-dim">
-                  {p.tag}
-                </span>
-                <span className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-gradient-to-br from-lux-gold/25 to-transparent opacity-0 blur-xl transition group-hover:opacity-100" />
-                <h3 className="font-display relative z-10 mt-3 text-xl font-medium text-lux-navy group-hover:text-lux-gold-dim">
-                  {p.name}
-                </h3>
-                <p className="relative z-10 mt-2 flex-1 text-sm text-stone-600">
-                  {p.blurb}
-                </p>
-                <span className="relative z-10 mt-8 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-lux-navy">
-                  Explore
-                  <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" />
-                </span>
-              </Link>
-            ))}
+
+          <div className="mt-12 border-t border-stone-200/60 pt-14">
+            <OurPresenceBlock band={data.presence} />
           </div>
         </div>
       </section>

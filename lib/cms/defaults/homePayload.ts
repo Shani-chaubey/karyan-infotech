@@ -83,34 +83,26 @@ export const DEFAULT_HOME_PAYLOAD: HomePayload = {
   ],
   portfolioIntro: {
     eyebrow: "Portfolio",
-    title: "Residential & commercial landmarks",
+    title: "Our presence across India",
   },
-  portfolio: [
-    {
-      name: "Karyan Trevana",
-      href: "/karyan-trevana",
-      tag: "Residential",
-      blurb: "NH-24 · thoughtfully planned residences",
-    },
-    {
-      name: "Karyan CityWalk",
-      href: "/karyan-citywalk",
-      tag: "Commercial",
-      blurb: "High-street retail along the expressway",
-    },
-    {
-      name: "Karyan Square",
-      href: "/karyan-square",
-      tag: "Commercial",
-      blurb: "Retail and office spaces on NH-24",
-    },
-    {
-      name: "Avenue IV",
-      href: "/karyan-avenue-iv",
-      tag: "Commercial",
-      blurb: "Wave City flagship commercial",
-    },
-  ],
+  presence: {
+    heading: "Our presence",
+    cityIds: [
+      "jhajjar",
+      "wave-city",
+      "mendhasala",
+      "khordha",
+      "kachholi",
+      "patna",
+      "changodar",
+      "rajoda",
+      "mehsana",
+      "jhagadia",
+      "ranchi",
+      "goa",
+    ],
+  },
+  portfolio: [],
   whyIntro: {
     eyebrow: "Why Karyan",
     title: "A developer-led journey — from first call to fit-out.",

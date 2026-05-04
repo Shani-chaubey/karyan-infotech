@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { BookOpen, Layers, MessageSquare, Megaphone } from "lucide-react";
 import type { HomePayload } from "@/lib/cms/types";
 import { DEFAULT_HOME_PAYLOAD } from "@/lib/cms/defaults/homePayload";
+import { INDIA_PRESENCE_CITIES_SORTED } from "@/lib/cms/indiaPresenceCities";
+import { migrateLegacyHomePresence } from "@/lib/cms/migrateHomePresence";
 import {
   CmsField,
   CmsGhostButton,
@@ -15,6 +17,7 @@ import {
   CmsPageIntro,
   CmsSaveBar,
   CmsSection,
+  CmsSelect,
   CmsTextarea,
   deepMerge,
 } from "./cms-ui";
@@ -27,11 +30,12 @@ export default function HomePortalForm() {
     fetch("/api/admin/home", { credentials: "include" })
       .then((r) => r.json())
       .then((j) => {
+        const raw = (j.data ?? {}) as Record<string, unknown>;
         const merged = deepMerge(
           DEFAULT_HOME_PAYLOAD as unknown as Record<string, unknown>,
-          (j.data ?? {}) as Record<string, unknown>
-        );
-        setData(merged as HomePayload);
+          raw
+        ) as unknown as HomePayload;
+        setData(migrateLegacyHomePresence(merged, raw));
       });
   }, []);
 
@@ -621,9 +625,9 @@ export default function HomePortalForm() {
         description="Portfolio, process, testimonials, FAQs, location, and amenities"
       >
         <CmsSection
-          title="Portfolio teaser"
-          description="Heading and four project tiles that deep-link to detail pages."
-          where='Home page — "Portfolio" grid linking to project pages'
+          title="Our presence (India map)"
+          description="One map with dotted India, light-golden highlights by region, and a city list. Pick cities from the list — markers and regional glow update automatically."
+          where="Home page — portfolio band: India presence map only (project cards removed)"
           defaultOpen={false}
         >
           <div className="grid gap-3 sm:grid-cols-2">
@@ -650,77 +654,80 @@ export default function HomePortalForm() {
               />
             </CmsField>
           </div>
-          <div className="space-y-4">
-            {data.portfolio.map((p, i) => (
-              <CmsItemCard
-                key={i}
-                title={`Project tile ${i + 1}`}
-                onRemove={() =>
-                  patch((d) => ({ ...d, portfolio: d.portfolio.filter((_, j) => j !== i) }))
-                }
-              >
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <CmsField label="Name on the card">
-                    <CmsInput
-                      value={p.name}
-                      onChange={(e) =>
-                        patch((d) => {
-                          const portfolio = [...d.portfolio];
-                          portfolio[i] = { ...portfolio[i], name: e.target.value };
-                          return { ...d, portfolio };
-                        })
-                      }
-                    />
-                  </CmsField>
-                  <CmsField label="Link" hint="Path to the project page.">
-                    <CmsInput
-                      value={p.href}
-                      onChange={(e) =>
-                        patch((d) => {
-                          const portfolio = [...d.portfolio];
-                          portfolio[i] = { ...portfolio[i], href: e.target.value };
-                          return { ...d, portfolio };
-                        })
-                      }
-                    />
-                  </CmsField>
-                  <CmsField label="Type tag" hint="Residential / Commercial">
-                    <CmsInput
-                      value={p.tag}
-                      onChange={(e) =>
-                        patch((d) => {
-                          const portfolio = [...d.portfolio];
-                          portfolio[i] = { ...portfolio[i], tag: e.target.value };
-                          return { ...d, portfolio };
-                        })
-                      }
-                    />
-                  </CmsField>
-                  <CmsField label="Short blurb">
-                    <CmsInput
-                      value={p.blurb}
-                      onChange={(e) =>
-                        patch((d) => {
-                          const portfolio = [...d.portfolio];
-                          portfolio[i] = { ...portfolio[i], blurb: e.target.value };
-                          return { ...d, portfolio };
-                        })
-                      }
-                    />
-                  </CmsField>
-                </div>
-              </CmsItemCard>
-            ))}
-            <CmsGhostButton
-              onClick={() =>
-                patch((d) => ({
-                  ...d,
-                  portfolio: [...d.portfolio, { name: "", href: "/", tag: "", blurb: "" }],
-                }))
-              }
+
+          <div className="mt-8 space-y-8 border-t border-slate-200 pt-8">
+            <CmsField
+              label="Heading"
+              hint="Shown large next to the city list (e.g. Our presence)."
             >
-              + Add project tile
-            </CmsGhostButton>
+              <CmsInput
+                value={data.presence.heading}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    presence: { ...d.presence, heading: e.target.value },
+                  }))
+                }
+              />
+            </CmsField>
+            <CmsField
+              label="Cities on the map"
+              hint="Each city sits on its map coordinates. Regions (North, West, East, etc.) get a light golden glow when at least one city in that region is selected."
+            >
+              <div className="space-y-4">
+                {data.presence.cityIds.map((cityId, i) => (
+                  <CmsItemCard
+                    key={`p-${i}-${cityId || "empty"}`}
+                    title={`City ${i + 1}`}
+                    onRemove={() =>
+                      patch((d) => ({
+                        ...d,
+                        presence: {
+                          ...d.presence,
+                          cityIds: d.presence.cityIds.filter((_, j) => j !== i),
+                        },
+                      }))
+                    }
+                  >
+                    <CmsField label="City" hint="Choose a city — marker and regional highlight update on the map.">
+                      <CmsSelect
+                        value={cityId}
+                        onChange={(e) =>
+                          patch((d) => {
+                            const cityIds = [...d.presence.cityIds];
+                            cityIds[i] = e.target.value;
+                            return {
+                              ...d,
+                              presence: { ...d.presence, cityIds },
+                            };
+                          })
+                        }
+                      >
+                        <option value="">Select city…</option>
+                        {INDIA_PRESENCE_CITIES_SORTED.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.label}
+                          </option>
+                        ))}
+                      </CmsSelect>
+                    </CmsField>
+                  </CmsItemCard>
+                ))}
+                <CmsGhostButton
+                  onClick={() =>
+                    patch((d) => ({
+                      ...d,
+                      presence: {
+                        ...d.presence,
+                        cityIds: [...d.presence.cityIds, ""],
+                      },
+                    }))
+                  }
+                >
+                  + Add city
+                </CmsGhostButton>
+              </div>
+            </CmsField>
           </div>
         </CmsSection>
 

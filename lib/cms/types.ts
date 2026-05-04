@@ -44,6 +44,14 @@ export type HomeHeroSlide = {
   exploreHref: string;
 };
 
+/** Cities are chosen by id from `INDIA_PRESENCE_CITIES`; map markers use lat/lon from that registry. */
+export type HomePresenceBand = {
+  /** e.g. “Our presence” — shown in uppercase styling on the site */
+  heading: string;
+  /** Preset city ids (see `lib/cms/indiaPresenceCities.ts`) */
+  cityIds: string[];
+};
+
 export type HomePayload = {
   heroSlides: HomeHeroSlide[];
   heroSideStats: { label: string; value: string; hint: string }[];
@@ -52,6 +60,9 @@ export type HomePayload = {
   capabilitiesIntro: { eyebrow: string; title: string };
   capabilities: HomeCapability[];
   portfolioIntro: { eyebrow: string; title: string };
+  /** Single India map + city list (regions glow gold when a city in that region is selected) */
+  presence: HomePresenceBand;
+  /** Legacy home project tiles — no longer shown on the public home page; kept for older API payloads. */
   portfolio: { name: string; href: string; tag: string; blurb: string }[];
   whyIntro: { eyebrow: string; title: string };
   pillars: HomePillar[];

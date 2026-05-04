@@ -4,12 +4,8 @@ import { HomeContentModel } from "@/models/HomeContent";
 import { ProjectPageModel } from "@/models/ProjectPage";
 import { BlogPostModel } from "@/models/BlogPost";
 import { SitePageModel } from "@/models/SitePage";
-import type {
-  BlogPostPayload,
-  HomePayload,
-  ProjectPayload,
-  SiteSettingsBundle,
-} from "./types";
+import type { BlogPostPayload, HomePayload, ProjectPayload, SiteSettingsBundle } from "./types";
+import { migrateLegacyHomePresence } from "./migrateHomePresence";
 import { DEFAULT_SITE_SETTINGS } from "./defaults/siteSettings";
 import { DEFAULT_HOME_PAYLOAD } from "./defaults/homePayload";
 import { DEFAULT_BLOG_POSTS } from "./defaults/blogPosts";
@@ -34,12 +30,17 @@ export async function getSiteSettings(): Promise<SiteSettingsBundle> {
   return DEFAULT_SITE_SETTINGS;
 }
 
+function mergeHomePayloadFromDoc(raw: Record<string, unknown>): HomePayload {
+  const out = { ...DEFAULT_HOME_PAYLOAD, ...raw } as HomePayload;
+  return migrateLegacyHomePresence(out, raw);
+}
+
 export async function getHomeContent(): Promise<HomePayload> {
   try {
     await connectMongo();
     const doc = await HomeContentModel.findOne({ key: "default" }).lean();
     if (doc?.data && typeof doc.data === "object") {
-      return { ...DEFAULT_HOME_PAYLOAD, ...(doc.data as Partial<HomePayload>) };
+      return mergeHomePayloadFromDoc(doc.data as Record<string, unknown>);
     }
   } catch {
     /* fall through */
