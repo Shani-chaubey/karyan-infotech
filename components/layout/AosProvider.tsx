@@ -13,6 +13,8 @@ function applyAutoAosAttributes() {
   const itemPattern = ["fade-up", "fade-left", "fade-right", "zoom-in"] as const;
 
   sections.forEach((section, sectionIndex) => {
+    if (section.hasAttribute("data-aos-skip")) return;
+
     // Animate section container itself.
     if (!section.dataset.aos) {
       section.dataset.aos = sectionPattern[sectionIndex % sectionPattern.length];
@@ -30,6 +32,9 @@ function applyAutoAosAttributes() {
     );
 
     items.forEach((item, itemIndex) => {
+      if (item.hasAttribute("data-aos-skip") || item.closest("[data-aos-skip]")) {
+        return;
+      }
       if (!item.dataset.aos) {
         item.dataset.aos = itemPattern[itemIndex % itemPattern.length];
       }

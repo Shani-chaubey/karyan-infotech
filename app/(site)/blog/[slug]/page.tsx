@@ -39,7 +39,10 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <>
-      <section className="relative h-[min(72vh,760px)] w-full overflow-hidden bg-theme-bg">
+      <section
+        data-aos-skip
+        className="relative h-[min(72vh,760px)] w-full overflow-hidden bg-theme-bg"
+      >
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url('${heroImage}')` }}
@@ -47,9 +50,12 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-black/20" />
       </section>
 
-      <article className="bg-[#f8f5f0] pb-20 pt-0">
+      <article data-aos-skip className="bg-[#f8f5f0] pb-20 pt-0">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="-mt-24 mb-10 rounded-3xl border border-white/80 bg-white/95 p-6 shadow-[0_30px_80px_-35px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:p-8 lg:p-10">
+          <div
+            data-aos-skip
+            className="-mt-24 mb-10 rounded-3xl border border-white/80 bg-white/95 p-6 backdrop-blur-sm sm:p-8 lg:p-10"
+          >
             <div className="mb-4 flex flex-wrap items-center gap-3 text-sm" style={{ color: "#7a7a7a" }}>
               <span
                 className="text-xs font-bold uppercase px-2.5 py-1 text-white"
