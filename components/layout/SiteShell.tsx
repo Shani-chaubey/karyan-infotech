@@ -1,6 +1,7 @@
 import { getSiteSettings } from "@/lib/cms/getters";
 import { EnquiryProvider } from "@/components/enquiry/EnquiryProvider";
 import CallNowFab from "@/components/layout/CallNowFab";
+import WhatsAppFab from "@/components/layout/WhatsAppFab";
 import EnquiryFloatPromo from "@/components/layout/EnquiryFloatPromo";
 import NavbarClient from "@/components/layout/NavbarClient";
 import FooterClient from "@/components/layout/FooterClient";
@@ -57,6 +58,10 @@ export default async function SiteShell({
           footer={footer}
           logoSrc={settings.nav.headerLogoSrc}
           logoAlt={settings.nav.headerLogoAlt}
+        />
+        <WhatsAppFab
+          href={settings.nav.topBar.whatsappHref}
+          phone={settings.nav.topBar.whatsapp || settings.nav.topBar.phone}
         />
         <CallNowFab href={settings.nav.topBar.phoneHref} />
         <EnquiryFloatPromo promo={settings.enquiryFloatPromo} />

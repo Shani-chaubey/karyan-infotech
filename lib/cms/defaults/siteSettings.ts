@@ -11,6 +11,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsBundle = {
     topBar: {
       phone: "+91 920 600 1002",
       phoneHref: "tel:+919206001002",
+      whatsapp: "+91 920 600 1002",
+      whatsappHref: "https://wa.me/919206001002",
       regionLabel: "Delhi NCR",
       enquireLabel: "Enquire",
     },

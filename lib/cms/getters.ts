@@ -62,8 +62,18 @@ export async function getSiteSettings(): Promise<SiteSettingsBundle> {
           ? { ...defTheme, ...(tr as Partial<typeof defTheme>) }
           : defTheme;
       return {
-        nav: doc.nav as SiteSettingsBundle["nav"],
-        footer: doc.footer as SiteSettingsBundle["footer"],
+        nav: {
+          ...DEFAULT_SITE_SETTINGS.nav,
+          ...(doc.nav as Partial<SiteSettingsBundle["nav"]>),
+          topBar: {
+            ...DEFAULT_SITE_SETTINGS.nav.topBar,
+            ...((doc.nav as Partial<SiteSettingsBundle["nav"]>)?.topBar ?? {}),
+          },
+        },
+        footer: {
+          ...DEFAULT_SITE_SETTINGS.footer,
+          ...(doc.footer as Partial<SiteSettingsBundle["footer"]>),
+        },
         projectInterestOptions,
         themeColors,
         pageHeader,

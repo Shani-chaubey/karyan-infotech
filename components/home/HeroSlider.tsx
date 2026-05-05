@@ -93,13 +93,10 @@ export default function HeroSlider({ slides: slidesProp }: Props) {
                     style={{ backgroundImage: `url('${slide.bg}')` }}
                     data-swiper-parallax="-8%"
                   />
-                  <div
-                    className="absolute inset-0 bg-gradient-to-t from-theme-bg/65 via-theme-bg/28 to-theme-bg/15"
-                    aria-hidden
-                  />
+                  
                   <div className="relative z-20 flex h-full min-h-[min(100svh,940px)] w-full max-w-7xl items-end px-4 pb-[150px] sm:px-6 lg:px-8">
                     <div
-                      className="w-full max-w-3xl rounded-3xl border border-white/15 bg-black/60 p-6 shadow-[0_20px_70px_-20px_rgba(0,0,0,0.55)] sm:p-8"
+                      className="w-fit max-w-[min(92vw,760px)] rounded-3xl border border-white/15 bg-black/60 p-6 shadow-[0_20px_70px_-20px_rgba(0,0,0,0.55)] sm:max-w-[min(86vw,760px)] sm:p-8"
                       data-swiper-parallax="-100"
                     >
                       {slide.tag?.trim() ? (

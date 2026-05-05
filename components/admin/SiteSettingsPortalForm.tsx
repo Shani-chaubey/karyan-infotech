@@ -113,6 +113,37 @@ export default function SiteSettingsPortalForm() {
                 }
               />
             </CmsField>
+            <CmsField label="WhatsApp number (visible text)">
+              <CmsInput
+                value={data.nav.topBar.whatsapp ?? ""}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    nav: {
+                      ...d.nav,
+                      topBar: { ...d.nav.topBar, whatsapp: e.target.value },
+                    },
+                  }))
+                }
+              />
+            </CmsField>
+            <CmsField
+              label="WhatsApp link"
+              hint="Use https://wa.me/9192... format. Floating icon opens this link."
+            >
+              <CmsInput
+                value={data.nav.topBar.whatsappHref ?? ""}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    nav: {
+                      ...d.nav,
+                      topBar: { ...d.nav.topBar, whatsappHref: e.target.value },
+                    },
+                  }))
+                }
+              />
+            </CmsField>
             <CmsField label="Region label" hint="e.g. Delhi NCR">
               <CmsInput
                 value={data.nav.topBar.regionLabel ?? ""}

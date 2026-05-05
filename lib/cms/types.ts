@@ -8,6 +8,8 @@ export type SiteNavPayload = {
   topBar: {
     phone: string;
     phoneHref: string;
+    whatsapp?: string;
+    whatsappHref?: string;
     regionLabel?: string;
     enquireLabel?: string;
   };

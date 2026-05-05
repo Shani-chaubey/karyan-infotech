@@ -4,10 +4,11 @@ import { ArrowRight, Award, CheckCircle2, Phone } from "lucide-react";
 import HeroSlider from "@/components/home/HeroSlider";
 import HomeSiteProjectsSection from "@/components/home/HomeSiteProjectsSection";
 import OurPresenceBlock from "@/components/home/OurPresenceBlock";
+import HomeBlogCarousel from "@/components/home/HomeBlogCarousel";
 import SectionBgStack from "@/components/decor/SectionBgStack";
 import SectionWave from "@/components/decor/SectionWave";
 import type { ProjectsListPayload } from "@/components/site/ProjectsPageContent";
-import type { HomePayload } from "@/lib/cms/types";
+import type { BlogPostPayload, HomePayload } from "@/lib/cms/types";
 import { getLucideIcon } from "@/lib/cms/icons";
 
 export default function LuxuryHomeView({
@@ -17,6 +18,7 @@ export default function LuxuryHomeView({
   brandLogoAlt,
   deskPhone,
   deskPhoneHref,
+  blogPosts,
 }: {
   data: HomePayload;
   projectsList: ProjectsListPayload;
@@ -24,6 +26,7 @@ export default function LuxuryHomeView({
   brandLogoAlt?: string;
   deskPhone?: string;
   deskPhoneHref?: string;
+  blogPosts: BlogPostPayload[];
 }) {
   const callDeskPhone = deskPhone?.trim() || data.splitCta.phone;
   const callDeskPhoneHref = deskPhoneHref?.trim() || data.splitCta.phoneHref;
@@ -318,7 +321,7 @@ export default function LuxuryHomeView({
       </section>
 
       {/* Promises checklist */}
-      <section className="relative overflow-hidden border-y border-stone-200/80 bg-lux-cream py-16 lg:py-20">
+      {/* <section className="relative overflow-hidden border-y border-stone-200/80 bg-lux-cream py-16 lg:py-20">
         <SectionBgStack
           topGlow
           grain
@@ -363,7 +366,7 @@ export default function LuxuryHomeView({
             </ul>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Wave into dark process */}
       <div className="relative overflow-hidden bg-lux-cream">
@@ -748,29 +751,14 @@ export default function LuxuryHomeView({
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {data.journalTeasers.map((j) => (
-              <Link
-                key={j.title}
-                href={j.href}
-                className="group rounded-3xl border border-white/10 bg-white/[0.05] p-6 backdrop-blur-md transition hover:border-lux-gold/35 hover:bg-white/[0.09]"
-              >
-                <p className="font-display text-lg text-white group-hover:text-lux-gold-bright">
-                  {j.title}
-                </p>
-                <p className="mt-2 text-sm text-stone-400">{j.hint}</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-widest text-lux-gold-bright">
-                  Read
-                  <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" />
-                </span>
-              </Link>
-            ))}
+          <div className="mt-12">
+            <HomeBlogCarousel posts={blogPosts} />
           </div>
         </div>
       </section>
 
       {/* Ecosystem */}
-      <section className="relative overflow-hidden bg-theme-bg py-16 text-stone-300 lg:py-20">
+      {/* <section className="relative overflow-hidden bg-theme-bg py-16 text-stone-300 lg:py-20">
         <SectionBgStack
           bottomGlow
           edgeFade="dark"
@@ -810,7 +798,7 @@ export default function LuxuryHomeView({
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Split CTA — phone + form */}
       <section className="relative overflow-hidden bg-gradient-to-br from-lux-cream via-lux-ivory to-lux-cream py-20 lg:py-28">
