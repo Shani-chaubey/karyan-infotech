@@ -573,6 +573,246 @@ export default function ProjectPortalForm({ slug }: { slug: string }) {
             </CmsGhostButton>
           </div>
         </CmsSection>
+
+        <CmsSection
+          title="Floor plans"
+          description="Separate section for floor plan images."
+          where="Project page — dedicated floor plans section below gallery"
+          defaultOpen={false}
+        >
+          <CmsField label="Section title (optional)">
+            <CmsInput
+              value={data.floorPlansTitle ?? ""}
+              onChange={(e) =>
+                patch((d) => ({ ...d, floorPlansTitle: e.target.value || undefined }))
+              }
+            />
+          </CmsField>
+          <div className="space-y-4">
+            {(data.floorPlans ?? []).map((f, i) => (
+              <CmsItemCard
+                key={i}
+                title={`Plan ${i + 1}`}
+                onRemove={() =>
+                  patch((d) => ({
+                    ...d,
+                    floorPlans: (d.floorPlans ?? []).filter((_, j) => j !== i),
+                  }))
+                }
+              >
+                <CmsField label="Floor plan image">
+                  <CmsImageUpload
+                    value={f.src}
+                    onChange={(url) =>
+                      patch((d) => {
+                        const floorPlans = [...(d.floorPlans ?? [])];
+                        floorPlans[i] = { ...floorPlans[i], src: url };
+                        return { ...d, floorPlans };
+                      })
+                    }
+                    folder="projects/floor-plans"
+                    accept="image/png,image/jpeg,image/webp"
+                  />
+                </CmsField>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <CmsField label="Alt text">
+                    <CmsInput
+                      value={f.alt}
+                      onChange={(e) =>
+                        patch((d) => {
+                          const floorPlans = [...(d.floorPlans ?? [])];
+                          floorPlans[i] = { ...floorPlans[i], alt: e.target.value };
+                          return { ...d, floorPlans };
+                        })
+                      }
+                    />
+                  </CmsField>
+                  <CmsField label="Label (optional)">
+                    <CmsInput
+                      value={f.label ?? ""}
+                      onChange={(e) =>
+                        patch((d) => {
+                          const floorPlans = [...(d.floorPlans ?? [])];
+                          floorPlans[i] = {
+                            ...floorPlans[i],
+                            label: e.target.value || undefined,
+                          };
+                          return { ...d, floorPlans };
+                        })
+                      }
+                    />
+                  </CmsField>
+                </div>
+              </CmsItemCard>
+            ))}
+            <CmsGhostButton
+              onClick={() =>
+                patch((d) => ({
+                  ...d,
+                  floorPlans: [...(d.floorPlans ?? []), { src: "", alt: "", label: "" }],
+                }))
+              }
+            >
+              + Add floor plan
+            </CmsGhostButton>
+          </div>
+        </CmsSection>
+
+        <CmsSection
+          title="Downloads"
+          description="Separate buttons for brochure and price list."
+          where="Project page — downloads section below floor plans"
+          defaultOpen={false}
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <CmsField label="Brochure button label">
+              <CmsInput
+                value={data.downloads?.brochureLabel ?? ""}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    downloads: {
+                      brochureLabel: e.target.value,
+                      brochureUrl: d.downloads?.brochureUrl ?? "",
+                      priceListLabel: d.downloads?.priceListLabel ?? "",
+                      priceListUrl: d.downloads?.priceListUrl ?? "",
+                    },
+                  }))
+                }
+              />
+            </CmsField>
+            <CmsField label="Price list button label">
+              <CmsInput
+                value={data.downloads?.priceListLabel ?? ""}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    downloads: {
+                      brochureLabel: d.downloads?.brochureLabel ?? "",
+                      brochureUrl: d.downloads?.brochureUrl ?? "",
+                      priceListLabel: e.target.value,
+                      priceListUrl: d.downloads?.priceListUrl ?? "",
+                    },
+                  }))
+                }
+              />
+            </CmsField>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <CmsField label="Brochure file/link">
+              <CmsImageUpload
+                value={data.downloads?.brochureUrl ?? ""}
+                onChange={(url) =>
+                  patch((d) => ({
+                    ...d,
+                    downloads: {
+                      brochureLabel: d.downloads?.brochureLabel ?? "",
+                      brochureUrl: url,
+                      priceListLabel: d.downloads?.priceListLabel ?? "",
+                      priceListUrl: d.downloads?.priceListUrl ?? "",
+                    },
+                  }))
+                }
+                folder="projects/downloads"
+                accept="application/pdf,.pdf"
+              />
+            </CmsField>
+            <CmsField label="Price list file/link">
+              <CmsImageUpload
+                value={data.downloads?.priceListUrl ?? ""}
+                onChange={(url) =>
+                  patch((d) => ({
+                    ...d,
+                    downloads: {
+                      brochureLabel: d.downloads?.brochureLabel ?? "",
+                      brochureUrl: d.downloads?.brochureUrl ?? "",
+                      priceListLabel: d.downloads?.priceListLabel ?? "",
+                      priceListUrl: url,
+                    },
+                  }))
+                }
+                folder="projects/downloads"
+                accept="application/pdf,.pdf"
+              />
+            </CmsField>
+          </div>
+        </CmsSection>
+
+        <CmsSection
+          title="Project video"
+          description="Upload/add a video URL for this project."
+          where="Project page — dedicated project video section"
+          defaultOpen={false}
+        >
+          <CmsField label="Video section title (optional)">
+            <CmsInput
+              value={data.videoSection?.title ?? ""}
+              onChange={(e) =>
+                patch((d) => ({
+                  ...d,
+                  videoSection: {
+                    title: e.target.value,
+                    description: d.videoSection?.description ?? "",
+                    videoUrl: d.videoSection?.videoUrl ?? "",
+                    posterImage: d.videoSection?.posterImage ?? "",
+                  },
+                }))
+              }
+            />
+          </CmsField>
+          <CmsField label="Description (optional)">
+            <CmsTextarea
+              value={data.videoSection?.description ?? ""}
+              onChange={(e) =>
+                patch((d) => ({
+                  ...d,
+                  videoSection: {
+                    title: d.videoSection?.title ?? "",
+                    description: e.target.value,
+                    videoUrl: d.videoSection?.videoUrl ?? "",
+                    posterImage: d.videoSection?.posterImage ?? "",
+                  },
+                }))
+              }
+            />
+          </CmsField>
+          <CmsField label="Video file/link">
+            <CmsImageUpload
+              value={data.videoSection?.videoUrl ?? ""}
+              onChange={(url) =>
+                patch((d) => ({
+                  ...d,
+                  videoSection: {
+                    title: d.videoSection?.title ?? "",
+                    description: d.videoSection?.description ?? "",
+                    videoUrl: url,
+                    posterImage: d.videoSection?.posterImage ?? "",
+                  },
+                }))
+              }
+              folder="projects/videos"
+              accept="video/*"
+            />
+          </CmsField>
+          <CmsField label="Video poster image (optional)">
+            <CmsImageUpload
+              value={data.videoSection?.posterImage ?? ""}
+              onChange={(url) =>
+                patch((d) => ({
+                  ...d,
+                  videoSection: {
+                    title: d.videoSection?.title ?? "",
+                    description: d.videoSection?.description ?? "",
+                    videoUrl: d.videoSection?.videoUrl ?? "",
+                    posterImage: url,
+                  },
+                }))
+              }
+              folder="projects/videos"
+              accept="image/png,image/jpeg,image/webp"
+            />
+          </CmsField>
+        </CmsSection>
       </CmsGroup>
 
       {/* ── GROUP 4: Conversion ─────────────────────────────────────── */}

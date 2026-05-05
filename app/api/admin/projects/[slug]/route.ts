@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { connectMongo } from "@/lib/mongodb";
 import { ProjectPageModel } from "@/models/ProjectPage";
@@ -29,5 +30,7 @@ export async function PUT(
     { $set: { slug, payload } },
     { upsert: true }
   );
+  revalidatePath(`/${slug}`);
+  revalidatePath("/projects");
   return NextResponse.json({ ok: true });
 }

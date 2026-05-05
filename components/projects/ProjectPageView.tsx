@@ -3,9 +3,10 @@ import Image from "next/image";
 import PageHeader from "@/components/layout/PageHeader";
 import CTASection from "@/components/shared/CTASection";
 import ContactForm from "@/components/shared/ContactForm";
-import { Building2, CheckCircle2 } from "lucide-react";
+import { Building2, CheckCircle2, Download } from "lucide-react";
 import type { ProjectPayload } from "@/lib/cms/types";
 import { getLucideIcon, projectIcon } from "@/lib/cms/icons";
+import ProjectVideoPlayer from "@/components/projects/ProjectVideoPlayer";
 
 export function projectMetadata(data: ProjectPayload): Metadata {
   return {
@@ -27,6 +28,10 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
     architects,
     architectsTitle,
     gallery,
+    floorPlans,
+    floorPlansTitle,
+    downloads,
+    videoSection,
     leasingBox,
     specs,
     locationSidebar,
@@ -72,6 +77,32 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
                   <p key={i}>{p}</p>
                 ))}
               </div>
+               {(downloads?.brochureUrl?.trim() || downloads?.priceListUrl?.trim()) ? (
+                <div className="mt-8 flex flex-wrap justify-end gap-3">
+                  {downloads?.brochureUrl?.trim() ? (
+                    <a
+                      href={downloads.brochureUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-sm bg-theme-bg px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+                    >
+                      <Download className="h-4 w-4" />
+                      {downloads.brochureLabel?.trim() || "Download Brochure"}
+                    </a>
+                  ) : null}
+                  {downloads?.priceListUrl?.trim() ? (
+                    <a
+                      href={downloads.priceListUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-sm border border-theme-bg px-5 py-3 text-sm font-semibold text-theme-bg transition hover:bg-theme-bg hover:text-white"
+                    >
+                      <Download className="h-4 w-4" />
+                      {downloads.priceListLabel?.trim() || "Download Price List"}
+                    </a>
+                  ) : null}
+                </div>
+              ) : null}
 
               {unitTypes?.length ? (
                 <>
@@ -149,6 +180,48 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
                         />
                       </div>
                     ))}
+                  </div>
+                </>
+              ) : null}
+
+              {floorPlans?.length ? (
+                <>
+                  <h3 className="mb-5 mt-10 text-xl font-bold text-[#1a1a2e]">
+                    {floorPlansTitle ?? "Floor Plans"}
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {floorPlans.map((plan) => (
+                      <div key={plan.src} className="relative h-64 overflow-hidden rounded-sm border border-stone-200 bg-white">
+                        <Image
+                          src={plan.src}
+                          alt={plan.alt}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : null}
+
+             
+
+              {videoSection?.videoUrl?.trim() ? (
+                <>
+                  <h3 className="mb-5 mt-10 text-xl font-bold text-[#1a1a2e]">
+                    {videoSection.title?.trim() || "Project Video"}
+                  </h3>
+                  {videoSection.description?.trim() ? (
+                    <p className="mb-4 text-sm leading-relaxed text-[#7a7a7a]">
+                      {videoSection.description}
+                    </p>
+                  ) : null}
+                  <div className="overflow-hidden rounded-sm border border-stone-200 bg-black">
+                    <ProjectVideoPlayer
+                      src={videoSection.videoUrl}
+                      poster={videoSection.posterImage?.trim() || undefined}
+                    />
                   </div>
                 </>
               ) : null}

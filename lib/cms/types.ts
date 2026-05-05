@@ -180,6 +180,20 @@ export type ProjectPayload = {
   architectsTitle?: string;
   architects?: { name: string; role: string; description: string }[];
   gallery: { src: string; alt: string }[];
+  floorPlansTitle?: string;
+  floorPlans?: { src: string; alt: string; label?: string }[];
+  downloads?: {
+    brochureLabel?: string;
+    brochureUrl?: string;
+    priceListLabel?: string;
+    priceListUrl?: string;
+  };
+  videoSection?: {
+    title?: string;
+    description?: string;
+    videoUrl?: string;
+    posterImage?: string;
+  };
   leasingBox?: { title: string; intro: string; bullets: string[] };
   specs: { label: string; value: string }[];
   locationSidebar?: {
