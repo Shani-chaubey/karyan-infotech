@@ -18,7 +18,12 @@ export default async function ContactPage() {
   const payload = doc.payload as ContactPayload;
   return (
     <>
-      <PageHeader title={doc.metaTitle} breadcrumbs={[{ label: "Contact" }]} />
+      <PageHeader
+        title={payload.headerHeading || doc.metaTitle}
+        subheading={payload.headerSubheading}
+        bgImage={payload.headerBgImage}
+        breadcrumbs={[{ label: "Contact" }]}
+      />
       <ContactPageContent payload={payload} />
     </>
   );

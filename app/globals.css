@@ -82,6 +82,17 @@
   transform: scale(1.28);
 }
 
+/* Home portfolio: horizontal 3D coverflow; each slide is a vertical (image + text) card */
+.home-projects-swiper--3d.swiper {
+  width: 100%;
+  padding-block: 1.75rem;
+  box-sizing: border-box;
+}
+.home-projects-swiper--3d .swiper-slide {
+  height: auto;
+  box-sizing: border-box;
+}
+
 /* Floating “Call now” FAB (see CallNowFab) */
 @keyframes lux-call-fab-float {
   0%,
@@ -126,6 +137,52 @@
 }
 
 @layer utilities {
+  /* Runtime theme overrides (from SiteShell CSS variables) */
+  .bg-theme-bg {
+    background-color: var(--color-theme-bg);
+  }
+  .bg-theme-bg-deep {
+    background-color: var(--color-theme-bg-deep);
+  }
+  .bg-theme-bg-soft {
+    background-color: var(--color-theme-bg-soft);
+  }
+  .bg-theme-bg-muted {
+    background-color: var(--color-theme-bg-muted);
+  }
+  .bg-theme-bg-elevated {
+    background-color: var(--color-theme-bg-elevated);
+  }
+
+  .text-theme-fg {
+    color: var(--color-theme-fg);
+  }
+  .text-theme-fg-soft {
+    color: var(--color-theme-fg-soft);
+  }
+  .text-theme-fg-muted {
+    color: var(--color-theme-fg-muted);
+  }
+  .text-theme-fg-subtle {
+    color: var(--color-theme-fg-subtle);
+  }
+  .text-theme-on-bg {
+    color: var(--color-theme-on-bg);
+  }
+  .text-theme-on-bg-muted {
+    color: var(--color-theme-on-bg-muted);
+  }
+  .text-theme-on-bg-subtle {
+    color: var(--color-theme-on-bg-subtle);
+  }
+
+  .border-theme-bg {
+    border-color: var(--color-theme-bg);
+  }
+  .border-theme-fg {
+    border-color: var(--color-theme-fg);
+  }
+
   .text-stone-500 {
     color: color-mix(in srgb, var(--color-theme-fg-muted) 82%, white 18%);
   }
@@ -146,6 +203,72 @@
   }
 }
 
+/* Minimized enquiry promo chip — bottom-left pop + gentle float + gold pulse */
+@keyframes lux-enquiry-chip-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes lux-enquiry-chip-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes lux-enquiry-chip-ring {
+  0%,
+  100% {
+    box-shadow:
+      0 12px 28px rgba(0, 0, 0, 0.35),
+      0 0 0 0 rgba(247, 185, 15, 0.55);
+  }
+  50% {
+    box-shadow:
+      0 16px 36px rgba(0, 0, 0, 0.4),
+      0 0 0 12px rgba(247, 185, 15, 0);
+  }
+}
+
+.lux-enquiry-float-chip-outer {
+  animation: lux-enquiry-chip-pop 0.55s cubic-bezier(0.34, 1.45, 0.64, 1) forwards;
+}
+
+.lux-enquiry-float-chip-inner {
+  animation: lux-enquiry-chip-float 2.8s ease-in-out 0.55s infinite;
+}
+
+.lux-enquiry-float-chip-btn {
+  animation: lux-enquiry-chip-ring 2.5s ease-in-out infinite;
+}
+
+.lux-enquiry-float-chip-outer:hover .lux-enquiry-float-chip-inner,
+.lux-enquiry-float-chip-outer:focus-within .lux-enquiry-float-chip-inner {
+  animation-play-state: paused;
+}
+
+.lux-enquiry-float-chip-outer:hover .lux-enquiry-float-chip-btn,
+.lux-enquiry-float-chip-outer:focus-within .lux-enquiry-float-chip-btn {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lux-enquiry-float-chip-outer,
+  .lux-enquiry-float-chip-inner,
+  .lux-enquiry-float-chip-btn {
+    animation: none;
+  }
+}
+
 .bg-theme-bg-muted {
-    background: linear-gradient(135deg, #a07c3a, #c6a96a);
+  background: linear-gradient(135deg, var(--color-theme-bg-muted), var(--color-theme-bg-elevated));
 }

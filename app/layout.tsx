@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
 import "./globals.css";
-import SiteShell from "@/components/layout/SiteShell";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -38,9 +37,7 @@ export default function RootLayout({
       <body
         className={`${outfit.className} min-h-screen flex flex-col bg-theme-bg antialiased`}
       >
-        <SiteShell>
-          <main className="flex-1 bg-lux-ivory text-theme-fg">{children}</main>
-        </SiteShell>
+        {children}
       </body>
     </html>
   );

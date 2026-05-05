@@ -18,7 +18,12 @@ export default async function AboutPage() {
   const payload = doc.payload as AboutPayload;
   return (
     <>
-      <PageHeader title={doc.metaTitle} breadcrumbs={[{ label: "About Us" }]} />
+      <PageHeader
+        title={payload.headerHeading || doc.metaTitle}
+        subheading={payload.headerSubheading}
+        bgImage={payload.headerBgImage}
+        breadcrumbs={[{ label: "About Us" }]}
+      />
       <AboutPageContent payload={payload} />
     </>
   );

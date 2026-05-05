@@ -30,7 +30,16 @@ async function main() {
 
   await SiteSettingsModel.findOneAndUpdate(
     { key: "default" },
-    { $set: { key: "default", nav: DEFAULT_SITE_SETTINGS.nav, footer: DEFAULT_SITE_SETTINGS.footer } },
+    {
+      $set: {
+        key: "default",
+        nav: DEFAULT_SITE_SETTINGS.nav,
+        footer: DEFAULT_SITE_SETTINGS.footer,
+        themeColors: DEFAULT_SITE_SETTINGS.themeColors,
+        pageHeader: DEFAULT_SITE_SETTINGS.pageHeader,
+        enquiryFloatPromo: DEFAULT_SITE_SETTINGS.enquiryFloatPromo,
+      },
+    },
     { upsert: true }
   );
   console.log("Seeded SiteSettings");

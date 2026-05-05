@@ -5,7 +5,13 @@ import BlogCard from "@/components/shared/BlogCard";
 import CTASection from "@/components/shared/CTASection";
 import { getBlogPosts, getSitePage } from "@/lib/cms/getters";
 
-type BlogIntroPayload = { eyebrow?: string; title?: string };
+type BlogIntroPayload = {
+  headerBgImage?: string;
+  headerHeading?: string;
+  headerSubheading?: string;
+  eyebrow?: string;
+  title?: string;
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const doc = await getSitePage("blog");
@@ -19,7 +25,12 @@ export default async function BlogPage() {
   const intro = doc.payload as BlogIntroPayload;
   return (
     <>
-      <PageHeader title={doc.metaTitle} breadcrumbs={[{ label: "Blog" }]} />
+      <PageHeader
+        title={intro.headerHeading || doc.metaTitle}
+        subheading={intro.headerSubheading}
+        bgImage={intro.headerBgImage}
+        breadcrumbs={[{ label: "Blog" }]}
+      />
 
       <section className="bg-[#f8f5f0] py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

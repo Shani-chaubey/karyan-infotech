@@ -9,41 +9,41 @@ import type { ProjectsListPayload } from "@/components/site/ProjectsPageContent"
 
 type Project = ProjectsListPayload["projects"][number];
 
-/** Same layout as the former “wide” bento card — used for every slide. */
-function PortfolioWideCard({ project }: { project: Project }) {
+/** Vertical card: image on top, copy below — fits two-across horizontal 3D carousel. */
+function PortfolioStackCard({ project }: { project: Project }) {
   return (
     <Link
       href={project.href}
-      className="group relative flex h-full min-h-[280px] flex-col overflow-hidden rounded-3xl border border-stone-200/70 bg-lux-ivory shadow-[0_24px_50px_-28px_rgba(10,22,40,0.15)] ring-1 ring-black/[0.03] transition duration-300 hover:-translate-y-1 hover:border-lux-gold/35 hover:shadow-[0_28px_60px_-24px_rgba(198,160,82,0.18)] sm:min-h-[260px] sm:flex-row lg:min-h-[300px]"
+      className="group flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border border-stone-200/70 bg-lux-ivory shadow-[0_24px_50px_-28px_rgba(10,22,40,0.15)] ring-1 ring-black/[0.03] transition duration-300 hover:border-lux-gold/35 hover:shadow-[0_28px_60px_-24px_rgba(198,160,82,0.18)]"
     >
-      <div className="relative h-52 shrink-0 overflow-hidden bg-stone-100 sm:h-auto sm:w-[46%] sm:min-h-[240px] lg:min-h-[280px]">
+      <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-stone-100">
         <Image
           src={project.image}
           alt={project.title}
           fill
-          sizes="(max-width: 640px) 100vw, 46vw"
+          sizes="(max-width: 640px) 92vw, 44vw"
           className="object-cover transition duration-500 group-hover:scale-[1.03]"
         />
-        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+        <div className="absolute left-3 top-3 flex flex-wrap gap-2 sm:left-4 sm:top-4">
           <span className="rounded-full bg-theme-bg/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-theme-on-bg backdrop-blur">
             {project.type}
           </span>
         </div>
-        <div className="absolute bottom-4 left-4">
+        <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4">
           <span className="rounded-full bg-theme-bg/85 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-theme-on-bg backdrop-blur">
             {project.status}
           </span>
         </div>
       </div>
-      <div className="flex flex-1 flex-col justify-center p-6 sm:p-8 sm:py-10 sm:pl-2 sm:pr-10">
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
         <p className="text-xs font-medium uppercase tracking-wide text-lux-gold-dim">{project.location}</p>
-        <h3 className="font-display mt-2 text-xl font-medium text-lux-navy group-hover:text-lux-gold-dim sm:text-2xl">
+        <h3 className="font-display mt-2 text-lg font-medium text-lux-navy group-hover:text-lux-gold-dim sm:text-xl">
           {project.title}
         </h3>
-        <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-stone-600 sm:line-clamp-5">
+        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-stone-600 sm:line-clamp-4">
           {project.description}
         </p>
-        <span className="mt-6 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-lux-navy">
+        <span className="mt-4 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-lux-navy">
           View project
           <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" />
         </span>
@@ -61,15 +61,39 @@ export default function HomeProjectsSlider({ projects }: { projects: Project[] }
 
   useEffect(() => {
     const root = rootRef.current;
-    const container = root?.querySelector(".home-projects-swiper");
+    const container = root?.querySelector(".home-projects-swiper--3d");
     if (!root || !container || !projects.length) return;
 
     const swiper = new Swiper(container as HTMLElement, {
-      loop: projects.length > 1,
-      slidesPerView: 1,
-      spaceBetween: 24,
-      speed: 650,
+      direction: "horizontal",
+      loop: projects.length > 2,
+      slidesPerView: 1.08,
+      centeredSlides: true,
+      spaceBetween: 16,
+      speed: 700,
+      grabCursor: true,
       watchOverflow: true,
+      effect: "coverflow",
+      coverflowEffect: {
+        rotate: 28,
+        stretch: 0,
+        depth: 160,
+        modifier: 1,
+        slideShadows: true,
+      },
+      autoplay: {
+        enabled: true,
+        delay: 3000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: false,
+      },
+      breakpoints: {
+        640: {
+          slidesPerView: 2,
+          spaceBetween: 22,
+          centeredSlides: false,
+        },
+      },
       navigation:
         prevRef.current && nextRef.current
           ? {
@@ -87,7 +111,20 @@ export default function HomeProjectsSlider({ projects }: { projects: Project[] }
         : undefined,
     });
 
+    const pauseHover = () => {
+      if (swiper.autoplay?.running) swiper.autoplay.pause();
+    };
+    const resumeHover = () => {
+      if (swiper.params.autoplay.disableOnInteraction) return;
+      swiper.autoplay.paused = false;
+      swiper.autoplay.run();
+    };
+    root.addEventListener("mouseenter", pauseHover);
+    root.addEventListener("mouseleave", resumeHover);
+
     return () => {
+      root.removeEventListener("mouseenter", pauseHover);
+      root.removeEventListener("mouseleave", resumeHover);
       swiper.destroy(true, true);
     };
   }, [trackKey, projects.length]);
@@ -95,7 +132,7 @@ export default function HomeProjectsSlider({ projects }: { projects: Project[] }
   if (!projects.length) return null;
 
   return (
-    <div ref={rootRef} className="relative mt-14">
+    <div ref={rootRef} className="home-projects-carousel-root relative mt-14">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-stretch sm:gap-4">
         <button
           ref={prevRef}
@@ -106,11 +143,11 @@ export default function HomeProjectsSlider({ projects }: { projects: Project[] }
           <ChevronLeft className="h-5 w-5" strokeWidth={1.75} />
         </button>
 
-        <div className="swiper home-projects-swiper order-1 min-w-0 flex-1 overflow-hidden sm:order-2">
+        <div className="swiper home-projects-swiper home-projects-swiper--3d order-1 min-h-0 min-w-0 flex-1 overflow-hidden sm:order-2">
           <div className="swiper-wrapper">
             {projects.map((project) => (
-              <div key={project.href} className="swiper-slide h-auto">
-                <PortfolioWideCard project={project} />
+              <div key={project.href} className="swiper-slide">
+                <PortfolioStackCard project={project} />
               </div>
             ))}
           </div>

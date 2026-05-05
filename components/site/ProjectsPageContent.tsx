@@ -2,6 +2,9 @@ import ProjectCard from "@/components/shared/ProjectCard";
 import CTASection from "@/components/shared/CTASection";
 
 export type ProjectsListPayload = {
+  headerBgImage?: string;
+  headerHeading?: string;
+  headerSubheading?: string;
   eyebrow: string;
   title: string;
   subtitle: string;

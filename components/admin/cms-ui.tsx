@@ -356,8 +356,11 @@ export function CmsSaveStatus({ message }: { message: string }) {
   );
 }
 
+/** Matches `AdminSidebar` width so the save bar aligns with the content column. */
+const ADMIN_SAVE_BAR_LEFT = "left-[230px]";
+
 /**
- * CmsSaveBar — sticky save bar shown at the bottom of every portal form.
+ * CmsSaveBar — fixed to the bottom of the viewport in the admin content area (right of sidebar).
  */
 export function CmsSaveBar({
   onSave,
@@ -369,8 +372,11 @@ export function CmsSaveBar({
   label?: string;
 }) {
   return (
-    <div className="sticky bottom-4 z-30">
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-lg shadow-slate-200/60">
+    <div
+      className={`fixed bottom-0 right-0 z-40 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-sm ${ADMIN_SAVE_BAR_LEFT}`}
+      style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+    >
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3">
         <CmsPrimaryButton onClick={onSave}>{label}</CmsPrimaryButton>
         <CmsSaveStatus message={status} />
         <p className="ml-auto text-xs text-slate-400">Saves update the live website immediately</p>

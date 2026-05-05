@@ -78,7 +78,7 @@ export default function NavbarClient({ nav }: { nav: SiteNavPayload }) {
           </div>
 
           <nav className="hidden items-center gap-1 lg:flex">
-            {mainLinks.map((l) => (
+            {mainLinks.slice(0, 2).map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
@@ -110,7 +110,7 @@ export default function NavbarClient({ nav }: { nav: SiteNavPayload }) {
                 />
               </button>
               {deskProjectsOpen ? (
-                <div className="absolute right-0 top-full z-50 w-[min(100vw-2rem,560px)] pt-3">
+                <div className="absolute right-0 left-0 mx-auto top-full z-50 w-[min(100vw-2rem,560px)] pt-3">
                   <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-stone-200/90 bg-white shadow-2xl ring-1 ring-black/5">
                     <div className="border-r border-stone-100 bg-stone-50/90 p-5">
                       <div className="mb-1 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-lux-gold-dim">
@@ -160,6 +160,20 @@ export default function NavbarClient({ nav }: { nav: SiteNavPayload }) {
                 </div>
               ) : null}
             </div>
+
+            {mainLinks.slice(2).map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={`rounded-md px-3 py-2 text-sm font-medium transition ${
+                  active(l.href)
+                    ? "text-lux-gold-dim"
+                    : "text-theme-fg hover:text-theme-fg-soft"
+                }`}
+              >
+                {l.label}
+              </Link>
+            ))}
           </nav>
 
           <div className="flex items-center gap-2">

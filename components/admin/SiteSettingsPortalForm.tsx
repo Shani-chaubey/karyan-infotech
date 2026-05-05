@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Globe, LayoutGrid, Menu } from "lucide-react";
+import { Globe, ImageIcon, LayoutGrid, Menu } from "lucide-react";
 import type { SiteSettingsBundle } from "@/lib/cms/types";
 import { DEFAULT_SITE_SETTINGS } from "@/lib/cms/defaults/siteSettings";
 import {
@@ -29,9 +29,12 @@ export default function SiteSettingsPortalForm() {
       .then((j) => {
         const nav = j.nav ?? {};
         const footer = j.footer ?? {};
+        const themeColors = j.themeColors ?? {};
+        const pageHeader = j.pageHeader ?? {};
+        const enquiryFloatPromo = j.enquiryFloatPromo ?? {};
         const merged = deepMerge(
           DEFAULT_SITE_SETTINGS as unknown as Record<string, unknown>,
-          { nav, footer } as Record<string, unknown>
+          { nav, footer, themeColors, pageHeader, enquiryFloatPromo } as Record<string, unknown>
         );
         setData(merged as SiteSettingsBundle);
       });
@@ -171,6 +174,61 @@ export default function SiteSettingsPortalForm() {
           </div>
         </CmsSection>
 
+
+        <CmsSection
+          title="Page header defaults"
+          description="Shared banner settings for about, blog, projects and contact headers."
+          where="Public pages — top hero/header strip"
+          defaultOpen
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <CmsField
+              label="Background image"
+              hint="Optional shared image. If empty, the premium dark gradient is used."
+            >
+              <CmsImageUpload
+                value={data.pageHeader.bgImage ?? ""}
+                onChange={(url) =>
+                  patch((d) => ({ ...d, pageHeader: { ...d.pageHeader, bgImage: url } }))
+                }
+                folder="site/page-header"
+                accept="image/png,image/jpeg,image/webp"
+              />
+            </CmsField>
+            <CmsField
+              label="Default heading"
+              hint="Fallback title if a page does not pass a heading explicitly."
+            >
+              <CmsInput
+                value={data.pageHeader.heading}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    pageHeader: { ...d.pageHeader, heading: e.target.value },
+                  }))
+                }
+              />
+            </CmsField>
+          </div>
+          <div className="mt-4">
+            <CmsField
+              label="Default subheading"
+              hint="Shown under the page heading across section headers."
+            >
+              <CmsTextarea
+                rows={3}
+                value={data.pageHeader.subheading}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    pageHeader: { ...d.pageHeader, subheading: e.target.value },
+                  }))
+                }
+              />
+            </CmsField>
+          </div>
+        </CmsSection>
+
         <CmsSection
           title="Main menu links"
           description="The primary pages in the horizontal navigation."
@@ -236,6 +294,140 @@ export default function SiteSettingsPortalForm() {
             >
               + Add menu link
             </CmsGhostButton>
+          </div>
+        </CmsSection>
+      </CmsGroup>
+
+      <CmsGroup
+        icon={<ImageIcon className="h-4 w-4" />}
+        title="Floating enquiry image"
+        description="Portrait strip fixed to the bottom-left; click opens the enquiry popup (same as the header button)."
+      >
+        <CmsSection
+          title="Bottom-left promo"
+          description="Fixed 160×260px frame; image uses “cover”. The X minimizes to an animated round thumbnail bottom-left; click it to expand again."
+          where="Public pages — large card and minimized chip both bottom-left (not in admin)"
+          defaultOpen
+        >
+          <div className="flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+            <label className="flex cursor-pointer items-center gap-2 font-medium text-slate-800">
+              <input
+                type="checkbox"
+                checked={data.enquiryFloatPromo.enabled}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    enquiryFloatPromo: { ...d.enquiryFloatPromo, enabled: e.target.checked },
+                  }))
+                }
+                className="h-4 w-4 rounded border-slate-300"
+              />
+              Show on public site
+            </label>
+            <span className="text-xs text-slate-500">
+              Frame: <span className="font-mono">160 × 260 px</span>
+            </span>
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <CmsField
+              label="Promo image"
+              hint="Upload or paste URL. Design for a tall portrait safe area — edges may crop slightly."
+            >
+              <CmsImageUpload
+                value={data.enquiryFloatPromo.imageSrc}
+                onChange={(url) =>
+                  patch((d) => ({
+                    ...d,
+                    enquiryFloatPromo: { ...d.enquiryFloatPromo, imageSrc: url },
+                  }))
+                }
+                folder="site/floating-enquiry"
+                accept="image/png,image/jpeg,image/webp"
+              />
+            </CmsField>
+            <CmsField label="Alt text" hint="Short description for screen readers (e.g. “3 & 4 BHK — enquire now”).">
+              <CmsInput
+                value={data.enquiryFloatPromo.imageAlt}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    enquiryFloatPromo: { ...d.enquiryFloatPromo, imageAlt: e.target.value },
+                  }))
+                }
+              />
+            </CmsField>
+          </div>
+        </CmsSection>
+      </CmsGroup>
+
+
+      <CmsGroup
+        icon={<LayoutGrid className="h-4 w-4" />}
+        title="Theme colors"
+        description="Control the global color palette used across the public website"
+      >
+        <CmsSection
+          title="Brand palette"
+          description="Pick colors and save to apply them live."
+          where="All public pages — background, text, accents and luxury highlights"
+          defaultOpen
+        >
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              ["luxNavy", "Luxury Navy"],
+              ["luxNavyMid", "Luxury Navy Mid"],
+              ["luxNavySoft", "Luxury Navy Soft"],
+              ["luxGold", "Luxury Gold"],
+              ["luxGoldBright", "Luxury Gold Bright"],
+              ["luxGoldDim", "Luxury Gold Dim"],
+              ["luxCream", "Luxury Cream"],
+              ["luxIvory", "Luxury Ivory"],
+              ["luxCharcoal", "Luxury Charcoal"],
+              ["themeBgDeep", "Theme BG Deep"],
+              ["themeBg", "Theme BG"],
+              ["themeBgSoft", "Theme BG Soft"],
+              ["themeBgMuted", "Theme BG Muted"],
+              ["themeBgElevated", "Theme BG Elevated"],
+              ["themeFg", "Theme FG"],
+              ["themeFgSoft", "Theme FG Soft"],
+              ["themeFgMuted", "Theme FG Muted"],
+              ["themeFgSubtle", "Theme FG Subtle"],
+              ["themeOnBg", "Text on BG"],
+              ["themeOnBgMuted", "Text on BG Muted"],
+              ["themeOnBgSubtle", "Text on BG Subtle"],
+            ].map(([key, label]) => (
+              <CmsField key={String(key)} label={String(label)}>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={String((data.themeColors as Record<string, string>)[String(key)] ?? "#000000")}
+                    onChange={(e) =>
+                      patch((d) => ({
+                        ...d,
+                        themeColors: {
+                          ...d.themeColors,
+                          [String(key)]: e.target.value,
+                        },
+                      }))
+                    }
+                    className="h-10 w-14 cursor-pointer rounded border border-slate-300 bg-white"
+                  />
+                  <CmsInput
+                    value={String((data.themeColors as Record<string, string>)[String(key)] ?? "")}
+                    onChange={(e) =>
+                      patch((d) => ({
+                        ...d,
+                        themeColors: {
+                          ...d.themeColors,
+                          [String(key)]: e.target.value,
+                        },
+                      }))
+                    }
+                    placeholder="#ffffff"
+                  />
+                </div>
+              </CmsField>
+            ))}
           </div>
         </CmsSection>
       </CmsGroup>

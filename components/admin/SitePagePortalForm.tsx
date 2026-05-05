@@ -22,25 +22,32 @@ import {
 const CONTACT_ICONS = ["Phone", "Mail", "MapPin", "Clock"] as const;
 
 type AboutPayload = {
-  headerEyebrow: string;
-  headerTitle: string;
-  imageSrc: string;
-  imageAlt: string;
-  paragraphs: string[];
-  stats: { num: string; label: string }[];
-  whyTitle: string;
-  whySubtitle: string;
-  whyInvest: string[];
-  whyClosing: string;
+  headerBgImage?: string;
+  headerHeading?: string;
+  headerSubheading?: string;
+  storySections?: AboutStorySection[];
   ctaTitle: string;
   ctaDescription: string;
   ctaPrimaryLabel: string;
   ctaPrimaryHref: string;
 };
 
+type AboutStorySection = {
+  eyebrow?: string;
+  heading: string;
+  subheading?: string;
+  paragraphs: string[];
+  imageSrc: string;
+  imageAlt: string;
+  stats: { num: string; label: string }[];
+};
+
 type ContactItem = { icon: string; label: string; value: string; href: string };
 
 type ContactPayload = {
+  headerBgImage?: string;
+  headerHeading?: string;
+  headerSubheading?: string;
   heroTitle: string;
   contactHeading: string;
   formHeading: string;
@@ -61,6 +68,9 @@ type ProjectCard = {
 };
 
 type ProjectsListPayload = {
+  headerBgImage?: string;
+  headerHeading?: string;
+  headerSubheading?: string;
   eyebrow: string;
   title: string;
   subtitle: string;
@@ -68,6 +78,9 @@ type ProjectsListPayload = {
 };
 
 type BlogIntroPayload = {
+  headerBgImage?: string;
+  headerHeading?: string;
+  headerSubheading?: string;
   eyebrow: string;
   title: string;
 };
@@ -177,139 +190,252 @@ export default function SitePagePortalForm({ slug }: { slug: string }) {
         </CmsSection>
       </CmsGroup>
 
+
+      <CmsGroup
+        icon={<LayoutTemplate className="h-4 w-4" />}
+        title="Header banner"
+        description="Top PageHeader image for this specific page only"
+      >
+        <CmsSection
+          title="Page header background"
+          description="This image appears in the dark top banner of the page header."
+          where="Public page top header (breadcrumb strip)"
+          defaultOpen
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <CmsField
+              label="Header background image"
+              hint="Upload a wide banner image. Leave empty to use the global default from Site Settings."
+            >
+              <CmsImageUpload
+                value={String((payload as Record<string, unknown>).headerBgImage ?? "")}
+                onChange={(url) =>
+                  patchPayload((p) => ({ ...p, headerBgImage: url }))
+                }
+                folder={`pages/${slug}/header`}
+                accept="image/png,image/jpeg,image/webp"
+              />
+            </CmsField>
+            <CmsField label="Header heading" hint="Large title in the top page banner.">
+              <CmsInput
+                value={String((payload as Record<string, unknown>).headerHeading ?? "")}
+                onChange={(e) =>
+                  patchPayload((p) => ({ ...p, headerHeading: e.target.value }))
+                }
+              />
+            </CmsField>
+          </div>
+          <div className="mt-4">
+            <CmsField label="Header subheading" hint="Short line under the banner heading.">
+              <CmsTextarea
+                rows={3}
+                value={String((payload as Record<string, unknown>).headerSubheading ?? "")}
+                onChange={(e) =>
+                  patchPayload((p) => ({ ...p, headerSubheading: e.target.value }))
+                }
+              />
+            </CmsField>
+          </div>
+        </CmsSection>
+      </CmsGroup>
+
       {/* ── About page ──────────────────────────────────────────────── */}
       {slug === "about" ? (
         <>
           <CmsGroup
             icon={<FileText className="h-4 w-4" />}
             title="Page content"
-            description="Hero image, story paragraphs, and highlight statistics"
+            description="Repeatable story sections with alternating image layout and optional stats"
           >
             <CmsSection
-              title="Header & hero image"
-              description="Top banner with photo and headline."
-              where="/about — top banner with photo and headline"
+              title="Story sections (repeatable)"
+              description="Add as many sections as needed. Frontend alternates image left/right automatically."
+              where="/about — content blocks below the page header"
               defaultOpen
             >
-              <div className="grid gap-3 sm:grid-cols-2">
-                <CmsField label="Eyebrow">
-                  <CmsInput
-                    value={about.headerEyebrow}
-                    onChange={(e) =>
-                      patchPayload((p) => ({ ...p, headerEyebrow: e.target.value }))
-                    }
-                  />
-                </CmsField>
-                <CmsField label="Main heading">
-                  <CmsInput
-                    value={about.headerTitle}
-                    onChange={(e) =>
-                      patchPayload((p) => ({ ...p, headerTitle: e.target.value }))
-                    }
-                  />
-                </CmsField>
-                <CmsField label="Hero image" hint="Large image shown on the About page hero.">
-                  <CmsImageUpload
-                    value={about.imageSrc}
-                    onChange={(url) =>
-                      patchPayload((p) => ({ ...p, imageSrc: url }))
-                    }
-                    folder="pages/about"
-                  />
-                </CmsField>
-                <CmsField label="Image description (accessibility)">
-                  <CmsInput
-                    value={about.imageAlt}
-                    onChange={(e) =>
-                      patchPayload((p) => ({ ...p, imageAlt: e.target.value }))
-                    }
-                  />
-                </CmsField>
-              </div>
-            </CmsSection>
-
-            <CmsSection
-              title="Story paragraphs"
-              description="Main text under the hero image."
-              where="/about — main text under the hero"
-              defaultOpen={false}
-            >
-              <CmsField label="Body copy" hint="Separate paragraphs with a blank line.">
-                <CmsTextarea
-                  value={(about.paragraphs ?? []).join("\n\n")}
-                  onChange={(e) =>
-                    patchPayload((p) => ({
-                      ...p,
-                      paragraphs: e.target.value
-                        .split(/\n\n+/)
-                        .map((x) => x.trim())
-                        .filter(Boolean),
-                    }))
-                  }
-                  className="min-h-[200px]"
-                />
-              </CmsField>
-            </CmsSection>
-
-            <CmsSection
-              title="Highlight statistics"
-              description="Key numbers displayed in a grid below the story."
-              where="/about — grid of statistics under the story"
-              defaultOpen={false}
-            >
               <div className="space-y-4">
-                {(about.stats ?? []).map((s, i) => (
+                {(about.storySections ?? []).map((section, i) => (
                   <CmsItemCard
                     key={i}
-                    title={`Stat ${i + 1}`}
+                    title={`Story section ${i + 1}`}
                     onRemove={() =>
                       patchPayload((p) => {
-                        const stats = [...((p.stats as typeof about.stats) ?? [])];
-                        stats.splice(i, 1);
-                        return { ...p, stats };
+                        const storySections = [...((p.storySections as AboutStorySection[]) ?? [])];
+                        storySections.splice(i, 1);
+                        return { ...p, storySections };
                       })
                     }
                   >
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <CmsField label="Big number">
+                      <CmsField label="Eyebrow (optional)">
                         <CmsInput
-                          value={s.num}
+                          value={section.eyebrow ?? ""}
                           onChange={(e) =>
                             patchPayload((p) => {
-                              const stats = [...((p.stats as typeof about.stats) ?? [])];
-                              stats[i] = { ...stats[i], num: e.target.value };
-                              return { ...p, stats };
+                              const storySections = [...((p.storySections as AboutStorySection[]) ?? [])];
+                              storySections[i] = { ...storySections[i], eyebrow: e.target.value };
+                              return { ...p, storySections };
                             })
                           }
                         />
                       </CmsField>
-                      <CmsField label="Label">
+                      <CmsField label="Heading">
                         <CmsInput
-                          value={s.label}
+                          value={section.heading}
                           onChange={(e) =>
                             patchPayload((p) => {
-                              const stats = [...((p.stats as typeof about.stats) ?? [])];
-                              stats[i] = { ...stats[i], label: e.target.value };
-                              return { ...p, stats };
+                              const storySections = [...((p.storySections as AboutStorySection[]) ?? [])];
+                              storySections[i] = { ...storySections[i], heading: e.target.value };
+                              return { ...p, storySections };
                             })
                           }
                         />
                       </CmsField>
                     </div>
+
+                    <CmsField label="Subheading (optional)">
+                      <CmsInput
+                        value={section.subheading ?? ""}
+                        onChange={(e) =>
+                          patchPayload((p) => {
+                            const storySections = [...((p.storySections as AboutStorySection[]) ?? [])];
+                            storySections[i] = { ...storySections[i], subheading: e.target.value };
+                            return { ...p, storySections };
+                          })
+                        }
+                      />
+                    </CmsField>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <CmsField label="Section image">
+                        <CmsImageUpload
+                          value={section.imageSrc}
+                          onChange={(url) =>
+                            patchPayload((p) => {
+                              const storySections = [...((p.storySections as AboutStorySection[]) ?? [])];
+                              storySections[i] = { ...storySections[i], imageSrc: url };
+                              return { ...p, storySections };
+                            })
+                          }
+                          folder="pages/about/story"
+                        />
+                      </CmsField>
+                      <CmsField label="Image alt text">
+                        <CmsInput
+                          value={section.imageAlt}
+                          onChange={(e) =>
+                            patchPayload((p) => {
+                              const storySections = [...((p.storySections as AboutStorySection[]) ?? [])];
+                              storySections[i] = { ...storySections[i], imageAlt: e.target.value };
+                              return { ...p, storySections };
+                            })
+                          }
+                        />
+                      </CmsField>
+                    </div>
+
+                    <CmsField label="Paragraphs" hint="Separate paragraphs with a blank line.">
+                      <CmsTextarea
+                        className="min-h-[160px]"
+                        value={(section.paragraphs ?? []).join("\n\n")}
+                        onChange={(e) =>
+                          patchPayload((p) => {
+                            const storySections = [...((p.storySections as AboutStorySection[]) ?? [])];
+                            storySections[i] = {
+                              ...storySections[i],
+                              paragraphs: e.target.value
+                                .split(/\n\n+/)
+                                .map((x) => x.trim())
+                                .filter(Boolean),
+                            };
+                            return { ...p, storySections };
+                          })
+                        }
+                      />
+                    </CmsField>
+
+                    <CmsField label="Stats (optional)">
+                      <div className="space-y-3">
+                        {(section.stats ?? []).map((st, j) => (
+                          <div key={j} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+                            <CmsInput
+                              value={st.num}
+                              onChange={(e) =>
+                                patchPayload((p) => {
+                                  const storySections = [...((p.storySections as AboutStorySection[]) ?? [])];
+                                  const stats = [...(storySections[i]?.stats ?? [])];
+                                  stats[j] = { ...stats[j], num: e.target.value };
+                                  storySections[i] = { ...storySections[i], stats };
+                                  return { ...p, storySections };
+                                })
+                              }
+                              placeholder="Number"
+                            />
+                            <CmsInput
+                              value={st.label}
+                              onChange={(e) =>
+                                patchPayload((p) => {
+                                  const storySections = [...((p.storySections as AboutStorySection[]) ?? [])];
+                                  const stats = [...(storySections[i]?.stats ?? [])];
+                                  stats[j] = { ...stats[j], label: e.target.value };
+                                  storySections[i] = { ...storySections[i], stats };
+                                  return { ...p, storySections };
+                                })
+                              }
+                              placeholder="Label"
+                            />
+                            <CmsGhostButton
+                              onClick={() =>
+                                patchPayload((p) => {
+                                  const storySections = [...((p.storySections as AboutStorySection[]) ?? [])];
+                                  const stats = [...(storySections[i]?.stats ?? [])];
+                                  stats.splice(j, 1);
+                                  storySections[i] = { ...storySections[i], stats };
+                                  return { ...p, storySections };
+                                })
+                              }
+                            >
+                              Remove
+                            </CmsGhostButton>
+                          </div>
+                        ))}
+                        <CmsGhostButton
+                          onClick={() =>
+                            patchPayload((p) => {
+                              const storySections = [...((p.storySections as AboutStorySection[]) ?? [])];
+                              const stats = [...(storySections[i]?.stats ?? []), { num: "", label: "" }];
+                              storySections[i] = { ...storySections[i], stats };
+                              return { ...p, storySections };
+                            })
+                          }
+                        >
+                          + Add stat
+                        </CmsGhostButton>
+                      </div>
+                    </CmsField>
                   </CmsItemCard>
                 ))}
+
                 <CmsGhostButton
                   onClick={() =>
                     patchPayload((p) => ({
                       ...p,
-                      stats: [
-                        ...((p.stats as typeof about.stats) ?? []),
-                        { num: "", label: "" },
+                      storySections: [
+                        ...((p.storySections as AboutStorySection[]) ?? []),
+                        {
+                          eyebrow: "",
+                          heading: "",
+                          subheading: "",
+                          paragraphs: [],
+                          imageSrc: "",
+                          imageAlt: "",
+                          stats: [],
+                        },
                       ],
                     }))
                   }
                 >
-                  + Add statistic
+                  + Add story section
                 </CmsGhostButton>
               </div>
             </CmsSection>
@@ -320,55 +446,6 @@ export default function SitePagePortalForm({ slug }: { slug: string }) {
             title="Lower sections"
             description="Why invest with us block and the bottom call-to-action"
           >
-            <CmsSection
-              title="Why invest with us"
-              description="Reasons list and closing statement."
-              where="/about — reasons list and closing line"
-              defaultOpen={false}
-            >
-              <div className="grid gap-3 sm:grid-cols-2">
-                <CmsField label="Section title">
-                  <CmsInput
-                    value={about.whyTitle}
-                    onChange={(e) =>
-                      patchPayload((p) => ({ ...p, whyTitle: e.target.value }))
-                    }
-                  />
-                </CmsField>
-                <CmsField label="Subtitle">
-                  <CmsInput
-                    value={about.whySubtitle}
-                    onChange={(e) =>
-                      patchPayload((p) => ({ ...p, whySubtitle: e.target.value }))
-                    }
-                  />
-                </CmsField>
-              </div>
-              <CmsField label="Bullet lines" hint="One reason per line.">
-                <CmsTextarea
-                  value={(about.whyInvest ?? []).join("\n")}
-                  onChange={(e) =>
-                    patchPayload((p) => ({
-                      ...p,
-                      whyInvest: e.target.value
-                        .split("\n")
-                        .map((x) => x.trim())
-                        .filter(Boolean),
-                    }))
-                  }
-                  className="min-h-[120px]"
-                />
-              </CmsField>
-              <CmsField label="Closing line">
-                <CmsInput
-                  value={about.whyClosing}
-                  onChange={(e) =>
-                    patchPayload((p) => ({ ...p, whyClosing: e.target.value }))
-                  }
-                />
-              </CmsField>
-            </CmsSection>
-
             <CmsSection
               title="Bottom call-to-action"
               description="Banner above the footer with a link button."

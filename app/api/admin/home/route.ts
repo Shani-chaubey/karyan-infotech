@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { connectMongo } from "@/lib/mongodb";
@@ -21,5 +22,6 @@ export async function PUT(req: Request) {
     { $set: { key: "default", data } },
     { upsert: true }
   );
+  revalidatePath("/", "layout");
   return NextResponse.json({ ok: true });
 }

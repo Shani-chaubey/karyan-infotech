@@ -4,6 +4,9 @@ import SiteBrandLogo from "@/components/layout/SiteBrandLogo";
 import { getLucideIcon } from "@/lib/cms/icons";
 
 export type ContactPayload = {
+  headerBgImage?: string;
+  headerHeading?: string;
+  headerSubheading?: string;
   heroTitle: string;
   contactHeading: string;
   formHeading: string;

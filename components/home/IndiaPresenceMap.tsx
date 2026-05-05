@@ -122,35 +122,51 @@ export default function IndiaPresenceMap({
             </filter>
           </defs>
 
-          {mapState.pins.map(({ city, cx, cy }) => {
+          {mapState.pins.map(({ city, cx, cy }, idx) => {
             const h = hovered?.id === city.id;
+            // Stagger each pin's ripple so they don't all pulse together
+            const delay = `${(idx * 0.35) % 2}s`;
             return (
               <g key={city.id}>
-                {/* Outer glow ring */}
+                {/* ── Ripple ring 1 — outermost, slow ── */}
+                <circle cx={cx} cy={cy} r="0.5" fill="none" stroke={markerColor} strokeWidth="0.35">
+                  <animate attributeName="r" values="0.5;3.8" dur="2s" begin={delay} repeatCount="indefinite" />
+                  <animate attributeName="stroke-opacity" values="0.55;0" dur="2s" begin={delay} repeatCount="indefinite" />
+                </circle>
+
+                {/* ── Ripple ring 2 — slightly behind ── */}
+                <circle cx={cx} cy={cy} r="0.5" fill="none" stroke={markerColor} strokeWidth="0.25">
+                  <animate attributeName="r" values="0.5;2.6" dur="2s" begin={`${parseFloat(delay) + 0.45}s`} repeatCount="indefinite" />
+                  <animate attributeName="stroke-opacity" values="0.4;0" dur="2s" begin={`${parseFloat(delay) + 0.45}s`} repeatCount="indefinite" />
+                </circle>
+
+                {/* ── Static halo (brightens on hover) ── */}
                 <circle
                   cx={cx} cy={cy}
-                  r={h ? 3.2 : 2.0}
+                  r={h ? 1.8 : 1.1}
                   fill={markerColor}
-                  fillOpacity={h ? 0.22 : 0.13}
-                  style={{ transition: "r 0.25s ease, fill-opacity 0.25s" }}
+                  fillOpacity={h ? 0.28 : 0.14}
+                  style={{ transition: "r 0.2s ease, fill-opacity 0.2s" }}
                 />
-                {/* Mid ring */}
+
+                {/* ── Core gold dot (blinking fill opacity) ── */}
                 <circle
                   cx={cx} cy={cy}
-                  r={h ? 1.9 : 1.2}
-                  fill={markerColor}
-                  fillOpacity={h ? 0.42 : 0.28}
-                  style={{ transition: "r 0.25s ease" }}
-                />
-                {/* Core gold dot */}
-                <circle
-                  cx={cx} cy={cy}
-                  r={h ? 1.0 : 0.65}
+                  r={h ? 0.95 : 0.62}
                   fill="url(#pinGold)"
                   filter="url(#pinGlow)"
-                  style={{ transition: "r 0.25s ease" }}
-                />
-                {/* Invisible pointer-events hit area */}
+                  style={{ transition: "r 0.2s ease" }}
+                >
+                  <animate
+                    attributeName="fill-opacity"
+                    values="1;0.55;1"
+                    dur="1.8s"
+                    begin={delay}
+                    repeatCount="indefinite"
+                  />
+                </circle>
+
+                {/* ── Hit area ── */}
                 <circle
                   cx={cx} cy={cy}
                   r={4}

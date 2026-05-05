@@ -4,8 +4,15 @@ import { HomeContentModel } from "@/models/HomeContent";
 import { ProjectPageModel } from "@/models/ProjectPage";
 import { BlogPostModel } from "@/models/BlogPost";
 import { SitePageModel } from "@/models/SitePage";
-import type { BlogPostPayload, HomePayload, ProjectPayload, SiteSettingsBundle } from "./types";
+import type {
+  BlogPostPayload,
+  HomePayload,
+  HomePresenceBand,
+  ProjectPayload,
+  SiteSettingsBundle,
+} from "./types";
 import { migrateLegacyHomePresence } from "./migrateHomePresence";
+import { normalizePresenceCityIds } from "./normalizePresenceCityIds";
 import { DEFAULT_SITE_SETTINGS } from "./defaults/siteSettings";
 import { DEFAULT_HOME_PAYLOAD } from "./defaults/homePayload";
 import { DEFAULT_BLOG_POSTS } from "./defaults/blogPosts";
@@ -22,7 +29,32 @@ export async function getSiteSettings(): Promise<SiteSettingsBundle> {
     await connectMongo();
     const doc = await SiteSettingsModel.findOne({ key: "default" }).lean();
     if (doc?.nav && doc?.footer) {
-      return { nav: doc.nav as SiteSettingsBundle["nav"], footer: doc.footer as SiteSettingsBundle["footer"] };
+      const raw = doc as Record<string, unknown>;
+      const pr = raw.enquiryFloatPromo;
+      const hr = raw.pageHeader;
+      const tr = raw.themeColors;
+      const defPromo = DEFAULT_SITE_SETTINGS.enquiryFloatPromo;
+      const defHeader = DEFAULT_SITE_SETTINGS.pageHeader;
+      const defTheme = DEFAULT_SITE_SETTINGS.themeColors;
+      const enquiryFloatPromo: SiteSettingsBundle["enquiryFloatPromo"] =
+        pr && typeof pr === "object" && !Array.isArray(pr)
+          ? { ...defPromo, ...(pr as Partial<typeof defPromo>) }
+          : defPromo;
+      const pageHeader: SiteSettingsBundle["pageHeader"] =
+        hr && typeof hr === "object" && !Array.isArray(hr)
+          ? { ...defHeader, ...(hr as Partial<typeof defHeader>) }
+          : defHeader;
+      const themeColors: SiteSettingsBundle["themeColors"] =
+        tr && typeof tr === "object" && !Array.isArray(tr)
+          ? { ...defTheme, ...(tr as Partial<typeof defTheme>) }
+          : defTheme;
+      return {
+        nav: doc.nav as SiteSettingsBundle["nav"],
+        footer: doc.footer as SiteSettingsBundle["footer"],
+        themeColors,
+        pageHeader,
+        enquiryFloatPromo,
+      };
     }
   } catch {
     /* use defaults */
@@ -31,7 +63,21 @@ export async function getSiteSettings(): Promise<SiteSettingsBundle> {
 }
 
 function mergeHomePayloadFromDoc(raw: Record<string, unknown>): HomePayload {
-  const out = { ...DEFAULT_HOME_PAYLOAD, ...raw } as HomePayload;
+  const base = { ...DEFAULT_HOME_PAYLOAD, ...raw } as HomePayload;
+  const defP = DEFAULT_HOME_PAYLOAD.presence;
+  const rp = raw.presence as Record<string, unknown> | undefined;
+
+  /** Deep-merge `presence` so a partial or oddly shaped DB object does not wipe `cityIds`. */
+  const presence: HomePresenceBand = {
+    eyebrow: typeof rp?.eyebrow === "string" ? rp.eyebrow : defP.eyebrow,
+    heading: typeof rp?.heading === "string" ? rp.heading : defP.heading,
+    subheading: typeof rp?.subheading === "string" ? rp.subheading : defP.subheading,
+    cityIds: Array.isArray(rp?.cityIds)
+      ? normalizePresenceCityIds(rp.cityIds as unknown[])
+      : defP.cityIds,
+  };
+
+  const out = { ...base, presence } as HomePayload;
   return migrateLegacyHomePresence(out, raw);
 }
 

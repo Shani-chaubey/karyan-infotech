@@ -5,30 +5,28 @@ export const DEFAULT_SITE_PAGES = [
     metaDescription:
       "Learn about Karyan Infratech LLP — a vision born of the Karyan Group.",
     payload: {
-      headerEyebrow: "Karyan Infratech LLP",
-      headerTitle: "About Karyan Infratech",
-      imageSrc: "/images/proverview.jpg",
-      imageAlt: "Karyan Infratech",
-      paragraphs: [
-        "Karyan Infratech is a new venture by the Karyan Group, a third-generation business family with multiple verticals in textiles, warehousing, and unmanned aerial vehicles (drones). With over 15 years of experience and expertise, Karyan Infratech is backed by the Karyan Group and select promoters of the Savior Group – premier real estate developers of Delhi/NCR.",
-        "At Karyan Infratech, we maintain a high level of professionalism with a strong focus on customer satisfaction. We offer transparency and accountability through each stage, from acquisition to construction, completion, marketing, and sales.",
+      headerBgImage: "",
+      headerHeading: "About Us",
+      headerSubheading: "Learn about our vision, legacy, and commitment to quality development.",
+      storySections: [
+        {
+          eyebrow: "Karyan Infratech LLP",
+          heading: "About Karyan Infratech",
+          subheading: "Built on legacy, driven by transparent execution.",
+          imageSrc: "/images/proverview.jpg",
+          imageAlt: "Karyan Infratech",
+          paragraphs: [
+            "Karyan Infratech is a new venture by the Karyan Group, a third-generation business family with multiple verticals in textiles, warehousing, and unmanned aerial vehicles (drones). With over 15 years of experience and expertise, Karyan Infratech is backed by the Karyan Group and select promoters of the Savior Group – premier real estate developers of Delhi/NCR.",
+            "At Karyan Infratech, we maintain a high level of professionalism with a strong focus on customer satisfaction. We offer transparency and accountability through each stage, from acquisition to construction, completion, marketing, and sales.",
+          ],
+          stats: [
+            { num: "15", label: "ACRE OF LAND BANK" },
+            { num: "280", label: "Acre land bank, Delhi NCR" },
+            { num: "23000", label: "SQ MTR OF COMMERCIAL SPACE" },
+            { num: "8+", label: "PLUS PROJECTS DELIVERED" },
+          ],
+        },
       ],
-      stats: [
-        { num: "15", label: "ACRE OF LAND BANK" },
-        { num: "280", label: "Acre land bank, Delhi NCR" },
-        { num: "23000", label: "SQ MTR OF COMMERCIAL SPACE" },
-        { num: "8+", label: "PLUS PROJECTS DELIVERED" },
-      ],
-      whyTitle: "WHY INVEST WITH US?",
-      whySubtitle:
-        "From Project development to delivery, our foundation is based on",
-      whyInvest: [
-        "Integrating Technology",
-        "Process Orientation",
-        "Customer Satisfaction",
-        "Commitment to Integrity & Quality",
-      ],
-      whyClosing: "At Karyan Infratech, we promise to build value for the future",
       ctaTitle: "Do You Need Professionals?",
       ctaDescription:
         "Our team is ready to help you find your dream home or investment property.",
@@ -41,6 +39,9 @@ export const DEFAULT_SITE_PAGES = [
     metaTitle: "Contact",
     metaDescription: "Get in touch with Karyan Infratech. Schedule a free site visit.",
     payload: {
+      headerBgImage: "",
+      headerHeading: "Contact",
+      headerSubheading: "Talk to our team for site visits, pricing details, and project guidance.",
       heroTitle: "We aim to shape your dreams into reality",
       contactHeading: "FIND US ON:",
       formHeading: "Contact Form",
@@ -81,6 +82,9 @@ export const DEFAULT_SITE_PAGES = [
     metaDescription:
       "Explore Karyan Infratech's premium real estate portfolio — residential, commercial, and retail projects in Delhi NCR.",
     payload: {
+      headerBgImage: "",
+      headerHeading: "Our Projects",
+      headerSubheading: "Discover our residential, retail, and commercial developments across Delhi NCR.",
       eyebrow: "Our Portfolio",
       title: "Premium Real Estate Developments",
       subtitle:
@@ -139,6 +143,9 @@ export const DEFAULT_SITE_PAGES = [
     metaDescription:
       "Stay updated with the latest news, insights, and updates from Karyan Infratech about real estate in Delhi NCR.",
     payload: {
+      headerBgImage: "",
+      headerHeading: "Blog",
+      headerSubheading: "Market insights, updates, and practical real-estate perspectives from our team.",
       eyebrow: "Insights & Updates",
       title: "Real Estate News & Insights",
     },

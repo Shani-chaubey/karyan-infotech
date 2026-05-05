@@ -64,7 +64,8 @@ export default function AdminShell({
 
         {/* Scrollable main content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-5xl px-7 py-7">
+          {/* Extra bottom padding so the fixed CmsSaveBar does not cover the last fields */}
+          <div className="mx-auto max-w-5xl px-7 py-7 pb-32">
             <div className="space-y-5">{children}</div>
           </div>
         </main>

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { useEffect, useRef } from "react";
 import Swiper from "swiper/bundle";
 import type { HomeHeroSlide, HomePayload } from "@/lib/cms/types";
@@ -91,13 +93,45 @@ export default function HeroSlider({ slides: slidesProp }: Props) {
                     style={{ backgroundImage: `url('${slide.bg}')` }}
                     data-swiper-parallax="-8%"
                   />
+                  <div
+                    className="absolute inset-0 bg-gradient-to-t from-theme-bg/65 via-theme-bg/28 to-theme-bg/15"
+                    aria-hidden
+                  />
                   <div className="relative z-20 mx-auto flex h-full min-h-[min(100svh,940px)] w-full max-w-7xl items-end px-5 pb-16 sm:px-8 sm:pb-20 lg:px-12 lg:pb-24">
-                    <h1
-                      className="font-display max-w-[18ch] text-4xl font-medium leading-[1.06] tracking-tight text-white [text-shadow:0_3px_14px_rgba(0,0,0,0.9)] sm:text-5xl md:text-6xl lg:text-7xl"
-                      data-swiper-parallax="-160"
+                    <div
+                      className="w-full max-w-3xl rounded-3xl border border-white/25 bg-white/10 p-6 shadow-[0_20px_70px_-20px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:p-8"
+                      data-swiper-parallax="-100"
                     >
-                      {slide.title}
-                    </h1>
+                      {slide.tag?.trim() ? (
+                        <span className="inline-flex rounded-full border border-white/30 bg-theme-bg/35 px-3.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/90">
+                          {slide.tag}
+                        </span>
+                      ) : null}
+                      <h1
+                        className="font-display mt-4 max-w-[18ch] text-4xl font-medium leading-[1.06] tracking-tight text-white [text-shadow:0_3px_14px_rgba(0,0,0,0.85)] sm:text-5xl md:text-6xl"
+                        data-swiper-parallax="-160"
+                      >
+                        {slide.title}
+                      </h1>
+                      {slide.subtitle?.trim() ? (
+                        <p
+                          className="mt-4 max-w-[56ch] text-sm leading-relaxed text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.55)] sm:text-base"
+                          data-swiper-parallax="-120"
+                        >
+                          {slide.subtitle}
+                        </p>
+                      ) : null}
+                      {slide.exploreHref?.trim() ? (
+                        <Link
+                          href={slide.exploreHref}
+                          className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/35 bg-white/15 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-white/25"
+                          data-swiper-parallax="-80"
+                        >
+                          Explore
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </div>

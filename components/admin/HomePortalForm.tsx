@@ -6,6 +6,7 @@ import type { HomePayload } from "@/lib/cms/types";
 import { DEFAULT_HOME_PAYLOAD } from "@/lib/cms/defaults/homePayload";
 import { INDIA_PRESENCE_CITIES_SORTED } from "@/lib/cms/indiaPresenceCities";
 import { migrateLegacyHomePresence } from "@/lib/cms/migrateHomePresence";
+import { normalizePresenceCityIds } from "@/lib/cms/normalizePresenceCityIds";
 import {
   CmsField,
   CmsGhostButton,
@@ -35,7 +36,14 @@ export default function HomePortalForm() {
           DEFAULT_HOME_PAYLOAD as unknown as Record<string, unknown>,
           raw
         ) as unknown as HomePayload;
-        setData(migrateLegacyHomePresence(merged, raw));
+        const withMigrated = migrateLegacyHomePresence(merged, raw);
+        setData({
+          ...withMigrated,
+          presence: {
+            ...withMigrated.presence,
+            cityIds: normalizePresenceCityIds(withMigrated.presence.cityIds),
+          },
+        });
       });
   }, []);
 
@@ -45,13 +53,21 @@ export default function HomePortalForm() {
 
   async function save() {
     if (!data) return;
+    const normalized: HomePayload = {
+      ...data,
+      presence: {
+        ...data.presence,
+        cityIds: normalizePresenceCityIds(data.presence.cityIds),
+      },
+    };
     setStatus("Saving…");
     const res = await fetch("/api/admin/home", {
       method: "PUT",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify(normalized),
     });
+    if (res.ok) setData(normalized);
     setStatus(res.ok ? "Saved successfully." : "Could not save. Try again.");
   }
 

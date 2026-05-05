@@ -18,7 +18,12 @@ export default async function ProjectsPage() {
   const payload = doc.payload as ProjectsListPayload;
   return (
     <>
-      <PageHeader title={doc.metaTitle} breadcrumbs={[{ label: "Projects" }]} />
+      <PageHeader
+        title={payload.headerHeading || doc.metaTitle}
+        subheading={payload.headerSubheading}
+        bgImage={payload.headerBgImage}
+        breadcrumbs={[{ label: "Projects" }]}
+      />
       <ProjectsPageContent payload={payload} />
     </>
   );

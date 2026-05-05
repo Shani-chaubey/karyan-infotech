@@ -5,6 +5,9 @@ const SiteSettingsSchema = new Schema(
     key: { type: String, required: true, unique: true, default: "default" },
     nav: { type: Schema.Types.Mixed, required: true },
     footer: { type: Schema.Types.Mixed, required: true },
+    themeColors: { type: Schema.Types.Mixed, required: false },
+    pageHeader: { type: Schema.Types.Mixed, required: false },
+    enquiryFloatPromo: { type: Schema.Types.Mixed, required: false },
   },
   { timestamps: true }
 );

@@ -28,9 +28,53 @@ export type SiteFooterPayload = {
   disclaimerExtra?: string;
 };
 
+/** Bottom-left floating image; click opens the global enquiry modal (see EnquiryFloatPromo). */
+export type SiteEnquiryFloatPromo = {
+  enabled: boolean;
+  /** Full image URL (HTTPS). Empty hides the promo even if enabled. */
+  imageSrc: string;
+  imageAlt: string;
+};
+
+export type SiteThemeColors = {
+  luxNavy: string;
+  luxNavyMid: string;
+  luxNavySoft: string;
+  luxGold: string;
+  luxGoldBright: string;
+  luxGoldDim: string;
+  luxCream: string;
+  luxIvory: string;
+  luxCharcoal: string;
+  themeBgDeep: string;
+  themeBg: string;
+  themeBgSoft: string;
+  themeBgMuted: string;
+  themeBgElevated: string;
+  themeFg: string;
+  themeFgSoft: string;
+  themeFgMuted: string;
+  themeFgSubtle: string;
+  themeOnBg: string;
+  themeOnBgMuted: string;
+  themeOnBgSubtle: string;
+};
+
+export type SitePageHeaderDefaults = {
+  /** Optional shared background for all non-project page headers. */
+  bgImage?: string;
+  /** Fallback heading when a page does not provide one. */
+  heading: string;
+  /** Default subheading shown under each page heading. */
+  subheading: string;
+};
+
 export type SiteSettingsBundle = {
   nav: SiteNavPayload;
   footer: SiteFooterPayload;
+  themeColors: SiteThemeColors;
+  pageHeader: SitePageHeaderDefaults;
+  enquiryFloatPromo: SiteEnquiryFloatPromo;
 };
 
 export type HomeCapability = { title: string; text: string; icon: string };

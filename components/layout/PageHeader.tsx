@@ -1,6 +1,4 @@
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
-import SiteBrandLogo from "@/components/layout/SiteBrandLogo";
+import { getSiteSettings } from "@/lib/cms/getters";
 
 export interface PageHeaderBreadcrumb {
   label: string;
@@ -8,39 +6,38 @@ export interface PageHeaderBreadcrumb {
 }
 
 interface PageHeaderProps {
-  title: string;
+  /** Per-page heading; falls back to Site Settings -> Page header defaults. */
+  title?: string;
   breadcrumbs?: PageHeaderBreadcrumb[];
-  /** Optional cover image (e.g. project hero). Falls back to rich navy gradient. */
+  /** Optional per-page cover image (e.g. project hero). Overrides global header image. */
   bgImage?: string;
-  /** Short line under the title */
+  /** Legacy prop; kept for compatibility. Prefer `subheading`. */
   description?: string;
+  /** Per-page subheading; falls back to Site Settings -> Page header defaults. */
+  subheading?: string;
 }
 
-export default function PageHeader({
+export default async function PageHeader({
   title,
   breadcrumbs = [],
   bgImage,
   description,
+  subheading,
 }: PageHeaderProps) {
+  const settings = await getSiteSettings();
+  const defaultHeader = settings.pageHeader;
+
+  const resolvedBg = bgImage?.trim() || defaultHeader.bgImage?.trim() || "";
+  const resolvedTitle = title?.trim() || defaultHeader.heading.trim() || "Karyan Infratech";
+  const resolvedSubheading = (subheading ?? description ?? defaultHeader.subheading)?.trim() || "";
+
   return (
     <header className="relative overflow-hidden border-b border-white/10">
-      {bgImage ? (
+      {resolvedBg ? (
         <>
           <div
             className="absolute inset-0 scale-105 bg-cover bg-center"
-            style={{ backgroundImage: `url(${bgImage})` }}
-            aria-hidden
-          />
-          <div
-            className="absolute inset-0 bg-[radial-gradient(ellipse_100%_120%_at_12%_45%,rgba(0,0,0,0.55),transparent_62%)]"
-            aria-hidden
-          />
-          <div
-            className="absolute inset-0 bg-gradient-to-r from-theme-bg/78 via-theme-bg/48 to-theme-bg/22"
-            aria-hidden
-          />
-          <div
-            className="absolute inset-0 bg-gradient-to-t from-theme-bg/88 via-theme-bg/28 to-theme-bg/38"
+            style={{ backgroundImage: `url(${resolvedBg})` }}
             aria-hidden
           />
         </>
@@ -65,32 +62,24 @@ export default function PageHeader({
         </>
       )}
 
-      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
-          <div className="max-w-3xl">
-            <div className="mb-5 inline-flex items-center gap-3">
-              <span className="h-px w-8 shrink-0 bg-lux-gold-bright/80" aria-hidden />
-              <SiteBrandLogo
-                variant="onDark"
-                asLink={false}
-                className="h-7 w-auto max-w-[160px] opacity-95 sm:h-8 sm:max-w-[200px]"
-              />
-            </div>
+      <div className="relative mx-auto flex min-h-[600px] max-w-7xl items-center justify-center px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-32">
+        <div className="flex w-full flex-col items-center gap-8 text-center">
+          <div className="max-w-4xl">
             <h1 className="font-display text-3xl font-medium leading-[1.1] tracking-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.85),0_8px_32px_rgba(0,0,0,0.35)] sm:text-4xl md:text-5xl lg:text-[3.25rem]">
-              {title}
+              {resolvedTitle}
             </h1>
-            {description ? (
-              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-stone-100 [text-shadow:0_1px_2px_rgba(0,0,0,0.75)] sm:text-base">
-                {description}
+            {resolvedSubheading ? (
+              <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-stone-100 [text-shadow:0_1px_2px_rgba(0,0,0,0.75)] sm:text-base">
+                {resolvedSubheading}
               </p>
             ) : (
-              <div className="mt-5 h-1 w-14 rounded-full bg-gradient-to-r from-lux-gold-bright to-lux-gold/30" />
+              <div className="mx-auto mt-5 h-1 w-14 rounded-full bg-gradient-to-r from-lux-gold-bright to-lux-gold/30" />
             )}
           </div>
 
-          <nav
+          {/* <nav
             aria-label="Breadcrumb"
-            className="flex flex-wrap items-center gap-x-1 gap-y-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/75 [text-shadow:0_1px_2px_rgba(0,0,0,0.65)]"
+            className="flex flex-wrap items-center justify-center gap-x-1 gap-y-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/75 [text-shadow:0_1px_2px_rgba(0,0,0,0.65)]"
           >
             <Link
               href="/"
@@ -118,7 +107,7 @@ export default function PageHeader({
                 )}
               </span>
             ))}
-          </nav>
+          </nav> */}
         </div>
       </div>
     </header>
