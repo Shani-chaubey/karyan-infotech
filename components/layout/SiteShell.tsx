@@ -1,5 +1,6 @@
 import { getSiteSettings } from "@/lib/cms/getters";
 import { EnquiryProvider } from "@/components/enquiry/EnquiryProvider";
+import AosProvider from "@/components/layout/AosProvider";
 import CallNowFab from "@/components/layout/CallNowFab";
 import WhatsAppFab from "@/components/layout/WhatsAppFab";
 import EnquiryFloatPromo from "@/components/layout/EnquiryFloatPromo";
@@ -45,27 +46,29 @@ export default async function SiteShell({
     contactPhoneHref: settings.nav.topBar.phoneHref || settings.footer.contactPhoneHref,
   };
   return (
-    <EnquiryProvider
-      brandLogoSrc={settings.nav.headerLogoSrc}
-      brandLogoAlt={settings.nav.headerLogoAlt}
-      projectOptions={settings.projectInterestOptions}
-    >
-      {/* Use a real wrapper element so CSS vars cascade to all site UI */}
-      <div style={themeCssVars(settings.themeColors)}>
-        <NavbarClient nav={settings.nav} />
-        {children}
-        <FooterClient
-          footer={footer}
-          logoSrc={settings.nav.headerLogoSrc}
-          logoAlt={settings.nav.headerLogoAlt}
-        />
-        <WhatsAppFab
-          href={settings.nav.topBar.whatsappHref}
-          phone={settings.nav.topBar.whatsapp || settings.nav.topBar.phone}
-        />
-        <CallNowFab href={settings.nav.topBar.phoneHref} />
-        <EnquiryFloatPromo promo={settings.enquiryFloatPromo} />
-      </div>
-    </EnquiryProvider>
+    <AosProvider>
+      <EnquiryProvider
+        brandLogoSrc={settings.nav.headerLogoSrc}
+        brandLogoAlt={settings.nav.headerLogoAlt}
+        projectOptions={settings.projectInterestOptions}
+      >
+        {/* Use a real wrapper element so CSS vars cascade to all site UI */}
+        <div style={themeCssVars(settings.themeColors)}>
+          <NavbarClient nav={settings.nav} />
+          {children}
+          <FooterClient
+            footer={footer}
+            logoSrc={settings.nav.headerLogoSrc}
+            logoAlt={settings.nav.headerLogoAlt}
+          />
+          <WhatsAppFab
+            href={settings.nav.topBar.whatsappHref}
+            phone={settings.nav.topBar.whatsapp || settings.nav.topBar.phone}
+          />
+          <CallNowFab href={settings.nav.topBar.phoneHref} />
+          <EnquiryFloatPromo promo={settings.enquiryFloatPromo} />
+        </div>
+      </EnquiryProvider>
+    </AosProvider>
   );
 }

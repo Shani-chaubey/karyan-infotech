@@ -292,9 +292,12 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
                 </div>
               ) : null}
 
-              <div className="rounded-sm bg-[#f8f5f0] p-6">
-                <h3 className="mb-4 text-base font-bold text-[#1a1a2e]">{sidebarFormTitle}</h3>
-                <ContactForm />
+              <div className="overflow-hidden rounded-2xl border border-stone-200/90 bg-gradient-to-b from-white to-[#f8f5f0] p-6 lg:sticky lg:top-28">
+                <h3 className="mb-2 text-base font-bold text-[#1a1a2e]">{sidebarFormTitle}</h3>
+                <p className="mb-5 text-xs uppercase tracking-[0.15em] text-stone-500">
+                  We respond within one business day
+                </p>
+                <ContactForm fixedProject={header.title} />
               </div>
             </div>
           </div>

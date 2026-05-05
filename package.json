@@ -13,6 +13,7 @@
     "seed:blog:beautiful": "tsx scripts/seed-blog-beautiful.ts"
   },
   "dependencies": {
+    "aos": "^2.3.4",
     "bcryptjs": "^3.0.3",
     "dotted-map": "3.1.0",
     "firebase": "^12.12.1",
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/aos": "^3.0.7",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
