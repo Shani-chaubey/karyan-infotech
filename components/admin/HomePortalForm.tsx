@@ -23,6 +23,21 @@ import {
   deepMerge,
 } from "./cms-ui";
 
+const HOME_SECTION_CATALOG: { id: string; label: string }[] = [
+  { id: "stats", label: "Stats band" },
+  { id: "projects", label: "Projects slider" },
+  { id: "philosophy", label: "Philosophy" },
+  { id: "capabilities", label: "Capabilities" },
+  { id: "presence", label: "Our Presence" },
+  { id: "why", label: "Why Karyan" },
+  { id: "process", label: "Process timeline" },
+  { id: "testimonials", label: "Testimonials" },
+  { id: "location", label: "Location intelligence" },
+  { id: "about", label: "About section" },
+  { id: "journal", label: "Blog carousel" },
+  { id: "splitCta", label: "Call + Enquiry strip" },
+];
+
 export default function HomePortalForm() {
   const [data, setData] = useState<HomePayload | null>(null);
   const [status, setStatus] = useState("");
@@ -84,6 +99,62 @@ export default function HomePortalForm() {
         Each section below matches a visible part of your homepage. Open a section, edit the
         words or images, then press "Save home page" once at the bottom.
       </CmsPageIntro>
+
+      <CmsGroup
+        icon={<Layers className="h-4 w-4" />}
+        title="Section positions"
+        description="Move homepage sections up/down without code changes"
+      >
+        <CmsSection
+          title="Homepage order"
+          description="Use arrows to move sections upward or downward."
+          where="Home page — section sequence below hero"
+          defaultOpen
+        >
+          <div className="space-y-3">
+            {data.sectionOrder.map((id, i) => {
+              const label =
+                HOME_SECTION_CATALOG.find((s) => s.id === id)?.label ?? id;
+              return (
+                <CmsItemCard key={`${id}-${i}`} title={`${i + 1}. ${label}`}>
+                  <div className="flex gap-2">
+                    <CmsGhostButton
+                      onClick={() =>
+                        patch((d) => {
+                          if (i === 0) return d;
+                          const sectionOrder = [...d.sectionOrder];
+                          [sectionOrder[i - 1], sectionOrder[i]] = [
+                            sectionOrder[i],
+                            sectionOrder[i - 1],
+                          ];
+                          return { ...d, sectionOrder };
+                        })
+                      }
+                    >
+                      Move up
+                    </CmsGhostButton>
+                    <CmsGhostButton
+                      onClick={() =>
+                        patch((d) => {
+                          if (i === d.sectionOrder.length - 1) return d;
+                          const sectionOrder = [...d.sectionOrder];
+                          [sectionOrder[i], sectionOrder[i + 1]] = [
+                            sectionOrder[i + 1],
+                            sectionOrder[i],
+                          ];
+                          return { ...d, sectionOrder };
+                        })
+                      }
+                    >
+                      Move down
+                    </CmsGhostButton>
+                  </div>
+                </CmsItemCard>
+              );
+            })}
+          </div>
+        </CmsSection>
+      </CmsGroup>
 
       {/* ── GROUP 1: Above the fold ─────────────────────────────────── */}
       <CmsGroup

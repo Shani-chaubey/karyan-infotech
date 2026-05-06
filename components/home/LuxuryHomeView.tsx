@@ -12,6 +12,21 @@ import type { ProjectsListPayload } from "@/components/site/ProjectsPageContent"
 import type { BlogPostPayload, HomePayload } from "@/lib/cms/types";
 import { getLucideIcon } from "@/lib/cms/icons";
 
+const HOME_SECTION_KEYS = [
+  "stats",
+  "projects",
+  "philosophy",
+  "capabilities",
+  "presence",
+  "why",
+  "process",
+  "testimonials",
+  "location",
+  "about",
+  "journal",
+  "splitCta",
+] as const;
+
 export default function LuxuryHomeView({
   data,
   projectsList,
@@ -31,6 +46,18 @@ export default function LuxuryHomeView({
 }) {
   const callDeskPhone = deskPhone?.trim() || data.splitCta.phone;
   const callDeskPhoneHref = deskPhoneHref?.trim() || data.splitCta.phoneHref;
+  const configured = Array.isArray(data.sectionOrder) ? data.sectionOrder : [];
+  const normalizedSectionOrder = [
+    ...configured.filter((id): id is (typeof HOME_SECTION_KEYS)[number] =>
+      HOME_SECTION_KEYS.includes(id as (typeof HOME_SECTION_KEYS)[number])
+    ),
+    ...HOME_SECTION_KEYS.filter((id) => !configured.includes(id)),
+  ];
+  const orderMap = new Map(
+    normalizedSectionOrder.map((id, idx) => [id, (idx + 1) * 10] as const)
+  );
+  const sectionOrder = (id: (typeof HOME_SECTION_KEYS)[number]) =>
+    orderMap.get(id) ?? 999;
 
   return (
     <>
@@ -41,8 +68,12 @@ export default function LuxuryHomeView({
         brandLogoAlt={brandLogoAlt}
       />
 
+      <div className="flex flex-col">
       {/* Wave into light band */}
-      <div className="relative z-20 -mt-14 overflow-hidden bg-lux-ivory md:-mt-20">
+      <div
+        className="relative z-20 -mt-14 overflow-hidden bg-lux-ivory md:-mt-20"
+        style={{ order: sectionOrder("stats") }}
+      >
         <SectionBgStack
           layers={[
             {
@@ -113,10 +144,15 @@ export default function LuxuryHomeView({
         </div>
       </section>
 
-      <HomeSiteProjectsSection payload={projectsList} />
+      <div style={{ order: sectionOrder("projects") }}>
+        <HomeSiteProjectsSection payload={projectsList} />
+      </div>
 
       {/* Philosophy */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-lux-cream via-lux-ivory to-lux-cream">
+      <section
+        className="relative overflow-hidden bg-gradient-to-br from-lux-cream via-lux-ivory to-lux-cream"
+        style={{ order: sectionOrder("philosophy") }}
+      >
         <SectionBgStack
           diagonalSheen
           bottomGlow
@@ -171,7 +207,10 @@ export default function LuxuryHomeView({
       </div>
 
       {/* Capabilities — ribbon + cards like service tiles */}
-      <section className="relative overflow-hidden bg-lux-ivory pb-14 pt-3">
+      <section
+        className="relative overflow-hidden bg-lux-ivory pb-14 pt-3"
+        style={{ order: sectionOrder("capabilities") }}
+      >
         <SectionBgStack
           topGlow
           grain
@@ -228,7 +267,10 @@ export default function LuxuryHomeView({
       </section>
 
       {/* Our Presence */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-lux-cream to-lux-ivory py-14 lg:py-20">
+      <section
+        className="relative overflow-hidden bg-gradient-to-b from-lux-cream to-lux-ivory py-14 lg:py-20"
+        style={{ order: sectionOrder("presence") }}
+      >
         <SectionBgStack
           diagonalSheen
           bottomGlow
@@ -263,7 +305,10 @@ export default function LuxuryHomeView({
       </section>
 
       {/* Why */}
-      <section className="relative overflow-hidden bg-lux-ivory py-14 lg:py-20">
+      <section
+        className="relative overflow-hidden bg-lux-ivory py-14 lg:py-20"
+        style={{ order: sectionOrder("why") }}
+      >
         <SectionBgStack
           edgeFade="light"
           topGlow
@@ -341,7 +386,10 @@ export default function LuxuryHomeView({
       </div>
 
       {/* Process */}
-      <section className="relative overflow-hidden bg-theme-bg pb-24 pt-4 text-stone-200">
+      <section
+        className="relative overflow-hidden bg-theme-bg pb-24 pt-4 text-stone-200"
+        style={{ order: sectionOrder("process") }}
+      >
         <SectionBgStack
           edgeFade="dark"
           bottomGlow
@@ -424,7 +472,10 @@ export default function LuxuryHomeView({
       </div>
 
       {/* Testimonials */}
-      <section className="relative overflow-hidden bg-lux-ivory py-14 lg:py-20">
+      <section
+        className="relative overflow-hidden bg-lux-ivory py-14 lg:py-20"
+        style={{ order: sectionOrder("testimonials") }}
+      >
         <SectionBgStack
           topGlow
           diagonalSheen
@@ -542,7 +593,10 @@ export default function LuxuryHomeView({
       </section> */}
 
       {/* Location */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-lux-ivory via-lux-cream to-lux-cream py-14 lg:py-20">
+      <section
+        className="relative overflow-hidden bg-gradient-to-br from-lux-ivory via-lux-cream to-lux-cream py-14 lg:py-20"
+        style={{ order: sectionOrder("location") }}
+      >
         <SectionBgStack
           diagonalSheen
           bottomGlow
@@ -617,7 +671,10 @@ export default function LuxuryHomeView({
       </section>
 
       {/* About */}
-      <section className="relative overflow-hidden border-t border-stone-200/80 bg-lux-ivory py-14 lg:py-20">
+      <section
+        className="relative overflow-hidden border-t border-stone-200/80 bg-lux-ivory py-14 lg:py-20"
+        style={{ order: sectionOrder("about") }}
+      >
         <SectionBgStack
           topGlow
           grain
@@ -688,7 +745,10 @@ export default function LuxuryHomeView({
       </section>
 
       {/* Journal */}
-      <section className="relative overflow-hidden bg-theme-bg py-14 text-stone-300 lg:py-20">
+      <section
+        className="relative overflow-hidden bg-theme-bg py-14 text-stone-300 lg:py-20"
+        style={{ order: sectionOrder("journal") }}
+      >
         <SectionBgStack
           edgeFade="dark"
           topGlow
@@ -779,7 +839,11 @@ export default function LuxuryHomeView({
       </section> */}
 
       {/* Split CTA — phone + form */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-lux-cream via-lux-ivory to-lux-cream py-14 lg:py-20">        <SectionBgStack
+      <section
+        className="relative overflow-hidden bg-gradient-to-br from-lux-cream via-lux-ivory to-lux-cream py-14 lg:py-20"
+        style={{ order: sectionOrder("splitCta") }}
+      >
+        <SectionBgStack
           diagonalSheen
           topGlow
           bottomGlow
@@ -834,6 +898,7 @@ export default function LuxuryHomeView({
           </div>
         </div>
       </section>
+      </div>
 
       {/* Final CTA */}
       {/* <section className="relative overflow-hidden bg-lux-ivory pb-24 pt-8 lg:pb-32">

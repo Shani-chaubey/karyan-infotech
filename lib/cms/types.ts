@@ -109,6 +109,8 @@ export type HomePresenceBand = {
 };
 
 export type HomePayload = {
+  /** Reorderable homepage section keys controlled from admin. */
+  sectionOrder: string[];
   heroSlides: HomeHeroSlide[];
   heroSideStats: { label: string; value: string; hint: string }[];
   statCards: { value: string; label: string; sub: string }[];

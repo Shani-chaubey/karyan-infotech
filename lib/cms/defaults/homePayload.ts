@@ -1,6 +1,20 @@
 import type { HomePayload } from "../types";
 
 export const DEFAULT_HOME_PAYLOAD: HomePayload = {
+  sectionOrder: [
+    "stats",
+    "projects",
+    "philosophy",
+    "capabilities",
+    "presence",
+    "why",
+    "process",
+    "testimonials",
+    "location",
+    "about",
+    "journal",
+    "splitCta",
+  ],
   heroSlides: [
     {
       bg: "https://karyaninfratech.co.in/wp-content/uploads/2026/04/20260409_1252_Image-Generation_remix_01knrhxdp4exssq8ndhw9y4r45.png",
