@@ -8,6 +8,7 @@ import type { ProjectPayload } from "@/lib/cms/types";
 import { getLucideIcon, projectIcon } from "@/lib/cms/icons";
 import ProjectVideoPlayer from "@/components/projects/ProjectVideoPlayer";
 import ProjectGalleryCarousel from "@/components/projects/ProjectGalleryCarousel";
+import ProjectFloorPlansLightbox from "@/components/projects/ProjectFloorPlansLightbox";
 
 export function projectMetadata(data: ProjectPayload): Metadata {
   return {
@@ -176,22 +177,10 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
 
               {floorPlans?.length ? (
                 <>
-                  <h3 className="mb-5 mt-10 text-xl font-bold text-[#1a1a2e]">
-                    {floorPlansTitle ?? "Floor Plans"}
-                  </h3>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {floorPlans.map((plan) => (
-                      <div key={plan.src} className="relative h-64 overflow-hidden rounded-sm border border-stone-200 bg-white">
-                        <Image
-                          src={plan.src}
-                          alt={plan.alt}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  <ProjectFloorPlansLightbox
+                    title={floorPlansTitle ?? "Floor Plans"}
+                    images={floorPlans}
+                  />
                 </>
               ) : null}
 
