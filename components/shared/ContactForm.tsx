@@ -31,6 +31,7 @@ export default function ContactForm({ dark = false, fixedProject }: ContactFormP
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof typeof form, string>>>({});
 
   useEffect(() => {
     if (!submitted) return;
@@ -49,10 +50,43 @@ export default function ContactForm({ dark = false, fixedProject }: ContactFormP
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => setForm({ ...form, [e.target.name]: e.target.value });
+  ) => {
+    const { name, value } = e.target;
+    const nextValue =
+      name === "mobile" ? value.replace(/\D/g, "").slice(0, 10) : value;
+    setForm({ ...form, [name]: nextValue });
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const validate = () => {
+    const nextErrors: Partial<Record<keyof typeof form, string>> = {};
+    const name = form.name.trim();
+    const email = form.email.trim();
+    const mobile = form.mobile.trim();
+    const message = form.message.trim();
+
+    if (!/^[A-Za-z][A-Za-z\s.'-]{1,79}$/.test(name)) {
+      nextErrors.name = "Enter a valid name (2-80 letters).";
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      nextErrors.email = "Enter a valid email address.";
+    }
+    if (!/^\d{10}$/.test(mobile)) {
+      nextErrors.mobile = "Phone number must be exactly 10 digits.";
+    }
+    if (message && message.length < 10) {
+      nextErrors.message = "Message should be at least 10 characters.";
+    } else if (message.length > 500) {
+      nextErrors.message = "Message can be maximum 500 characters.";
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     setLoading(true);
     try {
       const res = await fetch("/api/leads", {
@@ -73,6 +107,7 @@ export default function ContactForm({ dark = false, fixedProject }: ContactFormP
         throw new Error(typeof j.error === "string" ? j.error : "Request failed");
       }
       setSubmitted(true);
+      setErrors({});
     } catch {
       alert("We could not send your message. Please try again or use the phone number above.");
     } finally {
@@ -87,6 +122,7 @@ export default function ContactForm({ dark = false, fixedProject }: ContactFormP
   const inputClass = dark
     ? "w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] outline-none transition placeholder:text-stone-300/80 focus:border-lux-gold/55 focus:ring-2 focus:ring-lux-gold/30"
     : "w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-[#2b2b2b] shadow-[0_10px_24px_-18px_rgba(15,23,42,0.35)] outline-none transition placeholder:text-stone-400 focus:border-lux-gold/50 focus:ring-2 focus:ring-lux-gold/25";
+  const errorClass = "mt-1 text-xs text-red-500";
 
   if (submitted) {
     return (
@@ -120,6 +156,7 @@ export default function ContactForm({ dark = false, fixedProject }: ContactFormP
           onChange={handleChange}
           className={inputClass}
         />
+        {errors.name ? <p className={errorClass}>{errors.name}</p> : null}
       </div>
       <div>
         <label className={labelClass}>Mobile Number *</label>
@@ -127,11 +164,15 @@ export default function ContactForm({ dark = false, fixedProject }: ContactFormP
           type="tel"
           name="mobile"
           required
+          inputMode="numeric"
+          pattern="\d{10}"
+          maxLength={10}
           placeholder="+91 98765 43210"
           value={form.mobile}
           onChange={handleChange}
           className={inputClass}
         />
+        {errors.mobile ? <p className={errorClass}>{errors.mobile}</p> : null}
       </div>
       <div>
         <label className={labelClass}>Email Address *</label>
@@ -144,6 +185,7 @@ export default function ContactForm({ dark = false, fixedProject }: ContactFormP
           onChange={handleChange}
           className={inputClass}
         />
+        {errors.email ? <p className={errorClass}>{errors.email}</p> : null}
       </div>
       {!normalizedFixedProject ? (
         <div>
@@ -175,6 +217,7 @@ export default function ContactForm({ dark = false, fixedProject }: ContactFormP
           onChange={handleChange}
           className={`${inputClass} resize-none`}
         />
+        {errors.message ? <p className={errorClass}>{errors.message}</p> : null}
       </div>
       <button
         type="submit"

@@ -51,12 +51,16 @@ export default function EnquiryModal({
   const [form, setForm] = useState<FormState>(initialForm);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>(
+    {}
+  );
 
   useEffect(() => {
     if (!isOpen) return;
     queueMicrotask(() => {
       setForm({ ...initialForm, project: defaultProject || "" });
       setSubmitted(false);
+      setErrors({});
     });
     const t = window.setTimeout(() => closeRef.current?.focus(), 50);
     return () => window.clearTimeout(t);
@@ -76,11 +80,41 @@ export default function EnquiryModal({
     >
   ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const nextValue =
+      name === "mobile" ? value.replace(/\D/g, "").slice(0, 10) : value;
+    setForm((prev) => ({ ...prev, [name]: nextValue }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const validate = () => {
+    const nextErrors: Partial<Record<keyof FormState, string>> = {};
+    const name = form.name.trim();
+    const email = form.email.trim();
+    const mobile = form.mobile.trim();
+    const message = form.message.trim();
+
+    if (!/^[A-Za-z][A-Za-z\s.'-]{1,79}$/.test(name)) {
+      nextErrors.name = "Enter a valid name (2-80 letters).";
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      nextErrors.email = "Enter a valid email address.";
+    }
+    if (!/^\d{10}$/.test(mobile)) {
+      nextErrors.mobile = "Phone number must be exactly 10 digits.";
+    }
+    if (message && message.length < 10) {
+      nextErrors.message = "Message should be at least 10 characters.";
+    } else if (message.length > 500) {
+      nextErrors.message = "Message can be maximum 500 characters.";
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     setLoading(true);
     try {
       const res = await fetch("/api/leads", {
@@ -101,6 +135,7 @@ export default function EnquiryModal({
         throw new Error(typeof j.error === "string" ? j.error : "Request failed");
       }
       setSubmitted(true);
+      setErrors({});
     } catch {
       alert("We could not send your enquiry. Please try again or call the desk.");
     } finally {
@@ -194,6 +229,7 @@ export default function EnquiryModal({
                   placeholder="Your name"
                   className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-lux-navy outline-none ring-lux-gold/30 transition placeholder:text-stone-400 focus:border-lux-gold/50 focus:ring-2"
                 />
+                {errors.name ? <p className="mt-1 text-xs text-red-500">{errors.name}</p> : null}
               </div>
               <div>
                 <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-stone-500">
@@ -203,11 +239,15 @@ export default function EnquiryModal({
                   name="mobile"
                   type="tel"
                   required
+                  inputMode="numeric"
+                  pattern="\d{10}"
+                  maxLength={10}
                   value={form.mobile}
                   onChange={handleChange}
                   placeholder="+91 …"
                   className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-lux-navy outline-none ring-lux-gold/30 transition placeholder:text-stone-400 focus:border-lux-gold/50 focus:ring-2"
                 />
+                {errors.mobile ? <p className="mt-1 text-xs text-red-500">{errors.mobile}</p> : null}
               </div>
               <div>
                 <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-stone-500">
@@ -222,6 +262,7 @@ export default function EnquiryModal({
                   placeholder="you@email.com"
                   className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-lux-navy outline-none ring-lux-gold/30 transition placeholder:text-stone-400 focus:border-lux-gold/50 focus:ring-2"
                 />
+                {errors.email ? <p className="mt-1 text-xs text-red-500">{errors.email}</p> : null}
               </div>
               <div>
                 <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-stone-500">
@@ -255,6 +296,9 @@ export default function EnquiryModal({
                   placeholder="Corridor, unit type, timeline…"
                   className="w-full resize-none rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-lux-navy outline-none ring-lux-gold/30 transition placeholder:text-stone-400 focus:border-lux-gold/50 focus:ring-2"
                 />
+                {errors.message ? (
+                  <p className="mt-1 text-xs text-red-500">{errors.message}</p>
+                ) : null}
               </div>
               <button
                 type="submit"
