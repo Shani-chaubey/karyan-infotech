@@ -17,7 +17,9 @@ import {
   CmsSection,
   CmsSelect,
   CmsTextarea,
+  AdminToastViewport,
   deepMerge,
+  showAdminErrorToast,
 } from "./cms-ui";
 import SeoFields from "./SeoFields";
 
@@ -104,6 +106,10 @@ export default function SitePagePortalForm({ slug }: { slug: string }) {
     if (!fallback) return;
     let cancelled = false;
     fetch(`/api/admin/pages/${slug}`, { credentials: "include" }).then(async (r) => {
+      if (!r.ok) {
+        showAdminErrorToast(`Could not load page content (${r.status}).`);
+        return;
+      }
       const doc = r.ok ? await r.json() : null;
       if (cancelled || !doc) return;
       setMetaTitle(doc.metaTitle ?? fallback.metaTitle);
@@ -136,6 +142,7 @@ export default function SitePagePortalForm({ slug }: { slug: string }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ metaTitle, metaDescription, seo, payload }),
     });
+    if (!res.ok) showAdminErrorToast("Page save failed. Please try again.");
     setStatus(res.ok ? "Saved successfully." : "Could not save. Try again.");
   }
 
@@ -162,6 +169,7 @@ export default function SitePagePortalForm({ slug }: { slug: string }) {
 
   return (
     <div className="space-y-10">
+      <AdminToastViewport />
       <CmsPageIntro title="Page editor" where={where}>
         Edit the content that appears on this public page. The SEO fields below are for Google
         search results, not large headings on the page itself.

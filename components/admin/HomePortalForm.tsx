@@ -20,7 +20,9 @@ import {
   CmsSection,
   CmsSelect,
   CmsTextarea,
+  AdminToastViewport,
   deepMerge,
+  showAdminErrorToast,
 } from "./cms-ui";
 import SeoFields from "./SeoFields";
 
@@ -45,7 +47,10 @@ export default function HomePortalForm() {
 
   useEffect(() => {
     fetch("/api/admin/home", { credentials: "include" })
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`Could not load home content (${r.status})`);
+        return r.json();
+      })
       .then((j) => {
         const raw = (j.data ?? {}) as Record<string, unknown>;
         const merged = deepMerge(
@@ -60,6 +65,10 @@ export default function HomePortalForm() {
             cityIds: normalizePresenceCityIds(withMigrated.presence.cityIds),
           },
         });
+      })
+      .catch((e: unknown) => {
+        const msg = e instanceof Error ? e.message : "Could not load home content.";
+        showAdminErrorToast(msg);
       });
   }, []);
 
@@ -83,6 +92,7 @@ export default function HomePortalForm() {
       body: JSON.stringify(normalized),
     });
     if (res.ok) setData(normalized);
+    if (!res.ok) showAdminErrorToast("Home save failed. Please try again.");
     setStatus(res.ok ? "Saved successfully." : "Could not save. Try again.");
     return res.ok;
   }
@@ -98,6 +108,7 @@ export default function HomePortalForm() {
 
   return (
     <div className="space-y-10">
+      <AdminToastViewport />
       <CmsPageIntro
         title="Home page editor"
         where="Everything here appears on your public homepage at /"

@@ -12,6 +12,8 @@ import {
   CmsPageIntro,
   CmsPrimaryButton,
   CmsSaveStatus,
+  AdminToastViewport,
+  showAdminErrorToast,
 } from "./cms-ui";
 import BlogJoditEditor from "./BlogJoditEditor";
 import { slugify } from "./form-helpers";
@@ -23,10 +25,17 @@ export default function BlogPortalForm() {
 
   useEffect(() => {
     fetch("/api/admin/blog", { credentials: "include" })
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`Could not load blog posts (${r.status})`);
+        return r.json();
+      })
       .then((j) => {
         const list = (j.posts?.length ? j.posts : DEFAULT_BLOG_POSTS) as BlogPostPayload[];
         setPosts(list.map((p, i) => ({ ...p, order: p.order ?? i })));
+      })
+      .catch((e: unknown) => {
+        const msg = e instanceof Error ? e.message : "Could not load blog posts.";
+        showAdminErrorToast(msg);
       });
   }, []);
 
@@ -52,11 +61,13 @@ export default function BlogPortalForm() {
       body: JSON.stringify({ posts: normalized }),
     });
     setStatus(res.ok ? "Saved successfully." : "Could not save. Try again.");
+    if (!res.ok) showAdminErrorToast("Blog save failed. Please try again.");
     if (res.ok) setPosts(normalized);
   }
 
   return (
     <div className="space-y-8">
+      <AdminToastViewport />
       <CmsPageIntro
         title="Blog articles & cards"
         where="Cards appear on /blog and can surface on the home page “Journal” teaser. Each entry links to its article page."

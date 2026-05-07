@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { AdminToastViewport, showAdminErrorToast } from "./cms-ui";
 
 export type JsonEditorVariant = "home" | "site" | "projectPayload" | "blog" | "sitePage";
 
@@ -74,14 +75,21 @@ export function JsonEditorForm({ endpoint, label = "JSON", variant }: Props) {
   useEffect(() => {
     let cancelled = false;
     fetch(endpoint, { credentials: "include" })
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`Could not load data (${r.status})`);
+        return r.json();
+      })
       .then((j) => {
         if (cancelled) return;
         const initial = extractForEdit(j as Record<string, unknown>, variant);
         setFormData(initial);
       })
-      .catch(() => {
-        if (!cancelled) setFormData({});
+      .catch((e: unknown) => {
+        if (!cancelled) {
+          setFormData({});
+          const msg = e instanceof Error ? e.message : "Could not load data.";
+          showAdminErrorToast(msg);
+        }
       });
     return () => {
       cancelled = true;
@@ -101,11 +109,13 @@ export function JsonEditorForm({ endpoint, label = "JSON", variant }: Props) {
       if (!res.ok) {
         const t = await res.text();
         setStatus(`Error ${res.status}: ${t}`);
+        showAdminErrorToast(`Save failed (${res.status}).`);
         return;
       }
       setStatus("Saved.");
     } catch (e) {
       setStatus(String(e));
+      showAdminErrorToast("Save failed. Please try again.");
     }
   }, [endpoint, formData, variant]);
 
@@ -274,6 +284,7 @@ export function JsonEditorForm({ endpoint, label = "JSON", variant }: Props) {
 
   return (
     <div className="space-y-3">
+      <AdminToastViewport />
       <label className="block text-sm font-medium text-stone-700">{label}</label>
       {formData === null ? <p className="text-sm text-stone-500">Loading…</p> : renderNode(formData, [], label)}
       <div className="flex items-center gap-3">

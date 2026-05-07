@@ -16,7 +16,9 @@ import {
   CmsSaveBar,
   CmsSection,
   CmsTextarea,
+  AdminToastViewport,
   deepMerge,
+  showAdminErrorToast,
 } from "./cms-ui";
 import { parseLines } from "./form-helpers";
 import SeoFields from "./SeoFields";
@@ -33,13 +35,20 @@ export default function ProjectPortalForm({ slug }: { slug: string }) {
     const seed = DEFAULT_PROJECT_PAGES.find((x) => x.slug === slug)?.payload;
     if (!seed) return;
     fetch(`/api/admin/projects/${slug}`, { credentials: "include" })
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`Could not load project (${r.status})`);
+        return r.json();
+      })
       .then((j) => {
         const merged = deepMerge(
           seed as unknown as Record<string, unknown>,
           (j.payload ?? {}) as Record<string, unknown>
         );
         setData(merged as ProjectPayload);
+      })
+      .catch((e: unknown) => {
+        const msg = e instanceof Error ? e.message : "Could not load project content.";
+        showAdminErrorToast(msg);
       });
   }, [slug]);
 
@@ -59,6 +68,7 @@ export default function ProjectPortalForm({ slug }: { slug: string }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    if (!res.ok) showAdminErrorToast("Project save failed. Please try again.");
     setStatus(res.ok ? "Saved successfully." : "Could not save. Try again.");
   }
 
@@ -68,6 +78,7 @@ export default function ProjectPortalForm({ slug }: { slug: string }) {
 
   return (
     <div className="space-y-10">
+      <AdminToastViewport />
       <CmsPageIntro
         title={`Editing: ${data.header.title}`}
         where={`Public URL: ${publicPath}`}

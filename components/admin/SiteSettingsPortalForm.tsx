@@ -16,7 +16,9 @@ import {
   CmsSaveBar,
   CmsSection,
   CmsTextarea,
+  AdminToastViewport,
   deepMerge,
+  showAdminErrorToast,
 } from "./cms-ui";
 
 export default function SiteSettingsPortalForm() {
@@ -25,7 +27,10 @@ export default function SiteSettingsPortalForm() {
 
   useEffect(() => {
     fetch("/api/admin/site", { credentials: "include" })
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`Could not load site settings (${r.status})`);
+        return r.json();
+      })
       .then((j) => {
         const nav = j.nav ?? {};
         const footer = j.footer ?? {};
@@ -38,6 +43,10 @@ export default function SiteSettingsPortalForm() {
           { nav, footer, projectInterestOptions, themeColors, pageHeader, enquiryFloatPromo } as Record<string, unknown>
         );
         setData(merged as SiteSettingsBundle);
+      })
+      .catch((e: unknown) => {
+        const msg = e instanceof Error ? e.message : "Could not load site settings.";
+        showAdminErrorToast(msg);
       });
   }, []);
 
@@ -54,6 +63,7 @@ export default function SiteSettingsPortalForm() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
+    if (!res.ok) showAdminErrorToast("Site settings save failed. Please try again.");
     setStatus(res.ok ? "Saved successfully." : "Could not save. Try again.");
   }
 
@@ -61,6 +71,7 @@ export default function SiteSettingsPortalForm() {
 
   return (
     <div className="space-y-10">
+      <AdminToastViewport />
       <CmsPageIntro
         title="Global site settings"
         where="Top navigation bar and footer appear on every public page"

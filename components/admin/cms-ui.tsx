@@ -10,7 +10,7 @@ import {
   UploadCloud,
   X,
 } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebase";
 import type {
@@ -20,6 +20,70 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
+
+type AdminToastType = "error" | "success";
+
+type AdminToastItem = {
+  id: number;
+  message: string;
+  type: AdminToastType;
+};
+
+const ADMIN_TOAST_EVENT = "admin:toast";
+
+export function showAdminToast(message: string, type: AdminToastType = "error") {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(
+    new CustomEvent(ADMIN_TOAST_EVENT, { detail: { message, type } })
+  );
+}
+
+export function showAdminErrorToast(message: string) {
+  showAdminToast(message, "error");
+}
+
+export function AdminToastViewport() {
+  const [toasts, setToasts] = useState<AdminToastItem[]>([]);
+
+  useEffect(() => {
+    let nextId = 1;
+    const onToast = (event: Event) => {
+      const custom = event as CustomEvent<{ message?: string; type?: AdminToastType }>;
+      const message = custom.detail?.message?.trim();
+      if (!message) return;
+      const type = custom.detail?.type ?? "error";
+      const id = nextId++;
+      setToasts((prev) => [...prev, { id, message, type }]);
+      window.setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, 4200);
+    };
+    window.addEventListener(ADMIN_TOAST_EVENT, onToast as EventListener);
+    return () => {
+      window.removeEventListener(ADMIN_TOAST_EVENT, onToast as EventListener);
+    };
+  }, []);
+
+  if (!toasts.length) return null;
+
+  return (
+    <div className="pointer-events-none fixed right-5 top-5 z-[120] flex w-[min(92vw,420px)] flex-col gap-2">
+      {toasts.map((toast) => (
+        <div
+          key={toast.id}
+          className={`pointer-events-auto rounded-lg border px-4 py-3 text-sm shadow-lg ${
+            toast.type === "success"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+              : "border-red-200 bg-red-50 text-red-800"
+          }`}
+          role="alert"
+        >
+          {toast.message}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function deepMerge<T extends Record<string, unknown>>(
   base: T,
