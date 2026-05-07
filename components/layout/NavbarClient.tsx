@@ -19,8 +19,6 @@ export default function NavbarClient({ nav }: { nav: SiteNavPayload }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileProjectsOpen, setMobileProjectsOpen] = useState(false);
-  const [mobileResOpen, setMobileResOpen] = useState(false);
-  const [mobileComOpen, setMobileComOpen] = useState(false);
   const [deskProjectsOpen, setDeskProjectsOpen] = useState(false);
   const deskProjectsWrapRef = useRef<HTMLDivElement>(null);
 
@@ -33,8 +31,6 @@ export default function NavbarClient({ nav }: { nav: SiteNavPayload }) {
   const closeAllNav = useCallback(() => {
     setMobileOpen(false);
     setMobileProjectsOpen(false);
-    setMobileResOpen(false);
-    setMobileComOpen(false);
     setDeskProjectsOpen(false);
   }, []);
 
@@ -59,9 +55,7 @@ export default function NavbarClient({ nav }: { nav: SiteNavPayload }) {
       ? pathname === "/"
       : pathname === href || pathname.startsWith(`${href}/`);
 
-  const projectActive = [...residentialProjects, ...commercialProjects].some(
-    (p) => pathname === p.href || pathname.startsWith(`${p.href}/`)
-  );
+  const projectActive = pathname === "/projects" || pathname.startsWith("/projects/");
 
   return (
     <>
@@ -111,52 +105,24 @@ export default function NavbarClient({ nav }: { nav: SiteNavPayload }) {
                   />
                 </button>
                 {deskProjectsOpen ? (
-                  <div className="absolute right-0 left-0 mx-auto top-full z-50 w-[min(100vw-2rem,560px)] pt-3">
-                    <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-stone-200/90 bg-white shadow-2xl ring-1 ring-black/5">
-                      <div className="border-r border-stone-100 bg-stone-50/90 p-5">
-                        <div className="mb-1 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-lux-gold-dim">
-                          <Home className="h-3.5 w-3.5 shrink-0" />
-                          Residential
-                        </div>
-                        <p className="mb-4 text-xs text-stone-500">Premium residences</p>
-                        <div className="flex flex-col gap-1">
-                          {residentialProjects.map((p) => (
-                            <Link
-                              key={p.href}
-                              href={p.href}
-                              onClick={() => setDeskProjectsOpen(false)}
-                              className="rounded-lg border border-transparent px-3 py-2.5 text-sm font-medium text-theme-fg transition hover:border-theme-bg-soft hover:bg-white"
-                            >
-                              {p.name}
-                              <span className="mt-0.5 block text-[11px] font-normal text-stone-500">
-                                {p.tag}
-                              </span>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="p-5">
-                        <div className="mb-1 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-lux-gold-dim">
-                          <Landmark className="h-3.5 w-3.5 shrink-0" />
-                          Commercial
-                        </div>
-                        <p className="mb-4 text-xs text-stone-500">Retail, offices & malls</p>
-                        <div className="flex flex-col gap-1">
-                          {commercialProjects.map((p) => (
-                            <Link
-                              key={p.href}
-                              href={p.href}
-                              onClick={() => setDeskProjectsOpen(false)}
-                              className="rounded-lg border border-transparent px-3 py-2.5 text-sm font-medium text-theme-fg transition hover:border-theme-bg-soft hover:bg-lux-cream/60"
-                            >
-                              {p.name}
-                              <span className="mt-0.5 block text-[11px] font-normal text-stone-500">
-                                {p.tag}
-                              </span>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
+                  <div className="absolute left-0 right-0 top-full z-50 mx-auto w-[min(100vw-2rem,320px)] pt-3">
+                    <div className="overflow-hidden rounded-xl border border-stone-200/90 bg-white p-2 shadow-2xl ring-1 ring-black/5">
+                      <Link
+                        href="/projects?type=residential"
+                        onClick={() => setDeskProjectsOpen(false)}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-theme-fg transition hover:bg-lux-cream"
+                      >
+                        <Home className="h-4 w-4 shrink-0 text-lux-gold-dim" />
+                        Residential
+                      </Link>
+                      <Link
+                        href="/projects?type=commercial"
+                        onClick={() => setDeskProjectsOpen(false)}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-theme-fg transition hover:bg-lux-cream"
+                      >
+                        <Landmark className="h-4 w-4 shrink-0 text-lux-gold-dim" />
+                        Commercial
+                      </Link>
                     </div>
                   </div>
                 ) : null}
@@ -221,48 +187,22 @@ export default function NavbarClient({ nav }: { nav: SiteNavPayload }) {
               </button>
               {mobileProjectsOpen && (
                 <div className="ml-2 border-l-2 border-lux-gold/40 pl-3">
-                  <button
-                    type="button"
-                    onClick={() => setMobileResOpen((v) => !v)}
-                    className="flex w-full items-center justify-between py-2 text-sm font-semibold uppercase tracking-wide text-lux-gold-dim"
+                  <Link
+                    href="/projects?type=residential"
+                    onClick={closeAllNav}
+                    className="flex items-center gap-2 py-2 text-sm font-semibold uppercase tracking-wide text-lux-gold-dim"
                   >
+                    <Home className="h-4 w-4 shrink-0" />
                     Residential
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 ${mobileResOpen ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                  {mobileResOpen &&
-                    residentialProjects.map((p) => (
-                      <Link
-                        key={p.href}
-                        href={p.href}
-                        onClick={closeAllNav}
-                        className="block py-2 pl-2 text-sm text-theme-fg"
-                      >
-                        {p.name}
-                      </Link>
-                    ))}
-                  <button
-                    type="button"
-                    onClick={() => setMobileComOpen((v) => !v)}
-                    className="mt-2 flex w-full items-center justify-between py-2 text-sm font-semibold uppercase tracking-wide text-lux-gold-dim"
+                  </Link>
+                  <Link
+                    href="/projects?type=commercial"
+                    onClick={closeAllNav}
+                    className="mt-2 flex items-center gap-2 py-2 text-sm font-semibold uppercase tracking-wide text-lux-gold-dim"
                   >
+                    <Landmark className="h-4 w-4 shrink-0" />
                     Commercial
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 ${mobileComOpen ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                  {mobileComOpen &&
-                    commercialProjects.map((p) => (
-                      <Link
-                        key={p.href}
-                        href={p.href}
-                        onClick={closeAllNav}
-                        className="block py-2 pl-2 text-sm text-theme-fg"
-                      >
-                        {p.name}
-                      </Link>
-                    ))}
+                  </Link>
                 </div>
               )}
               <a

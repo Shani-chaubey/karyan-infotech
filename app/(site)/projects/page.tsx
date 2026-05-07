@@ -18,10 +18,27 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({
+  searchParams,
+}: {
+  searchParams?: { type?: string | string[] };
+}) {
   const doc = await getSitePage("projects");
   if (!doc) notFound();
   const payload = doc.payload as ProjectsListPayload;
+  const rawType = Array.isArray(searchParams?.type)
+    ? searchParams?.type[0]
+    : searchParams?.type;
+  const activeType = rawType?.toLowerCase().trim();
+  const filteredPayload: ProjectsListPayload =
+    activeType === "residential" || activeType === "commercial"
+      ? {
+          ...payload,
+          projects: payload.projects.filter((project) =>
+            project.type.toLowerCase().includes(activeType)
+          ),
+        }
+      : payload;
   return (
     <>
       <SeoJsonLd raw={doc.seo?.schemaJsonLd} />
@@ -31,7 +48,7 @@ export default async function ProjectsPage() {
         bgImage={payload.headerBgImage}
         breadcrumbs={[{ label: "Projects" }]}
       />
-      <ProjectsPageContent payload={payload} />
+      <ProjectsPageContent payload={filteredPayload} />
     </>
   );
 }
