@@ -79,11 +79,23 @@ function getLeadApiUrl(): string {
   );
 }
 
+function getLeadProjectName(project?: string): string {
+  const value = (project ?? "").trim().toLowerCase();
+  if (!value) return "karyan website";
+  if (value.includes("citywalk")) return "citywalk";
+  if (value.includes("trevana")) return "trevana";
+  if (value.includes("square")) return "square";
+  if (value.includes("avenue")) return "avenue iv";
+  if (value === "other") return "karyan website";
+  return project!.trim();
+}
+
 async function sendToLeadApi(lead: {
   name: string;
   email: string;
   mobile: string;
   formType: string;
+  project?: string;
 }) {
   const apiUrl = getLeadApiUrl();
   if (!isLeadApiEnabled()) {
@@ -93,11 +105,11 @@ async function sendToLeadApi(lead: {
 
   const body = new URLSearchParams({
     Name: lead.name,
-    ProjectName: "citywalk",
+    ProjectName: getLeadProjectName(lead.project),
     City: "Gzb",
     Location: "NCR",
     Remark: `Lead from ${lead.formType} Form - karyan website`,
-    Source: "landing page",
+    Source: "karyan website",
     Email: lead.email,
     Mobile: lead.mobile,
   });
@@ -281,6 +293,7 @@ export async function submitLead(rawLead: LeadInput) {
       email: rawLead.email,
       mobile: rawLead.mobile,
       formType,
+      project: rawLead.project,
     }),
     sendEmails({
       name: rawLead.name,
