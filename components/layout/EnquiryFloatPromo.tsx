@@ -23,6 +23,7 @@ export default function EnquiryFloatPromo({ promo }: Props) {
   const { openEnquiry } = useEnquiry();
   const [mounted, setMounted] = useState(false);
   const [expanded, setExpanded] = useState(true);
+  const [hovered, setHovered] = useState(false);
 
   const src = promo.imageSrc?.trim() ?? "";
   const enabled = promo.enabled && src.length > 0;
@@ -67,8 +68,13 @@ export default function EnquiryFloatPromo({ promo }: Props) {
           aria-label="Promotional enquiry"
         >
           <div
-            className="pointer-events-auto relative overflow-hidden rounded-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.35)] ring-1 ring-black/20"
-            style={{ width: FRAME_W, height: FRAME_H }}
+            className="pointer-events-auto relative overflow-hidden rounded-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.35)] ring-1 ring-black/20 transition-[width,height] duration-300 ease-out origin-bottom-left"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            style={{
+              width: hovered ? FRAME_W * 2 : FRAME_W,
+              height: hovered ? FRAME_H * 2 : FRAME_H,
+            }}
           >
             <button
               type="button"
