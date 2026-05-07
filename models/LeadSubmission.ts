@@ -4,7 +4,7 @@ const LeadSubmissionSchema = new Schema(
   {
     source: {
       type: String,
-      enum: ["enquiry_modal", "contact_page"],
+      enum: ["enquiry_modal", "contact_page", "about_page", "property_details"],
       required: true,
       index: true,
     },

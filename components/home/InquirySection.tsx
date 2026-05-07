@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import SiteBrandLogo from "@/components/layout/SiteBrandLogo";
+import { useLeadSubmission } from "@/hooks/useLeadSubmission";
 
 export default function InquirySection() {
   const [form, setForm] = useState({ name: "", email: "", mobile: "" });
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof typeof form, string>>>({});
+  const { submitLead, loading } = useLeadSubmission();
 
   useEffect(() => {
     if (!submitted) return;
@@ -48,31 +49,21 @@ export default function InquirySection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    setLoading(true);
     try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          source: "contact_page",
-          name: form.name.trim(),
-          email: form.email.trim(),
-          mobile: form.mobile.trim(),
-          project: "",
-          message: "",
-          pagePath: typeof window !== "undefined" ? window.location.pathname : "/about",
-        }),
+      const ok = await submitLead({
+        source: "about_page",
+        name: form.name.trim(),
+        email: form.email.trim(),
+        mobile: form.mobile.trim(),
+        project: "",
+        message: "",
+        pagePath: typeof window !== "undefined" ? window.location.pathname : "/about",
       });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(typeof j.error === "string" ? j.error : "Request failed");
-      }
+      if (!ok) throw new Error("Request failed");
       setSubmitted(true);
       setErrors({});
     } catch {
       alert("We could not send your enquiry. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 

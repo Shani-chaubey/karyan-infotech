@@ -5,6 +5,7 @@ import Link from "next/link";
 import { X, Send, CheckCircle2 } from "lucide-react";
 import SiteBrandLogo from "@/components/layout/SiteBrandLogo";
 import type { SiteProjectInterestOption } from "@/lib/cms/types";
+import { useLeadSubmission } from "@/hooks/useLeadSubmission";
 
 const PROJECT_OPTIONS_FALLBACK: SiteProjectInterestOption[] = [
   { value: "", label: "Select a project" },
@@ -50,10 +51,10 @@ export default function EnquiryModal({
   const closeRef = useRef<HTMLButtonElement>(null);
   const [form, setForm] = useState<FormState>(initialForm);
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>(
     {}
   );
+  const { submitLead, loading } = useLeadSubmission();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -115,31 +116,21 @@ export default function EnquiryModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    setLoading(true);
     try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          source: "enquiry_modal",
-          name: form.name.trim(),
-          email: form.email.trim(),
-          mobile: form.mobile.trim(),
-          project: form.project,
-          message: form.message.trim(),
-          pagePath: typeof window !== "undefined" ? window.location.pathname : "",
-        }),
+      const ok = await submitLead({
+        source: "enquiry_modal",
+        name: form.name.trim(),
+        email: form.email.trim(),
+        mobile: form.mobile.trim(),
+        project: form.project,
+        message: form.message.trim(),
+        pagePath: typeof window !== "undefined" ? window.location.pathname : "",
       });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(typeof j.error === "string" ? j.error : "Request failed");
-      }
+      if (!ok) throw new Error("Request failed");
       setSubmitted(true);
       setErrors({});
     } catch {
       alert("We could not send your enquiry. Please try again or call the desk.");
-    } finally {
-      setLoading(false);
     }
   };
 

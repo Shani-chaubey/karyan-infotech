@@ -5,6 +5,8 @@ import { listLeadSubmissions } from "@/lib/leads/listLeads";
 
 function sourceLabel(source: string) {
   if (source === "contact_page") return "Contact page";
+  if (source === "about_page") return "About page";
+  if (source === "property_details") return "Property details";
   return "Enquiry popup";
 }
 
@@ -14,7 +16,9 @@ export default async function AdminLeadsPage() {
 
   const leads = await listLeadSubmissions();
   const contactLeads = leads.filter((row) => row.source === "contact_page").length;
-  const popupLeads = leads.length - contactLeads;
+  const popupLeads = leads.filter((row) => row.source === "enquiry_modal").length;
+  const aboutLeads = leads.filter((row) => row.source === "about_page").length;
+  const propertyLeads = leads.filter((row) => row.source === "property_details").length;
 
   return (
     <AdminShell
@@ -23,7 +27,7 @@ export default async function AdminLeadsPage() {
       breadcrumbs={[{ label: "Overview", href: "/admin" }, { label: "Form leads" }]}
       userEmail={session.email}
     >
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-5">
         <div className="rounded-2xl border border-stone-200 bg-gradient-to-br from-white to-stone-50 px-4 py-3 shadow-sm">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">Total leads</p>
           <p className="mt-1 text-2xl font-bold text-lux-navy">{leads.length}</p>
@@ -35,6 +39,14 @@ export default async function AdminLeadsPage() {
         <div className="rounded-2xl border border-stone-200 bg-gradient-to-br from-white to-stone-50 px-4 py-3 shadow-sm">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">Enquiry popup</p>
           <p className="mt-1 text-2xl font-bold text-lux-navy">{popupLeads}</p>
+        </div>
+        <div className="rounded-2xl border border-stone-200 bg-gradient-to-br from-white to-stone-50 px-4 py-3 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">About page</p>
+          <p className="mt-1 text-2xl font-bold text-lux-navy">{aboutLeads}</p>
+        </div>
+        <div className="rounded-2xl border border-stone-200 bg-gradient-to-br from-white to-stone-50 px-4 py-3 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">Property details</p>
+          <p className="mt-1 text-2xl font-bold text-lux-navy">{propertyLeads}</p>
         </div>
       </div>
       <p className="text-sm text-stone-600">
