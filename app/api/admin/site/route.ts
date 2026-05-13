@@ -73,7 +73,7 @@ export async function PUT(req: Request) {
     { $set: { key: "default", nav: body.nav, footer: body.footer, projectInterestOptions, themeColors, pageHeader, enquiryFloatPromo } },
     { upsert: true }
   );
-  revalidateTag("site-settings");
+  revalidateTag("site-settings", "max");
   revalidatePath("/", "layout");
   return NextResponse.json({ ok: true });
 }
