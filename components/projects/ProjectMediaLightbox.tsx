@@ -109,6 +109,13 @@ export default function ProjectMediaLightbox({
                     className="object-contain"
                     sizes="100vw"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const el = e.currentTarget as HTMLImageElement;
+                      if (!el.dataset.errored) {
+                        el.dataset.errored = "1";
+                        el.src = "/images/proverview.jpg";
+                      }
+                    }}
                   />
                   {img.label?.trim() ? (
                     <span className="absolute left-4 top-4 z-10 rounded-full border border-white/35 bg-black/60 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur">
