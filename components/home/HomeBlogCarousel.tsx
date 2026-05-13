@@ -67,6 +67,13 @@ export default function HomeBlogCarousel({
                     loading="lazy"
                     decoding="async"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const el = e.currentTarget;
+                      if (!el.dataset.errored) {
+                        el.dataset.errored = "1";
+                        el.src = FALLBACK_POST_IMAGE;
+                      }
+                    }}
                     className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   />
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent" />
