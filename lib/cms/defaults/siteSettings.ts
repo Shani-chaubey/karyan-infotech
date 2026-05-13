@@ -1,8 +1,7 @@
 import type { SiteSettingsBundle } from "../types";
 
-/** Matches WordPress custom logo on karyaninfratech.co.in */
-export const DEFAULT_HEADER_LOGO_SRC =
-  "https://karyaninfratech.co.in/wp-content/uploads/2023/03/logo.png";
+/** Local logo from public/images — guaranteed to load in every environment. */
+export const DEFAULT_HEADER_LOGO_SRC = "/images/logo.png";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsBundle = {
   nav: {

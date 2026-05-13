@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { DEFAULT_HEADER_LOGO_SRC } from "@/lib/cms/defaults/siteSettings";
-import { normalizeImageSrc } from "@/lib/image/normalizeSrc";
+
+/** Local logo is the primary source — always available on any deployment. */
+const LOCAL_LOGO = "/images/logo.png";
 
 type Props = {
   src?: string | null;
@@ -29,19 +31,26 @@ export default function SiteBrandLogo({
   asLink = true,
   linkHref = "/",
 }: Props) {
-  const resolvedSrc = normalizeImageSrc(src?.trim() || DEFAULT_HEADER_LOGO_SRC);
+  const cmsSrc = src?.trim() ?? "";
+  const initialSrc = cmsSrc || LOCAL_LOGO;
+  const [imgSrc, setImgSrc] = useState(initialSrc);
+
   const resolvedAlt = alt?.trim() || "Karyan Infratech";
-  const variantClass =
-    variant === "onDark" ? "brightness-0 invert saturate-0" : "";
+  const variantClass = variant === "onDark" ? "brightness-0 invert saturate-0" : "";
+
+  function handleError() {
+    if (imgSrc !== LOCAL_LOGO) setImgSrc(LOCAL_LOGO);
+  }
 
   const img = (
     <img
-      src={resolvedSrc}
+      src={imgSrc}
       alt={resolvedAlt}
       width={width}
       height={height}
       decoding="async"
       referrerPolicy="no-referrer"
+      onError={handleError}
       {...(priority ? { fetchPriority: "high" as const } : {})}
       className={`h-auto w-auto max-w-full object-contain object-left ${variantClass} ${className}`.trim()}
     />
