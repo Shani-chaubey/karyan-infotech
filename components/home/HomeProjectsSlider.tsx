@@ -1,9 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { ProjectsListPayload } from "@/components/site/ProjectsPageContent";
 
 type Project = ProjectsListPayload["projects"][number];
+
+const FALLBACK_IMAGE = "/images/proverview.jpg";
 
 function PortfolioStackCard({
   project,
@@ -12,6 +17,8 @@ function PortfolioStackCard({
   project: Project;
   imagePriority?: boolean;
 }) {
+  const [imgSrc, setImgSrc] = useState(project.image || FALLBACK_IMAGE);
+
   return (
     <Link
       href={project.href}
@@ -19,13 +26,14 @@ function PortfolioStackCard({
     >
       <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-stone-100">
         <Image
-          src={project.image}
+          src={imgSrc}
           alt={project.title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover transition duration-500 group-hover:scale-[1.03]"
           priority={imagePriority}
           referrerPolicy="no-referrer"
+          onError={() => setImgSrc(FALLBACK_IMAGE)}
         />
         <div className="absolute left-3 top-3 flex flex-wrap gap-2 sm:left-4 sm:top-4">
           <span className="rounded-full bg-theme-bg/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-theme-on-bg backdrop-blur">

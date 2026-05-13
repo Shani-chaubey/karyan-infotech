@@ -1,4 +1,4 @@
-import Image from "next/image";
+import CmsImage from "@/components/ui/CmsImage";
 import CTASection from "@/components/shared/CTASection";
 import InquirySection from "@/components/home/InquirySection";
 
@@ -55,13 +55,13 @@ export default function AboutPageContent({ payload }: { payload: AboutPayload })
             <div className="mx-auto max-w-[1200px] px-4">
               <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
                 <div className={`relative h-[420px] overflow-hidden ${imageLeft ? "lg:order-1" : "lg:order-2"}`}>
-                  <Image
+                  <CmsImage
                     src={section.imageSrc}
                     alt={section.imageAlt}
                     fill
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-cover"
-                    referrerPolicy="no-referrer"
+                    fallback="/images/our-vision.webp"
                   />
                 </div>
 

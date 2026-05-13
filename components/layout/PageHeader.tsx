@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { getSiteSettings } from "@/lib/cms/getters";
 import { normalizeImageSrc } from "@/lib/image/normalizeSrc";
+import PageHeaderBg from "@/components/layout/PageHeaderBg";
 
 export interface PageHeaderBreadcrumb {
   label: string;
@@ -37,17 +37,7 @@ export default async function PageHeader({
   return (
     <header className="relative overflow-hidden border-b border-white/10">
       {resolvedBg ? (
-        <div className="pointer-events-none absolute inset-0 z-0 min-h-[620px] w-full bg-theme-bg" aria-hidden>
-          <Image
-            src={resolvedBg}
-            alt=""
-            fill
-            className="object-cover object-center scale-105"
-            sizes="100vw"
-            priority
-            referrerPolicy="no-referrer"
-          />
-        </div>
+        <PageHeaderBg src={resolvedBg} />
       ) : (
         <>
           <div className="absolute inset-0 bg-theme-bg" aria-hidden />

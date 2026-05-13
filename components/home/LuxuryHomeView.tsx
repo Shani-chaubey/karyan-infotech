@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import CmsImage from "@/components/ui/CmsImage";
 import { EnquiryTrigger } from "@/components/enquiry/EnquiryProvider";
 import { ArrowRight, Award, CheckCircle2, Phone } from "lucide-react";
 import { FaCity, FaLeaf, FaLightbulb, FaLandmark } from "react-icons/fa";
@@ -709,13 +710,13 @@ export default function LuxuryHomeView({
               {data.aboutSection.logoSrc?.trim() ? (
                 <>
                   <div className="relative h-[260px] w-full sm:h-[320px] lg:h-full lg:min-h-[420px]">
-                    <Image
+                    <CmsImage
                       src={data.aboutSection.logoSrc}
                       alt={data.aboutSection.logoAlt || "Karyan about image"}
                       fill
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 50vw"
-                      referrerPolicy="no-referrer"
+                      fallback="/images/our-vision.webp"
                     />
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent" />

@@ -1,5 +1,10 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+
+const FALLBACK_IMAGE = "/images/proverview.jpg";
 
 interface ProjectCardProps {
   title: string;
@@ -24,21 +29,23 @@ export default function ProjectCard({
   status,
   imagePriority = false,
 }: ProjectCardProps) {
+  const [imgSrc, setImgSrc] = useState(image || FALLBACK_IMAGE);
+
   return (
     <Link
       href={href}
       className="block group bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow"
     >
-      {/* Image */}
       <div className="relative overflow-hidden" style={{ height: "220px" }}>
         <Image
-          src={image}
+          src={imgSrc}
           alt={title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           priority={imagePriority}
           referrerPolicy="no-referrer"
+          onError={() => setImgSrc(FALLBACK_IMAGE)}
         />
         <div className="absolute top-3 left-3 flex gap-2">
           <span className="bg-theme-bg px-2 py-1 text-xs font-bold uppercase text-theme-on-bg">
@@ -52,11 +59,8 @@ export default function ProjectCard({
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-5">
-        <p className="mb-1 text-xs font-medium text-theme-bg">
-          📍 {location}
-        </p>
+        <p className="mb-1 text-xs font-medium text-theme-bg">📍 {location}</p>
         <h3 className="mb-2 text-base font-bold text-[#292929] transition-colors group-hover:text-theme-bg">
           {title}
         </h3>
