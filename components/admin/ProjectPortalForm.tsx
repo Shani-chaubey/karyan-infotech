@@ -150,6 +150,43 @@ export default function ProjectPortalForm({ slug }: { slug: string }) {
               autoCorrect="off"
             />
           </CmsField>
+          <CmsField
+            label="Display order"
+            hint="Lower numbers appear first on the homepage portfolio and /projects page (e.g. 1, 2, 3)."
+          >
+            <CmsInput
+              type="number"
+              min={0}
+              step={1}
+              value={data.order ?? ""}
+              onChange={(e) => {
+                const raw = e.target.value.trim();
+                patch((d) => ({
+                  ...d,
+                  order: raw === "" ? undefined : Math.max(0, parseInt(raw, 10) || 0),
+                }));
+              }}
+            />
+          </CmsField>
+        </CmsSection>
+        <CmsSection
+          title="RERA"
+          description="Real Estate Regulatory Authority registration for this development."
+          where="Portfolio card badge on the homepage and /projects (replaces project type on the card)."
+          defaultOpen
+        >
+          <CmsField
+            label="RERA"
+            hint="e.g. UPRERAPRJ123456 — saved to the project listing card when you save at the bottom."
+          >
+            <CmsInput
+              value={data.rera ?? ""}
+              onChange={(e) => patch((d) => ({ ...d, rera: e.target.value }))}
+              spellCheck={false}
+              autoCapitalize="off"
+              autoCorrect="off"
+            />
+          </CmsField>
         </CmsSection>
         <CmsSection
           title="SEO — search listing"
@@ -868,9 +905,37 @@ export default function ProjectPortalForm({ slug }: { slug: string }) {
               }
             />
           </CmsField>
-          <CmsField label="Video file/link">
-            <CmsImageUpload
+          <CmsField
+            label="Video URL"
+            hint="YouTube or Vimeo link (watch, embed, or youtu.be), or a direct .mp4 / Firebase video URL."
+          >
+            <CmsInput
               value={data.videoSection?.videoUrl ?? ""}
+              onChange={(e) =>
+                patch((d) => ({
+                  ...d,
+                  videoSection: {
+                    title: d.videoSection?.title ?? "",
+                    description: d.videoSection?.description ?? "",
+                    videoUrl: e.target.value,
+                    posterImage: d.videoSection?.posterImage ?? "",
+                  },
+                }))
+              }
+              placeholder="https://www.youtube.com/watch?v=… or https://youtu.be/…"
+              spellCheck={false}
+            />
+          </CmsField>
+          <CmsField
+            label="Or upload video file"
+            hint="MP4/WebM hosted on Firebase — use this if you are not using YouTube/Vimeo."
+          >
+            <CmsImageUpload
+              value={
+                data.videoSection?.videoUrl?.includes("firebasestorage.googleapis.com")
+                  ? data.videoSection.videoUrl
+                  : ""
+              }
               onChange={(url) =>
                 patch((d) => ({
                   ...d,

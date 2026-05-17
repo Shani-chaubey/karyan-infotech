@@ -55,7 +55,7 @@ export type SiteFooterPayload = {
   commercial: NavLink[];
   contactPhone: string;
   contactPhoneHref: string;
-  social: { label: string; href: string }[];
+  social: { label: string; href: string; /** Optional brand icon image URL */ iconSrc?: string }[];
   legalLine: string;
   disclaimerExtra?: string;
 };
@@ -168,9 +168,12 @@ export type HomePayload = {
     eyebrow: string;
     title: string;
     body: string;
-    bullets: { icon: string; text: string }[];
-    corridorsTitle: string;
-    corridors: { corridor: string; projects: string }[];
+    /** Rich HTML for left-column highlight list (replaces legacy bullets). */
+    bulletsHtml: string;
+    /** Rich HTML for right card — title, table, copy (replaces corridors title + rows). */
+    corridorsHtml: string;
+    /** Buttons on the right card; each opens the enquiry modal. */
+    ctaButtons: { label: string; project?: string }[];
   };
   aboutSection: {
     eyebrow: string;
@@ -184,14 +187,16 @@ export type HomePayload = {
   journalTeasers: { title: string; href: string; hint: string }[];
   ecosystem: { eyebrow: string; body: string; tags: string[] };
   splitCta: {
-    leftEyebrow: string;
-    leftTitle: string;
+    /** When set, only video is shown (gallery ignored). YouTube/Vimeo or direct file URL. */
+    videoSrc: string;
+    videoPoster?: string;
+    galleryImages: { src: string; alt: string }[];
+    social: { label: string; href: string; iconSrc?: string }[];
     phone: string;
     phoneHref: string;
-    hours: string;
-    rightTitle: string;
-    rightBody: string;
-    rightCtaLabel: string;
+    whatsapp: string;
+    whatsappHref: string;
+    ctaButtons: { label: string; project?: string }[];
   };
   finalCta: { title: string; body: string; primaryLabel: string; secondaryLabel: string; secondaryHref: string };
 };
@@ -204,6 +209,10 @@ export type ProjectHighlight = {
 };
 
 export type ProjectPayload = {
+  /** Lower numbers appear first on homepage and /projects listing. */
+  order?: number;
+  /** RERA registration — shown on portfolio cards instead of project type. */
+  rera?: string;
   metadata: { title: string; description: string };
   seo?: SeoConfig;
   header: {
@@ -251,6 +260,15 @@ export type ProjectPayload = {
     secondaryLabel?: string;
     secondaryHref?: string;
   };
+};
+
+export type ContentPagePayload = {
+  slug: string;
+  title: string;
+  body: string;
+  metaTitle: string;
+  metaDescription: string;
+  seo?: SeoConfig;
 };
 
 export type BlogPostPayload = {

@@ -2,9 +2,14 @@ import Link from "next/link";
 import Image from "next/image";
 import CmsImage from "@/components/ui/CmsImage";
 import { EnquiryTrigger } from "@/components/enquiry/EnquiryProvider";
-import { ArrowRight, Award, CheckCircle2, Phone } from "lucide-react";
+import LocationRichHtml from "@/components/home/LocationRichHtml";
+import SplitContactSection from "@/components/home/SplitContactSection";
+import { normalizeHomeLocation } from "@/lib/cms/normalizeHomeLocation";
+import { normalizeHomeSplitContact } from "@/lib/cms/normalizeHomeSplitContact";
+import { ArrowRight } from "lucide-react";
 import { FaCity, FaLeaf, FaLightbulb, FaLandmark } from "react-icons/fa";
 import HeroSlider from "@/components/home/HeroSlider";
+import HomeSectionHeading from "@/components/home/HomeSectionHeading";
 import HomeSiteProjectsSection from "@/components/home/HomeSiteProjectsSection";
 import OurPresenceBlock from "@/components/home/OurPresenceBlock";
 import HomeBlogCarousel from "@/components/home/HomeBlogCarousel";
@@ -39,25 +44,22 @@ function capabilityReactIcon(title: string, text: string): IconType {
   return FaCity;
 }
 
+const LOCATION_CTA_CLASS =
+  "inline-flex w-full items-center justify-center rounded-xl border border-[#ead7b0]/70 bg-[linear-gradient(135deg,#a07c3a,#c6a96a)] py-4 text-sm font-semibold uppercase tracking-widest text-white shadow-lg transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lux-gold";
+
 export default function LuxuryHomeView({
   data,
   projectsList,
   brandLogoSrc,
   brandLogoAlt,
-  deskPhone,
-  deskPhoneHref,
   blogPosts,
 }: {
   data: HomePayload;
   projectsList: ProjectsListPayload;
   brandLogoSrc?: string;
   brandLogoAlt?: string;
-  deskPhone?: string;
-  deskPhoneHref?: string;
   blogPosts: BlogPostPayload[];
 }) {
-  const callDeskPhone = deskPhone?.trim() || data.splitCta.phone;
-  const callDeskPhoneHref = deskPhoneHref?.trim() || data.splitCta.phoneHref;
   const configured = Array.isArray(data.sectionOrder) ? data.sectionOrder : [];
   const normalizedSectionOrder = [
     ...configured.filter((id): id is (typeof HOME_SECTION_KEYS)[number] =>
@@ -70,6 +72,8 @@ export default function LuxuryHomeView({
   );
   const sectionOrder = (id: (typeof HOME_SECTION_KEYS)[number]) =>
     orderMap.get(id) ?? 999;
+  const location = normalizeHomeLocation(data.location);
+  const splitContact = normalizeHomeSplitContact(data.splitCta);
 
   return (
     <>
@@ -180,14 +184,11 @@ export default function LuxuryHomeView({
           ]}
         />
         <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:flex lg:items-center lg:gap-16 lg:px-8 lg:py-20">
-          <div className="max-w-xl lg:max-w-md">
-            <span className="inline-flex items-center rounded-full border border-lux-gold/30 bg-lux-ivory/90 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-lux-gold-dim shadow-sm backdrop-blur">
-              {data.philosophy.badge}
-            </span>
-            <h2 className="font-display mt-6 text-3xl font-medium leading-tight text-lux-navy sm:text-4xl lg:text-[2.75rem]">
-              {data.philosophy.title}
-            </h2>
-          </div>
+          <HomeSectionHeading
+            badge={data.philosophy.badge}
+            title={data.philosophy.title}
+            className="max-w-xl lg:max-w-md"
+          />
           <p className="mt-10 max-w-2xl text-base leading-relaxed text-stone-700 lg:mt-0 lg:text-lg">
             {data.philosophy.body}
           </p>
@@ -208,10 +209,6 @@ export default function LuxuryHomeView({
                 opacityClassName: "opacity-20",
               },
             ]}
-          />
-          <SectionWave
-            fill="fill-lux-ivory"
-            className="relative z-10 bg-lux-ivory"
           />
         </div>
 
@@ -239,14 +236,10 @@ export default function LuxuryHomeView({
           ]}
         />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-lux-gold-dim">
-              {data.capabilitiesIntro.eyebrow}
-            </p>
-            <h2 className="font-display mt-3 text-3xl font-medium text-lux-navy sm:text-4xl">
-              {data.capabilitiesIntro.title}
-            </h2>
-          </div>
+          <HomeSectionHeading
+            eyebrow={data.capabilitiesIntro.eyebrow}
+            title={data.capabilitiesIntro.title}
+          />
           <div className="mt-14 grid gap-6 sm:grid-cols-2">
             {data.capabilities.map(({ title, text, icon }) => {
               const Icon = getLucideIcon(icon);
@@ -344,14 +337,10 @@ export default function LuxuryHomeView({
           ]}
         />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-lux-gold-dim">
-              {data.whyIntro.eyebrow}
-            </p>
-            <h2 className="font-display mt-3 text-3xl font-medium text-lux-navy sm:text-4xl">
-              {data.whyIntro.title}
-            </h2>
-          </div>
+          <HomeSectionHeading
+            eyebrow={data.whyIntro.eyebrow}
+            title={data.whyIntro.title}
+          />
           <div className="mt-16 grid gap-8 md:grid-cols-3">
             {data.pillars.map(({ title, text, icon }) => {
               const Icon = getLucideIcon(icon);
@@ -426,14 +415,11 @@ export default function LuxuryHomeView({
           ]}
         />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-lux-gold-bright">
-              {data.processIntro.eyebrow}
-            </p>
-            <h2 className="font-display mt-3 text-3xl font-medium text-white sm:text-4xl">
-              {data.processIntro.title}
-            </h2>
-          </div>
+          <HomeSectionHeading
+            eyebrow={data.processIntro.eyebrow}
+            title={data.processIntro.title}
+            variant="dark"
+          />
           <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {data.process.map((s) => (
               <div
@@ -471,16 +457,11 @@ export default function LuxuryHomeView({
               },
             ]}
           />
-          <SectionWave
-            fill="fill-lux-ivory"
-            flip
-            className="relative z-10 bg-theme-bg"
-          />
         </div>
       </div>
 
       {/* Testimonials */}
-      <section
+      {/* <section
         className="relative overflow-hidden bg-lux-ivory py-14 lg:py-20"
         style={{ order: sectionOrder("testimonials") }}
       >
@@ -544,7 +525,7 @@ export default function LuxuryHomeView({
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* FAQ */}
       {/* <section className="relative overflow-hidden bg-lux-ivory py-20 lg:py-28">
@@ -633,47 +614,32 @@ export default function LuxuryHomeView({
         />
         <div className="relative mx-auto grid max-w-7xl gap-14 px-4 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-lux-gold-dim">
-              {data.location.eyebrow}
-            </p>
-            <h2 className="font-display mt-3 text-3xl font-medium text-lux-navy sm:text-4xl">
-              {data.location.title}
-            </h2>
+            <HomeSectionHeading
+              eyebrow={data.location.eyebrow}
+              title={data.location.title}
+              className="max-w-xl"
+            />
             <p className="mt-6 text-base leading-relaxed text-stone-600">
               {data.location.body}
             </p>
-            <ul className="mt-8 space-y-4 text-sm text-stone-700">
-              {data.location.bullets.map((b) => {
-                const BIcon = getLucideIcon(b.icon);
-                return (
-                  <li key={b.text} className="flex items-start gap-3">
-                    <BIcon className="mt-0.5 h-5 w-5 shrink-0 text-lux-gold-dim" />
-                    {b.text}
-                  </li>
-                );
-              })}
-            </ul>
+            <LocationRichHtml html={location.bulletsHtml} className="mt-8" />
           </div>
           <div className="rounded-3xl border border-stone-200/90 bg-lux-ivory/95 p-8 shadow-xl ring-1 ring-lux-gold/10 backdrop-blur">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-lux-gold-dim">
-              {data.location.corridorsTitle}
-            </p>
-            <ul className="mt-6 space-y-4 font-display text-lg text-lux-navy">
-              {data.location.corridors.map((row, i) => (
-                <li
-                  key={row.corridor}
-                  className={`flex justify-between ${i < data.location.corridors.length - 1 ? "border-b border-stone-200/80 pb-3" : "pb-1"}`}
+            <LocationRichHtml
+              html={location.corridorsHtml}
+              className="font-display text-lg text-lux-navy [&_li]:flex [&_li]:justify-between [&_li]:gap-4 [&_li]:border-b [&_li]:border-stone-200/80 [&_li]:pb-3 [&_li:last-child]:border-0 [&_li_span:last-child]:text-right [&_li_span:last-child]:text-sm [&_li_span:last-child]:font-sans [&_li_span:last-child]:font-normal [&_li_span:last-child]:text-stone-500"
+            />
+            <div className="mt-8 flex flex-col gap-3">
+              {location.ctaButtons.map((btn, i) => (
+                <EnquiryTrigger
+                  key={`${btn.label}-${i}`}
+                  project={btn.project?.trim() || undefined}
+                  className={LOCATION_CTA_CLASS}
                 >
-                  <span>{row.corridor}</span>
-                  <span className="text-right text-sm font-sans font-normal text-stone-500">
-                    {row.projects}
-                  </span>
-                </li>
+                  {btn.label}
+                </EnquiryTrigger>
               ))}
-            </ul>
-            <EnquiryTrigger className="mt-8 inline-flex w-full items-center justify-center rounded-xl border border-[#ead7b0]/70 bg-[linear-gradient(135deg,#a07c3a,#c6a96a)] py-4 text-sm font-semibold uppercase tracking-widest text-white shadow-lg transition hover:brightness-110">
-              Plan a site tour
-            </EnquiryTrigger>
+            </div>
           </div>
         </div>
       </section>
@@ -729,12 +695,11 @@ export default function LuxuryHomeView({
             </div>
 
             <div className="flex flex-col justify-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-lux-gold-dim">
-                {data.aboutSection.eyebrow}
-              </p>
-              <h2 className="font-display mt-3 text-3xl font-medium leading-tight text-lux-navy sm:text-4xl lg:text-[2.7rem]">
-                {data.aboutSection.title}
-              </h2>
+              <HomeSectionHeading
+                eyebrow={data.aboutSection.eyebrow}
+                title={data.aboutSection.title}
+                className="max-w-3xl"
+              />
               <p className="mt-5 max-w-3xl text-base leading-relaxed text-stone-700">
                 {data.aboutSection.description}
               </p>
@@ -783,12 +748,11 @@ export default function LuxuryHomeView({
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-lux-gold-bright">
-                {data.journalIntro.eyebrow}
-              </p>
-              <h2 className="font-display mt-3 text-3xl font-medium text-white sm:text-4xl">
-                {data.journalIntro.title}
-              </h2>
+              <HomeSectionHeading
+                eyebrow={data.journalIntro.eyebrow}
+                title={data.journalIntro.title}
+                variant="dark"
+              />
             </div>
             <Link
               href={data.journalIntro.ctaHref}
@@ -847,64 +811,13 @@ export default function LuxuryHomeView({
         </div>
       </section> */}
 
-      {/* Split CTA — phone + form */}
+      {/* Split contact — gallery/video + contact bar */}
       <section
-        className="relative overflow-hidden bg-gradient-to-br from-lux-cream via-lux-ivory to-lux-cream py-14 lg:py-20"
+        className="relative overflow-hidden bg-lux-ivory py-14 lg:py-20"
         style={{ order: sectionOrder("splitCta") }}
       >
-        <SectionBgStack
-          diagonalSheen
-          topGlow
-          bottomGlow
-          grain
-          layers={[
-            { variant: "orbRings", opacityClassName: "opacity-32" },
-            {
-              variant: "blobOrganic",
-              wrapClassName: "-left-1/3 top-0 h-full w-2/3",
-              opacityClassName: "opacity-14",
-            },
-            {
-              variant: "meshPremium",
-              wrapClassName: "right-0 top-1/4 h-3/4 w-1/2",
-              opacityClassName: "opacity-11 text-lux-navy",
-            },
-            {
-              variant: "scatterDots",
-              opacityClassName: "opacity-18 mix-blend-multiply",
-            },
-          ]}
-        />
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:px-8">
-          <div className="rounded-3xl border border-stone-200/90 bg-lux-ivory/95 p-10 shadow-xl backdrop-blur">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-lux-gold-dim">
-              {data.splitCta.leftEyebrow}
-            </p>
-            <h2 className="font-display mt-4 text-3xl font-medium text-lux-navy">
-              {data.splitCta.leftTitle}
-            </h2>
-            <a
-              href={callDeskPhoneHref}
-              className="mt-8 inline-flex items-center gap-3 text-2xl font-semibold text-lux-navy transition hover:text-lux-gold-dim"
-            >
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-theme-bg text-white">
-                <Phone className="h-5 w-5" />
-              </span>
-              {callDeskPhone}
-            </a>
-            <p className="mt-4 text-sm text-stone-600">{data.splitCta.hours}</p>
-          </div>
-          <div className="flex flex-col justify-center rounded-3xl border border-lux-gold/25 bg-theme-bg p-10 text-center text-white shadow-2xl lg:text-left">
-            <h3 className="font-display text-2xl font-medium">
-              {data.splitCta.rightTitle}
-            </h3>
-            <p className="mt-3 text-sm text-stone-400">
-              {data.splitCta.rightBody}
-            </p>
-            <EnquiryTrigger className="mt-8 inline-flex items-center justify-center rounded-xl border border-[#ead7b0]/70 bg-[linear-gradient(135deg,#a07c3a,#c6a96a)] px-8 py-4 text-sm font-semibold uppercase tracking-widest text-white shadow-lg transition hover:brightness-110">
-              {data.splitCta.rightCtaLabel}
-            </EnquiryTrigger>
-          </div>
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SplitContactSection data={splitContact} />
         </div>
       </section>
       </div>

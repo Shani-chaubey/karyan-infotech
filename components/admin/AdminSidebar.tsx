@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ExternalLink,
+  FileStack,
   FileText,
   FolderKanban,
   Home,
@@ -47,6 +48,12 @@ const NAV = [
     label: "Blog",
     hint: "Articles & journal cards",
     Icon: Newspaper,
+  },
+  {
+    href: "/admin/content-pages",
+    label: "Content pages",
+    hint: "Policies & legal pages",
+    Icon: FileStack,
   },
   {
     href: "/admin/leads",

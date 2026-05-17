@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import type { ProjectsListPayload } from "@/components/site/ProjectsPageContent";
 import SectionBgStack from "@/components/decor/SectionBgStack";
 import HomeProjectsSlider from "@/components/home/HomeProjectsSlider";
+import HomeSectionHeading from "@/components/home/HomeSectionHeading";
 
 export default function HomeSiteProjectsSection({ payload }: { payload: ProjectsListPayload }) {
   const { projects, eyebrow, title, subtitle } = payload;
@@ -28,13 +29,11 @@ export default function HomeSiteProjectsSection({ payload }: { payload: Projects
       />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-lux-gold-dim">{eyebrow}</p>
-            <h2 className="font-display mt-3 text-3xl font-medium text-lux-navy sm:text-4xl">{title}</h2>
-            {subtitle ? (
-              <p className="mt-4 text-sm leading-relaxed text-stone-600 sm:text-base">{subtitle}</p>
-            ) : null}
-          </div>
+          <HomeSectionHeading
+            eyebrow={eyebrow}
+            title={title}
+            description={subtitle}
+          />
           <Link
             href="/projects"
             className="inline-flex shrink-0 items-center gap-2 rounded-full border border-lux-navy/15 bg-lux-ivory px-6 py-3 text-xs font-semibold uppercase tracking-widest text-lux-navy shadow-sm transition hover:border-lux-gold/40 hover:bg-lux-cream"

@@ -2,48 +2,54 @@ import Link from "next/link";
 import { getAdminSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
-import { ArrowRight } from "lucide-react";
-import { getProjectsListPayload } from "@/lib/cms/getters";
-import { collectProjectsFromListing } from "@/lib/cms/projects";
+import { getContentPages } from "@/lib/cms/getters";
+import { ArrowRight, Plus } from "lucide-react";
 
-export default async function AdminProjectsIndex() {
+export default async function AdminContentPagesIndex() {
   const session = await getAdminSession();
   if (!session) redirect("/admin/login");
-  const listingPayload = await getProjectsListPayload();
-  const projects = collectProjectsFromListing(listingPayload);
+  const pages = await getContentPages();
 
   return (
     <AdminShell
-      title="Project pages"
-      subtitle="Choose a development to edit its public detail page — photos, copy, and enquiry area."
-      breadcrumbs={[{ label: "Overview", href: "/admin" }, { label: "Project pages" }]}
+      title="Content pages"
+      subtitle="Legal pages, policies, and other standalone content — each has its own URL slug."
+      breadcrumbs={[{ label: "Overview", href: "/admin" }, { label: "Content pages" }]}
       userEmail={session.email}
     >
-      {projects.length === 0 ? (
+      <div className="mb-6">
+        <Link
+          href="/admin/content-pages/new"
+          className="inline-flex items-center gap-2 rounded-xl bg-lux-navy px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-lux-navy-mid"
+        >
+          <Plus className="h-4 w-4" />
+          Add page
+        </Link>
+      </div>
+
+      {pages.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-stone-200 bg-white px-5 py-8 text-sm text-stone-600">
-          No projects found in listing page yet. Add cards in Admin - Pages - Projects first.
+          No content pages yet. Add one above or run{" "}
+          <code className="rounded bg-stone-100 px-1.5 py-0.5 text-xs">npm run seed:privacy-policy</code>{" "}
+          to create the Privacy Policy.
         </p>
       ) : null}
+
       <div className="grid gap-4 sm:grid-cols-2">
-        {projects.map((p) => (
+        {pages.map((p) => (
           <Link
             key={p.slug}
-            href={`/admin/projects/${p.slug}`}
+            href={`/admin/content-pages/${p.slug}`}
             className="group flex flex-col justify-between rounded-2xl border border-stone-200 bg-gradient-to-br from-white to-stone-50/80 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
           >
             <div>
-              <h2 className="font-display text-lg font-semibold text-lux-navy">{p.label}</h2>
-              <p className="mt-1 text-sm text-stone-600">{p.blurb}</p>
-              <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-stone-500">
-                {p.type}
-                <span className="ml-2 font-mono text-stone-400">· order {p.order}</span>
-              </p>
+              <h2 className="font-display text-lg font-semibold text-lux-navy">{p.title}</h2>
               <p className="mt-3 text-xs text-stone-500">
                 Live URL: <span className="font-mono text-stone-700">/{p.slug}</span>
               </p>
             </div>
             <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-lux-navy">
-              Edit this project
+              Edit page
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
             </span>
           </Link>

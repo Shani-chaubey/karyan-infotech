@@ -240,16 +240,17 @@ export const DEFAULT_HOME_PAYLOAD: HomePayload = {
     eyebrow: "Location intelligence",
     title: "Growth corridors we actually underwrite.",
     body: "NH-24, Wave City, and the Delhi–Meerut Expressway — where mobility investment is visible and catchments deepen year on year.",
-    bullets: [
-      { icon: "MapPin", text: "Coordinated site visits — weekdays & weekends." },
-      { icon: "Building2", text: "Mixed typologies: residences, retail, offices, mall frontages." },
-    ],
-    corridorsTitle: "Corridors",
-    corridors: [
-      { corridor: "NH-24", projects: "Trevana · Square" },
-      { corridor: "Expressway", projects: "CityWalk" },
-      { corridor: "Wave City", projects: "Avenue IV" },
-    ],
+    bulletsHtml: `<ul>
+<li>Coordinated site visits — weekdays &amp; weekends.</li>
+<li>Mixed typologies: residences, retail, offices, mall frontages.</li>
+</ul>`,
+    corridorsHtml: `<p><strong>Corridors</strong></p>
+<ul>
+<li><span>NH-24</span> — <span>Trevana · Square</span></li>
+<li><span>Expressway</span> — <span>CityWalk</span></li>
+<li><span>Wave City</span> — <span>Avenue IV</span></li>
+</ul>`,
+    ctaButtons: [{ label: "Plan a site tour" }],
   },
   aboutSection: {
     eyebrow: "About Karyan",
@@ -296,15 +297,37 @@ export const DEFAULT_HOME_PAYLOAD: HomePayload = {
     tags: ["Design", "Structure", "MEP", "HVAC", "Landscape", "PMC"],
   },
   splitCta: {
-    leftEyebrow: "Call the desk",
-    leftTitle: "Prefer voice? We pick up.",
+    videoSrc: "",
+    videoPoster: "",
+    galleryImages: [
+      {
+        src: "https://karyaninfratech.co.in/wp-content/uploads/2024/11/Karyan-CityWalk.jpg",
+        alt: "Karyan CityWalk — sales gallery",
+      },
+      {
+        src: "https://karyaninfratech.co.in/wp-content/uploads/2026/04/20260409_1252_Image-Generation_remix_01knrhxdp4exssq8ndhw9y4r45.png",
+        alt: "Karyan Trevana residences",
+      },
+      {
+        src: "https://karyaninfratech.co.in/wp-content/uploads/2024/11/Avenue-IV.jpg",
+        alt: "Karyan Avenue IV",
+      },
+    ],
+    social: [
+      { label: "Instagram", href: "https://www.instagram.com/karyanstreetwalk" },
+      { label: "Facebook", href: "https://www.facebook.com/karyanNh24" },
+      { label: "LinkedIn", href: "https://www.linkedin.com/company/karyan-infratech" },
+      { label: "YouTube", href: "https://www.youtube.com/@karyaninfratech" },
+      { label: "X", href: "https://x.com/karyaninfratech" },
+    ],
     phone: "+91 920 600 1002",
     phoneHref: "tel:+919206001002",
-    hours: "Mon–Sat · 10:00 – 19:00 IST · Delhi NCR site visits by appointment",
-    rightTitle: "Or send a structured enquiry.",
-    rightBody:
-      "Tell us corridor, budget band, and residential vs commercial — we respond with inventory snapshots.",
-    rightCtaLabel: "Open enquiry",
+    whatsapp: "+91 920 600 1002",
+    whatsappHref: "https://wa.me/919206001002",
+    ctaButtons: [
+      { label: "Meet our experts" },
+      { label: "Call for Site Visit" },
+    ],
   },
   finalCta: {
     title: "Reserve a private walkthrough.",

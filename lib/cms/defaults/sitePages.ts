@@ -100,6 +100,7 @@ export const DEFAULT_SITE_PAGES = [
           location: "NH-24, Ghaziabad",
           status: "IN PROGRESS",
           featured: true,
+          order: 1,
         },
         {
           title: "Karyan CityWalk",
@@ -111,6 +112,7 @@ export const DEFAULT_SITE_PAGES = [
           location: "Delhi–Meerut Expressway",
           status: "ONGOING",
           featured: false,
+          order: 2,
         },
         {
           title: "Karyan Avenue IV",
@@ -122,6 +124,7 @@ export const DEFAULT_SITE_PAGES = [
           location: "Wave City, NH-24",
           status: "IN PROGRESS",
           featured: false,
+          order: 3,
         },
         {
           title: "Karyan Square",
@@ -133,6 +136,7 @@ export const DEFAULT_SITE_PAGES = [
           location: "Wave City, NH-24",
           status: "ONGOING",
           featured: false,
+          order: 4,
         },
       ],
     },

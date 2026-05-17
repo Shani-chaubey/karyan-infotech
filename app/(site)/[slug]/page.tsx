@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProjectPageView, { projectMetadata } from "@/components/projects/ProjectPageView";
-import { getProjectPayload } from "@/lib/cms/getters";
-
-const RESERVED_SLUGS = new Set(["about", "contact", "projects", "blog", "thank-you", "admin", "api"]);
+import ContentPageView, { contentPageMetadata } from "@/components/site/ContentPageView";
+import { RESERVED_ROUTE_SLUGS } from "@/lib/cms/contentPages";
+import { getContentPageBySlug, getProjectPayload } from "@/lib/cms/getters";
 
 export async function generateMetadata({
   params,
@@ -11,20 +11,26 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  if (RESERVED_SLUGS.has(slug)) return {};
-  const data = await getProjectPayload(slug);
-  if (!data) return {};
-  return projectMetadata(data);
+  if (RESERVED_ROUTE_SLUGS.has(slug)) return {};
+  const contentPage = await getContentPageBySlug(slug);
+  if (contentPage) return contentPageMetadata(contentPage);
+  const project = await getProjectPayload(slug);
+  if (!project) return {};
+  return projectMetadata(project);
 }
 
-export default async function DynamicProjectPage({
+export default async function DynamicSlugPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  if (RESERVED_SLUGS.has(slug)) notFound();
-  const data = await getProjectPayload(slug);
-  if (!data) notFound();
-  return <ProjectPageView data={data} />;
+  if (RESERVED_ROUTE_SLUGS.has(slug)) notFound();
+
+  const contentPage = await getContentPageBySlug(slug);
+  if (contentPage) return <ContentPageView page={contentPage} />;
+
+  const project = await getProjectPayload(slug);
+  if (!project) notFound();
+  return <ProjectPageView data={project} />;
 }

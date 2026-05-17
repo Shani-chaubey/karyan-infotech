@@ -2,6 +2,7 @@ import type { HomePresenceBand } from "@/lib/cms/types";
 import { normalizePresenceCityIds } from "@/lib/cms/normalizePresenceCityIds";
 import { getIndiaPresenceCity } from "@/lib/cms/indiaPresenceCities";
 import IndiaPresenceMap, { type PresenceCity } from "./IndiaPresenceMap";
+import HomeSectionHeading from "@/components/home/HomeSectionHeading";
 
 function titleCaseSlug(id: string): string {
   return id.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -55,25 +56,8 @@ export default function OurPresenceBlock({ band }: { band: HomePresenceBand }) {
     <div className="grid gap-12 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-20">
       {/* ── Left: text + city grid ── */}
       <div className="order-2 flex flex-col lg:order-1">
-        {/* Eyebrow */}
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-lux-gold-dim">
-          {eyebrow}
-        </p>
-
-        {/* Heading */}
-        <h2 className="font-display mt-3 text-4xl font-light uppercase tracking-[0.2em] text-lux-navy sm:text-5xl">
-          {heading}
-        </h2>
-
-        {/* Decorative rule */}
+        <HomeSectionHeading eyebrow={eyebrow} title={heading} description={subheading} />
         <div className="mt-5 h-px w-14 bg-gradient-to-r from-lux-gold-dim to-transparent" />
-
-        {/* Subheading */}
-        {subheading ? (
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-stone-500 sm:text-base">
-            {subheading}
-          </p>
-        ) : null}
 
         {/* City list */}
         {rows.length ? (

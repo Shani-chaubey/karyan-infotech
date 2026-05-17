@@ -38,6 +38,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsBundle = {
       { label: "About", href: "/about" },
       { label: "Projects", href: "/projects" },
       { label: "Blog", href: "/blog" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Contact", href: "/contact" },
     ],
     residential: [{ label: "Karyan Trevana", href: "/karyan-trevana" }],

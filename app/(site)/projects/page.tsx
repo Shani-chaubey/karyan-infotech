@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
-import { getSitePage } from "@/lib/cms/getters";
+import { getProjectsListPayload, getSitePage } from "@/lib/cms/getters";
+import { sortProjectsByOrder } from "@/lib/cms/projects";
 import ProjectsPageContent, {
   type ProjectsListPayload,
 } from "@/components/site/ProjectsPageContent";
@@ -30,9 +31,8 @@ export default async function ProjectsPage({
     | Promise<{ type?: string | string[] }>;
 }) {
   const resolvedSearchParams = await Promise.resolve(searchParams ?? {});
-  const doc = await getSitePage("projects");
+  const [doc, payload] = await Promise.all([getSitePage("projects"), getProjectsListPayload()]);
   if (!doc) notFound();
-  const payload = doc.payload as ProjectsListPayload;
   const rawType = Array.isArray(resolvedSearchParams.type)
     ? resolvedSearchParams.type[0]
     : resolvedSearchParams.type;
@@ -40,8 +40,8 @@ export default async function ProjectsPage({
   const filteredPayload: ProjectsListPayload = activeType
     ? {
         ...payload,
-        projects: payload.projects.filter((project) =>
-          normalizeProjectType(project.type) === activeType
+        projects: sortProjectsByOrder(
+          payload.projects.filter((project) => normalizeProjectType(project.type) === activeType)
         ),
       }
     : payload;

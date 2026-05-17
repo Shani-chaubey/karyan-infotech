@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEnquiry } from "@/components/enquiry/EnquiryProvider";
 import SiteBrandLogo from "@/components/layout/SiteBrandLogo";
+import FooterSocialLink from "@/components/layout/FooterSocialLink";
 import type { SiteFooterPayload } from "@/lib/cms/types";
 
 export default function FooterClient({
@@ -20,7 +21,7 @@ export default function FooterClient({
 
   return (
     <footer className="border-t border-theme-bg-soft bg-theme-bg text-theme-on-bg-muted">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+      <div className="mx-auto max-w-7xl px-4 pt-14 pb-4 sm:px-6 lg:px-8 lg:pt-16 lg:pb-4">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
             <SiteBrandLogo
@@ -39,7 +40,10 @@ export default function FooterClient({
             <ul className="mt-5 space-y-2.5 text-sm">
               {footer.explore.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="transition hover:text-theme-on-bg">
+                  <Link
+                    href={item.href}
+                    className="transition hover:text-theme-on-bg"
+                  >
                     {item.label}
                   </Link>
                 </li>
@@ -54,7 +58,10 @@ export default function FooterClient({
             <ul className="mt-5 space-y-2.5 text-sm">
               {footer.residential.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="transition hover:text-theme-on-bg">
+                  <Link
+                    href={item.href}
+                    className="transition hover:text-theme-on-bg"
+                  >
                     {item.label}
                   </Link>
                 </li>
@@ -66,7 +73,10 @@ export default function FooterClient({
             <ul className="mt-5 space-y-2.5 text-sm">
               {footer.commercial.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="transition hover:text-theme-on-bg">
+                  <Link
+                    href={item.href}
+                    className="transition hover:text-theme-on-bg"
+                  >
                     {item.label}
                   </Link>
                 </li>
@@ -97,7 +107,10 @@ export default function FooterClient({
                 </button>
               </li>
               <li>
-                <Link href="/contact" className="transition hover:text-theme-on-bg">
+                <Link
+                  href="/contact"
+                  className="transition hover:text-theme-on-bg"
+                >
                   Contact &amp; map
                 </Link>
               </li>
@@ -105,43 +118,37 @@ export default function FooterClient({
             <p className="mt-8 text-[11px] font-bold uppercase tracking-[0.2em] text-theme-on-bg-subtle">
               Social
             </p>
-            <ul className="mt-4 flex flex-wrap gap-4 text-sm">
+            <ul className="mt-4 flex flex-wrap gap-3">
               {footer.social.map((s) => (
                 <li key={s.href}>
-                  <a
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition hover:text-theme-on-bg"
-                  >
-                    {s.label}
-                  </a>
+                  <FooterSocialLink label={s.label} href={s.href} iconSrc={s.iconSrc} />
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-6 border-t border-theme-bg-soft pt-8 text-base leading-relaxed text-theme-on-bg-subtle lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+        <div className="mt-4 flex flex-col gap-6 border-t border-theme-bg-soft pt-8 text-base leading-relaxed text-theme-on-bg-subtle lg:gap-4">
           <div className="min-w-0 flex-1 space-y-3">
-            <p>© {year} {footer.legalLine}</p>
             {footer.disclaimerExtra ? (
-              <p className="max-w-3xl">{footer.disclaimerExtra}</p>
+              <p className="max-w-3xl text-xs">{footer.disclaimerExtra}</p>
             ) : null}
           </div>
-          <div className="flex shrink-0 flex-col gap-3 lg:items-end">
-            <span className="text-base font-medium text-theme-on-bg-subtle">
+          <div className="text-xs flex shrink-0 gap-1 items-center w-full">
+            <p>
+              © {year} {footer.legalLine}
+            </p>
+            <span className=" flex items-center gap-1 text-theme-on-bg-subtle">
               Designed and developed by
+              <Image
+                src="/images/sysneticindialogo.png"
+                alt="Sysnetic India — Serves your purpose better"
+                width={160}
+                height={40}
+                className="h-9 w-auto max-w-[min(100%,220px)] object-contain object-left opacity-95 transition-opacity hover:opacity-100 sm:h-10 lg:object-right"
+              />
             </span>
-            <Image
-              src="/images/sysneticindialogo.png"
-              alt="Sysnetic India — Serves your purpose better"
-              width={220}
-              height={56}
-              className="h-9 w-auto max-w-[min(100%,220px)] object-contain object-left opacity-95 transition-opacity hover:opacity-100 sm:h-10 lg:object-right"
-            />
           </div>
-          
         </div>
       </div>
     </footer>

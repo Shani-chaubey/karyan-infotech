@@ -3,7 +3,7 @@ import Image from "next/image";
 import PageHeader from "@/components/layout/PageHeader";
 import CTASection from "@/components/shared/CTASection";
 import ContactForm from "@/components/shared/ContactForm";
-import { Building2, CheckCircle2, Download } from "lucide-react";
+import { Building2, CheckCircle2, Download, ShieldCheck } from "lucide-react";
 import type { ProjectPayload } from "@/lib/cms/types";
 import { getLucideIcon, projectIcon } from "@/lib/cms/icons";
 import ProjectVideoPlayer from "@/components/projects/ProjectVideoPlayer";
@@ -21,6 +21,7 @@ export function projectMetadata(data: ProjectPayload): Metadata {
 }
 
 export default function ProjectPageView({ data }: { data: ProjectPayload }) {
+  const reraNo = data.rera?.trim() ?? "";
   const {
     header,
     investmentHighlights,
@@ -48,6 +49,31 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
     <>
       <SeoJsonLd raw={data.seo?.schemaJsonLd} />
       <PageHeader title={header.title} breadcrumbs={header.breadcrumbs} bgImage={header.bgImage} />
+
+      {reraNo ? (
+        <section
+          className="relative overflow-hidden border-y-2 border-[#c9a84c]/50 bg-gradient-to-r from-[#fff9eb] via-white to-[#fff9eb] py-6 shadow-[0_8px_32px_-12px_rgba(201,168,76,0.35)]"
+          aria-label="RERA registration number"
+        >
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.12]"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(-12deg, transparent, transparent 12px, rgba(201,168,76,0.4) 12px, rgba(201,168,76,0.4) 13px)",
+            }}
+            aria-hidden
+          />
+          <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 sm:flex-row sm:justify-center sm:gap-6 sm:px-6 lg:px-8">
+            <span className="inline-flex shrink-0 items-center gap-2 rounded-full border-2 border-[#c9a84c] bg-theme-bg px-5 py-2 text-[11px] font-bold uppercase tracking-[0.22em] text-theme-on-bg shadow-md">
+              <ShieldCheck className="h-4 w-4 shrink-0" aria-hidden />
+              RERA Registration No.
+            </span>
+            <p className="rounded-lg border border-[#c9a84c]/35 bg-white/90 px-5 py-2.5 text-center font-mono text-base font-bold tracking-wide text-[#1a1a2e] shadow-sm ring-2 ring-[#c9a84c]/20 sm:text-lg">
+              {reraNo}
+            </p>
+          </div>
+        </section>
+      ) : null}
 
       <section className="bg-lux-ivory py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -204,6 +230,7 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
                     <ProjectVideoPlayer
                       src={videoSection.videoUrl}
                       poster={videoSection.posterImage?.trim() || undefined}
+                      title={videoSection.title?.trim() || "Project video"}
                     />
                   </div>
                 </>

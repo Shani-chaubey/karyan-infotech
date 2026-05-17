@@ -24,6 +24,7 @@ export const DEFAULT_PROJECT_PAGES: {
   {
     slug: "karyan-square",
     payload: {
+      order: 4,
       metadata: {
         title: "Karyan Square | Retail Shops & Office Spaces",
         description:
@@ -113,6 +114,7 @@ export const DEFAULT_PROJECT_PAGES: {
   {
     slug: "karyan-citywalk",
     payload: {
+      order: 2,
       metadata: {
         title: "Karyan CityWalk | High Street Retail Project",
         description:
@@ -220,6 +222,7 @@ export const DEFAULT_PROJECT_PAGES: {
   {
     slug: "karyan-trevana",
     payload: {
+      order: 1,
       metadata: {
         title: "Karyan Trevana | Premium 3 & 4 BHK Residences",
         description:
@@ -322,6 +325,7 @@ export const DEFAULT_PROJECT_PAGES: {
   {
     slug: "karyan-avenue-iv",
     payload: {
+      order: 3,
       metadata: {
         title: "Karyan Avenue IV | First Mall at Wave City",
         description:

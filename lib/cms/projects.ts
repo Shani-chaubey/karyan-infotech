@@ -1,6 +1,71 @@
 import type { ProjectsListPayload } from "@/components/site/ProjectsPageContent";
 import type { ProjectPayload } from "@/lib/cms/types";
 
+export type ProjectListCard = ProjectsListPayload["projects"][number];
+
+/** Parse display order; unknown/missing sorts last. */
+export function parseProjectOrder(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const n = Number(value);
+    if (Number.isFinite(n)) return n;
+  }
+  return 9999;
+}
+
+export function sortProjectsByOrder<T extends { order?: number; title?: string }>(
+  projects: T[]
+): T[] {
+  return [...projects].sort((a, b) => {
+    const diff = parseProjectOrder(a.order) - parseProjectOrder(b.order);
+    if (diff !== 0) return diff;
+    return (a.title ?? "").localeCompare(b.title ?? "", undefined, { sensitivity: "base" });
+  });
+}
+
+export type ProjectListingFieldsBySlug = Map<
+  string,
+  { order?: number; rera?: string }
+>;
+
+/** Merge order & RERA from project detail pages, then sort. */
+export function applyProjectListingFields<T extends ProjectListCard>(
+  projects: T[],
+  fieldsBySlug: ProjectListingFieldsBySlug
+): T[] {
+  const enriched = projects.map((project) => {
+    const slug = slugFromProjectHref(project.href);
+    const fromPage = slug ? fieldsBySlug.get(slug) : undefined;
+    if (!fromPage) return project;
+
+    let next = { ...project };
+    const order =
+      typeof project.order === "number" && Number.isFinite(project.order)
+        ? project.order
+        : fromPage.order;
+    if (order !== undefined) next = { ...next, order };
+
+    const pageRera = fromPage.rera?.trim();
+    if (pageRera) next = { ...next, rera: pageRera };
+    else if (!next.rera?.trim() && fromPage.rera !== undefined) {
+      next = { ...next, rera: fromPage.rera };
+    }
+
+    return next;
+  });
+  return sortProjectsByOrder(enriched);
+}
+
+/** @deprecated Use applyProjectListingFields */
+export function applyProjectOrders<T extends ProjectListCard>(
+  projects: T[],
+  orderBySlug: Map<string, number>
+): T[] {
+  const fieldsBySlug: ProjectListingFieldsBySlug = new Map();
+  for (const [slug, order] of orderBySlug) fieldsBySlug.set(slug, { order });
+  return applyProjectListingFields(projects, fieldsBySlug);
+}
+
 /** Lowercase URL segment: letters, numbers, hyphens only (e.g. karyan-9). */
 export function normalizeProjectSlug(raw: string): string {
   return raw
@@ -57,8 +122,9 @@ export function collectProjectsFromListing(payload: ProjectsListPayload): {
   label: string;
   blurb: string;
   type: string;
+  order: number;
 }[] {
-  return payload.projects
+  return sortProjectsByOrder(payload.projects)
     .map((project) => {
       const slug = slugFromProjectHref(project.href);
       if (!slug) return null;
@@ -67,9 +133,13 @@ export function collectProjectsFromListing(payload: ProjectsListPayload): {
         label: project.title?.trim() || slug,
         blurb: project.description?.trim() || `${project.type} project`,
         type: project.type?.trim() || "project",
+        order: parseProjectOrder(project.order),
       };
     })
-    .filter((row): row is { slug: string; label: string; blurb: string; type: string } => !!row);
+    .filter(
+      (row): row is { slug: string; label: string; blurb: string; type: string; order: number } =>
+        !!row
+    );
 }
 
 export function collectProjectTypes(payload: ProjectsListPayload): string[] {
@@ -83,8 +153,13 @@ export function collectProjectTypes(payload: ProjectsListPayload): string[] {
   return Array.from(seen.values());
 }
 
-export function buildDefaultProjectPayload(slug: string, title: string): ProjectPayload {
+export function buildDefaultProjectPayload(
+  slug: string,
+  title: string,
+  order?: number
+): ProjectPayload {
   return {
+    ...(order !== undefined ? { order } : {}),
     metadata: {
       title: `${title} | Karyan Project`,
       description: `${title} project details, specifications, gallery, and enquiry information.`,

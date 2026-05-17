@@ -6,6 +6,8 @@ import type { HomePayload } from "@/lib/cms/types";
 import { DEFAULT_HOME_PAYLOAD } from "@/lib/cms/defaults/homePayload";
 import { INDIA_PRESENCE_CITIES_SORTED } from "@/lib/cms/indiaPresenceCities";
 import { migrateLegacyHomePresence } from "@/lib/cms/migrateHomePresence";
+import { normalizeHomeLocation } from "@/lib/cms/normalizeHomeLocation";
+import { normalizeHomeSplitContact } from "@/lib/cms/normalizeHomeSplitContact";
 import { normalizePresenceCityIds } from "@/lib/cms/normalizePresenceCityIds";
 import {
   CmsField,
@@ -24,6 +26,7 @@ import {
   deepMerge,
   showAdminErrorToast,
 } from "./cms-ui";
+import BlogJoditEditor from "./BlogJoditEditor";
 import SeoFields from "./SeoFields";
 
 const HOME_SECTION_CATALOG: { id: string; label: string }[] = [
@@ -38,7 +41,7 @@ const HOME_SECTION_CATALOG: { id: string; label: string }[] = [
   { id: "location", label: "Location intelligence" },
   { id: "about", label: "About section" },
   { id: "journal", label: "Blog carousel" },
-  { id: "splitCta", label: "Call + Enquiry strip" },
+  { id: "splitCta", label: "Split contact" },
 ];
 
 export default function HomePortalForm() {
@@ -60,6 +63,8 @@ export default function HomePortalForm() {
         const withMigrated = migrateLegacyHomePresence(merged, raw);
         setData({
           ...withMigrated,
+          location: normalizeHomeLocation(withMigrated.location),
+          splitCta: normalizeHomeSplitContact(withMigrated.splitCta),
           presence: {
             ...withMigrated.presence,
             cityIds: normalizePresenceCityIds(withMigrated.presence.cityIds),
@@ -79,6 +84,8 @@ export default function HomePortalForm() {
   async function persistHome(nextData: HomePayload, savingLabel = "Saving…") {
     const normalized: HomePayload = {
       ...nextData,
+      location: normalizeHomeLocation(nextData.location),
+      splitCta: normalizeHomeSplitContact(nextData.splitCta),
       presence: {
         ...nextData.presence,
         cityIds: normalizePresenceCityIds(nextData.presence.cityIds),
@@ -1146,7 +1153,7 @@ export default function HomePortalForm() {
 
         <CmsSection
           title="Location story"
-          description="Corridor narrative, highlight bullets, and the corridor table."
+          description="Left narrative, highlight list, right card content, and enquiry buttons."
           where='Home page — "Location intelligence" band above amenities'
           defaultOpen={false}
         >
@@ -1176,56 +1183,85 @@ export default function HomePortalForm() {
               }
             />
           </CmsField>
-          <CmsField label="Corridors table title">
-            <CmsInput
-              value={data.location.corridorsTitle}
-              onChange={(e) =>
+          <CmsField
+            label="Highlight bullets (left column)"
+            hint="Rich list — bullet lists, bold labels, or short paragraphs."
+          >
+            <BlogJoditEditor
+              id="home-location-bullets"
+              variant="excerpt"
+              value={data.location.bulletsHtml ?? ""}
+              onChange={(html) =>
                 patch((d) => ({
                   ...d,
-                  location: { ...d.location, corridorsTitle: e.target.value },
+                  location: { ...d.location, bulletsHtml: html },
+                }))
+              }
+            />
+          </CmsField>
+          <CmsField
+            label="Right card content"
+            hint="Title, corridor table, or any copy for the card on the right."
+          >
+            <BlogJoditEditor
+              id="home-location-corridors"
+              value={data.location.corridorsHtml ?? ""}
+              onChange={(html) =>
+                patch((d) => ({
+                  ...d,
+                  location: { ...d.location, corridorsHtml: html },
                 }))
               }
             />
           </CmsField>
           <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-            Highlight bullets
+            Enquiry buttons (right card)
+          </p>
+          <p className="text-xs text-slate-500">
+            Each button opens the site enquiry modal. Optional project value pre-selects the project in the form.
           </p>
           <div className="space-y-4">
-            {data.location.bullets.map((b, i) => (
+            {(data.location.ctaButtons ?? []).map((btn, i) => (
               <CmsItemCard
                 key={i}
-                title={`Bullet ${i + 1}`}
+                title={`Button ${i + 1}`}
                 onRemove={() =>
                   patch((d) => ({
                     ...d,
                     location: {
                       ...d.location,
-                      bullets: d.location.bullets.filter((_, j) => j !== i),
+                      ctaButtons: (d.location.ctaButtons ?? []).filter((_, j) => j !== i),
                     },
                   }))
                 }
               >
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <CmsField label="Icon name">
+                  <CmsField label="Button label">
                     <CmsInput
-                      value={b.icon}
+                      value={btn.label}
                       onChange={(e) =>
                         patch((d) => {
-                          const bullets = [...d.location.bullets];
-                          bullets[i] = { ...bullets[i], icon: e.target.value };
-                          return { ...d, location: { ...d.location, bullets } };
+                          const ctaButtons = [...(d.location.ctaButtons ?? [])];
+                          ctaButtons[i] = { ...ctaButtons[i], label: e.target.value };
+                          return { ...d, location: { ...d.location, ctaButtons } };
                         })
                       }
                     />
                   </CmsField>
-                  <CmsField label="Text">
+                  <CmsField
+                    label="Pre-select project (optional)"
+                    hint="Matches enquiry dropdown values, e.g. trevana, citywalk"
+                  >
                     <CmsInput
-                      value={b.text}
+                      value={btn.project ?? ""}
                       onChange={(e) =>
                         patch((d) => {
-                          const bullets = [...d.location.bullets];
-                          bullets[i] = { ...bullets[i], text: e.target.value };
-                          return { ...d, location: { ...d.location, bullets } };
+                          const ctaButtons = [...(d.location.ctaButtons ?? [])];
+                          ctaButtons[i] = {
+                            ...ctaButtons[i],
+                            project: e.target.value.trim() || undefined,
+                          };
+                          return { ...d, location: { ...d.location, ctaButtons } };
                         })
                       }
                     />
@@ -1239,72 +1275,12 @@ export default function HomePortalForm() {
                   ...d,
                   location: {
                     ...d.location,
-                    bullets: [...d.location.bullets, { icon: "MapPin", text: "" }],
+                    ctaButtons: [...(d.location.ctaButtons ?? []), { label: "Enquire now" }],
                   },
                 }))
               }
             >
-              + Add bullet
-            </CmsGhostButton>
-          </div>
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-            Corridor rows
-          </p>
-          <div className="space-y-4">
-            {data.location.corridors.map((c, i) => (
-              <CmsItemCard
-                key={i}
-                title={`Row ${i + 1}`}
-                onRemove={() =>
-                  patch((d) => ({
-                    ...d,
-                    location: {
-                      ...d.location,
-                      corridors: d.location.corridors.filter((_, j) => j !== i),
-                    },
-                  }))
-                }
-              >
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <CmsField label="Corridor name">
-                    <CmsInput
-                      value={c.corridor}
-                      onChange={(e) =>
-                        patch((d) => {
-                          const corridors = [...d.location.corridors];
-                          corridors[i] = { ...corridors[i], corridor: e.target.value };
-                          return { ...d, location: { ...d.location, corridors } };
-                        })
-                      }
-                    />
-                  </CmsField>
-                  <CmsField label="Projects text">
-                    <CmsInput
-                      value={c.projects}
-                      onChange={(e) =>
-                        patch((d) => {
-                          const corridors = [...d.location.corridors];
-                          corridors[i] = { ...corridors[i], projects: e.target.value };
-                          return { ...d, location: { ...d.location, corridors } };
-                        })
-                      }
-                    />
-                  </CmsField>
-                </div>
-              </CmsItemCard>
-            ))}
-            <CmsGhostButton
-              onClick={() =>
-                patch((d) => ({
-                  ...d,
-                  location: {
-                    ...d.location,
-                    corridors: [...d.location.corridors, { corridor: "", projects: "" }],
-                  },
-                }))
-              }
-            >
-              + Add corridor row
+              + Add enquiry button
             </CmsGhostButton>
           </div>
         </CmsSection>
@@ -1571,111 +1547,273 @@ export default function HomePortalForm() {
         </CmsSection>
 
         <CmsSection
-          title="Split contact strip"
-          description="Phone block on the left and enquiry prompt on the right."
-          where="Home page — two-column strip above the final banner"
+          title="Split contact"
+          description="Sales gallery video or image carousel, then social, phone, WhatsApp, and enquiry buttons."
+          where="Home page — media strip with contact bar (matches site mockup)"
           defaultOpen={false}
         >
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                Left column — phone
-              </p>
-              <CmsField label="Eyebrow">
-                <CmsInput
-                  value={data.splitCta.leftEyebrow}
-                  onChange={(e) =>
-                    patch((d) => ({
-                      ...d,
-                      splitCta: { ...d.splitCta, leftEyebrow: e.target.value },
-                    }))
+          <CmsField
+            label="Video URL (optional)"
+            hint="YouTube, Vimeo, or direct .mp4. When set, gallery images are hidden on the site."
+          >
+            <CmsInput
+              value={data.splitCta.videoSrc}
+              onChange={(e) =>
+                patch((d) => ({
+                  ...d,
+                  splitCta: { ...d.splitCta, videoSrc: e.target.value },
+                }))
+              }
+              placeholder="https://…"
+            />
+          </CmsField>
+          <CmsField label="Video poster image (optional)" hint="Thumbnail before play — for file/MP4 videos.">
+            <CmsImageUpload
+              value={data.splitCta.videoPoster ?? ""}
+              onChange={(url) =>
+                patch((d) => ({
+                  ...d,
+                  splitCta: { ...d.splitCta, videoPoster: url || undefined },
+                }))
+              }
+            />
+          </CmsField>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            Gallery images (when no video)
+          </p>
+          <div className="space-y-4">
+            {data.splitCta.galleryImages.map((img, i) => (
+              <CmsItemCard
+                key={i}
+                title={`Slide ${i + 1}`}
+                onRemove={() =>
+                  patch((d) => ({
+                    ...d,
+                    splitCta: {
+                      ...d.splitCta,
+                      galleryImages: d.splitCta.galleryImages.filter((_, j) => j !== i),
+                    },
+                  }))
+                }
+              >
+                <CmsImageUpload
+                  value={img.src}
+                  onChange={(url) =>
+                    patch((d) => {
+                      const galleryImages = [...d.splitCta.galleryImages];
+                      galleryImages[i] = { ...galleryImages[i], src: url };
+                      return { ...d, splitCta: { ...d.splitCta, galleryImages } };
+                    })
                   }
                 />
-              </CmsField>
-              <CmsField label="Title">
-                <CmsInput
-                  value={data.splitCta.leftTitle}
-                  onChange={(e) =>
-                    patch((d) => ({
-                      ...d,
-                      splitCta: { ...d.splitCta, leftTitle: e.target.value },
-                    }))
-                  }
-                />
-              </CmsField>
-              <CmsField label="Phone number (display)">
-                <CmsInput
-                  value={data.splitCta.phone}
-                  onChange={(e) =>
-                    patch((d) => ({
-                      ...d,
-                      splitCta: { ...d.splitCta, phone: e.target.value },
-                    }))
-                  }
-                />
-              </CmsField>
-              <CmsField label="Phone link" hint="tel:+91…">
-                <CmsInput
-                  value={data.splitCta.phoneHref}
-                  onChange={(e) =>
-                    patch((d) => ({
-                      ...d,
-                      splitCta: { ...d.splitCta, phoneHref: e.target.value },
-                    }))
-                  }
-                />
-              </CmsField>
-              <CmsField label="Hours line">
-                <CmsTextarea
-                  value={data.splitCta.hours}
-                  onChange={(e) =>
-                    patch((d) => ({
-                      ...d,
-                      splitCta: { ...d.splitCta, hours: e.target.value },
-                    }))
-                  }
-                  className="min-h-[72px]"
-                />
-              </CmsField>
-            </div>
-            <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                Right column — enquiry
-              </p>
-              <CmsField label="Title">
-                <CmsInput
-                  value={data.splitCta.rightTitle}
-                  onChange={(e) =>
-                    patch((d) => ({
-                      ...d,
-                      splitCta: { ...d.splitCta, rightTitle: e.target.value },
-                    }))
-                  }
-                />
-              </CmsField>
-              <CmsField label="Body">
-                <CmsTextarea
-                  value={data.splitCta.rightBody}
-                  onChange={(e) =>
-                    patch((d) => ({
-                      ...d,
-                      splitCta: { ...d.splitCta, rightBody: e.target.value },
-                    }))
-                  }
-                />
-              </CmsField>
-              <CmsField label="Button label">
-                <CmsInput
-                  value={data.splitCta.rightCtaLabel}
-                  onChange={(e) =>
-                    patch((d) => ({
-                      ...d,
-                      splitCta: { ...d.splitCta, rightCtaLabel: e.target.value },
-                    }))
-                  }
-                />
-              </CmsField>
-            </div>
+                <CmsField label="Alt text">
+                  <CmsInput
+                    value={img.alt}
+                    onChange={(e) =>
+                      patch((d) => {
+                        const galleryImages = [...d.splitCta.galleryImages];
+                        galleryImages[i] = { ...galleryImages[i], alt: e.target.value };
+                        return { ...d, splitCta: { ...d.splitCta, galleryImages } };
+                      })
+                    }
+                  />
+                </CmsField>
+              </CmsItemCard>
+            ))}
+            <CmsGhostButton
+              onClick={() =>
+                patch((d) => ({
+                  ...d,
+                  splitCta: {
+                    ...d.splitCta,
+                    galleryImages: [...d.splitCta.galleryImages, { src: "", alt: "" }],
+                  },
+                }))
+              }
+            >
+              + Add gallery slide
+            </CmsGhostButton>
+          </div>
+          <p className="mt-6 text-xs font-bold uppercase tracking-wider text-slate-500">
+            Social links
+          </p>
+          <div className="space-y-4">
+            {data.splitCta.social.map((s, i) => (
+              <CmsItemCard
+                key={i}
+                title={`Network ${i + 1}`}
+                onRemove={() =>
+                  patch((d) => ({
+                    ...d,
+                    splitCta: {
+                      ...d.splitCta,
+                      social: d.splitCta.social.filter((_, j) => j !== i),
+                    },
+                  }))
+                }
+              >
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <CmsField label="Label" hint="e.g. Instagram — used for icon on site.">
+                    <CmsInput
+                      value={s.label}
+                      onChange={(e) =>
+                        patch((d) => {
+                          const social = [...d.splitCta.social];
+                          social[i] = { ...social[i], label: e.target.value };
+                          return { ...d, splitCta: { ...d.splitCta, social } };
+                        })
+                      }
+                    />
+                  </CmsField>
+                  <CmsField label="URL">
+                    <CmsInput
+                      value={s.href}
+                      onChange={(e) =>
+                        patch((d) => {
+                          const social = [...d.splitCta.social];
+                          social[i] = { ...social[i], href: e.target.value };
+                          return { ...d, splitCta: { ...d.splitCta, social } };
+                        })
+                      }
+                    />
+                  </CmsField>
+                </div>
+                <CmsField label="Custom icon (optional)">
+                  <CmsImageUpload
+                    value={s.iconSrc ?? ""}
+                    onChange={(url) =>
+                      patch((d) => {
+                        const social = [...d.splitCta.social];
+                        social[i] = { ...social[i], iconSrc: url || undefined };
+                        return { ...d, splitCta: { ...d.splitCta, social } };
+                      })
+                    }
+                  />
+                </CmsField>
+              </CmsItemCard>
+            ))}
+            <CmsGhostButton
+              onClick={() =>
+                patch((d) => ({
+                  ...d,
+                  splitCta: {
+                    ...d.splitCta,
+                    social: [...d.splitCta.social, { label: "", href: "" }],
+                  },
+                }))
+              }
+            >
+              + Add social link
+            </CmsGhostButton>
+          </div>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <CmsField label="Phone (display)">
+              <CmsInput
+                value={data.splitCta.phone}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    splitCta: { ...d.splitCta, phone: e.target.value },
+                  }))
+                }
+              />
+            </CmsField>
+            <CmsField label="Phone link" hint="tel:+91…">
+              <CmsInput
+                value={data.splitCta.phoneHref}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    splitCta: { ...d.splitCta, phoneHref: e.target.value },
+                  }))
+                }
+              />
+            </CmsField>
+            <CmsField label="WhatsApp (display)">
+              <CmsInput
+                value={data.splitCta.whatsapp}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    splitCta: { ...d.splitCta, whatsapp: e.target.value },
+                  }))
+                }
+              />
+            </CmsField>
+            <CmsField label="WhatsApp link" hint="https://wa.me/91…">
+              <CmsInput
+                value={data.splitCta.whatsappHref}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    splitCta: { ...d.splitCta, whatsappHref: e.target.value },
+                  }))
+                }
+              />
+            </CmsField>
+          </div>
+          <p className="mt-6 text-xs font-bold uppercase tracking-wider text-slate-500">
+            Enquiry buttons
+          </p>
+          <div className="space-y-4">
+            {data.splitCta.ctaButtons.map((btn, i) => (
+              <CmsItemCard
+                key={i}
+                title={`Button ${i + 1}`}
+                onRemove={() =>
+                  patch((d) => ({
+                    ...d,
+                    splitCta: {
+                      ...d.splitCta,
+                      ctaButtons: d.splitCta.ctaButtons.filter((_, j) => j !== i),
+                    },
+                  }))
+                }
+              >
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <CmsField label="Button label">
+                    <CmsInput
+                      value={btn.label}
+                      onChange={(e) =>
+                        patch((d) => {
+                          const ctaButtons = [...d.splitCta.ctaButtons];
+                          ctaButtons[i] = { ...ctaButtons[i], label: e.target.value };
+                          return { ...d, splitCta: { ...d.splitCta, ctaButtons } };
+                        })
+                      }
+                    />
+                  </CmsField>
+                  <CmsField label="Pre-select project (optional)">
+                    <CmsInput
+                      value={btn.project ?? ""}
+                      onChange={(e) =>
+                        patch((d) => {
+                          const ctaButtons = [...d.splitCta.ctaButtons];
+                          ctaButtons[i] = {
+                            ...ctaButtons[i],
+                            project: e.target.value.trim() || undefined,
+                          };
+                          return { ...d, splitCta: { ...d.splitCta, ctaButtons } };
+                        })
+                      }
+                    />
+                  </CmsField>
+                </div>
+              </CmsItemCard>
+            ))}
+            <CmsGhostButton
+              onClick={() =>
+                patch((d) => ({
+                  ...d,
+                  splitCta: {
+                    ...d.splitCta,
+                    ctaButtons: [...d.splitCta.ctaButtons, { label: "Enquire now" }],
+                  },
+                }))
+              }
+            >
+              + Add enquiry button
+            </CmsGhostButton>
           </div>
         </CmsSection>
 

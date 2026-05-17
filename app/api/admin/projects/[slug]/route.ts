@@ -31,6 +31,53 @@ function parsePutBody(raw: unknown): {
   return { payload: raw as ProjectPayload, nextSlug: "" };
 }
 
+async function syncListingOrder(slug: string, order: number | undefined): Promise<void> {
+  if (order === undefined || !Number.isFinite(order)) return;
+  const listingDoc = await SitePageModel.findOne({ slug: "projects" }).lean();
+  const rawPayload = listingDoc?.payload;
+  if (!rawPayload || typeof rawPayload !== "object" || Array.isArray(rawPayload)) return;
+  const pl = rawPayload as { projects?: { title?: string; href?: string; order?: number }[] };
+  const rows = [...(pl.projects ?? [])];
+  let changed = false;
+  for (let i = 0; i < rows.length; i++) {
+    const rowSlug = slugFromProjectHref(rows[i]?.href ?? "");
+    if (rowSlug === slug && rows[i].order !== order) {
+      rows[i] = { ...rows[i], order };
+      changed = true;
+      break;
+    }
+  }
+  if (changed) {
+    await SitePageModel.findOneAndUpdate(
+      { slug: "projects" },
+      { $set: { payload: { ...pl, projects: rows } } }
+    );
+  }
+}
+
+async function syncListingRera(slug: string, rera: string): Promise<void> {
+  const listingDoc = await SitePageModel.findOne({ slug: "projects" }).lean();
+  const rawPayload = listingDoc?.payload;
+  if (!rawPayload || typeof rawPayload !== "object" || Array.isArray(rawPayload)) return;
+  const pl = rawPayload as { projects?: { href?: string; rera?: string }[] };
+  const rows = [...(pl.projects ?? [])];
+  let changed = false;
+  for (let i = 0; i < rows.length; i++) {
+    const rowSlug = slugFromProjectHref(rows[i]?.href ?? "");
+    if (rowSlug === slug && (rows[i].rera ?? "") !== rera) {
+      rows[i] = { ...rows[i], rera };
+      changed = true;
+      break;
+    }
+  }
+  if (changed) {
+    await SitePageModel.findOneAndUpdate(
+      { slug: "projects" },
+      { $set: { payload: { ...pl, projects: rows } } }
+    );
+  }
+}
+
 async function syncListingTitle(slug: string, projectTitle: string): Promise<void> {
   if (!projectTitle) return;
   const listingDoc = await SitePageModel.findOne({ slug: "projects" }).lean();
@@ -111,6 +158,11 @@ export async function PUT(
 
   const projectTitle =
     typeof payload?.header?.title === "string" ? payload.header.title.trim() : "";
+  const projectOrder =
+    typeof payload?.order === "number" && Number.isFinite(payload.order)
+      ? payload.order
+      : undefined;
+  const projectRera = typeof payload?.rera === "string" ? payload.rera.trim() : "";
 
   const renameTo =
     requestedNext && requestedNext !== normalizedCurrent ? requestedNext : "";
@@ -135,6 +187,8 @@ export async function PUT(
 
     await syncListingHref(normalizedCurrent, renameTo);
     if (projectTitle) await syncListingTitle(renameTo, projectTitle);
+    if (projectOrder !== undefined) await syncListingOrder(renameTo, projectOrder);
+    await syncListingRera(renameTo, projectRera);
 
     revalidatePath(`/${normalizedCurrent}`);
     revalidatePath(`/${renameTo}`);
@@ -151,6 +205,8 @@ export async function PUT(
   );
 
   if (projectTitle) await syncListingTitle(normalizedCurrent, projectTitle);
+  if (projectOrder !== undefined) await syncListingOrder(normalizedCurrent, projectOrder);
+  await syncListingRera(normalizedCurrent, projectRera);
 
   revalidatePath(`/${normalizedCurrent}`);
   revalidatePath("/projects");

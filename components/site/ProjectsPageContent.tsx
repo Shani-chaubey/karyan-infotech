@@ -14,9 +14,13 @@ export type ProjectsListPayload = {
     image: string;
     href: string;
     type: string;
+    /** RERA registration — shown on cards instead of type. */
+    rera?: string;
     location: string;
     status: string;
     featured: boolean;
+    /** Display order (synced from project details; lower = first). */
+    order?: number;
   }[];
 };
 

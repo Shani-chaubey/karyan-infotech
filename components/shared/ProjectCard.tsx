@@ -12,6 +12,7 @@ interface ProjectCardProps {
   image: string;
   href: string;
   type: string;
+  rera?: string;
   location: string;
   status: string;
   featured?: boolean;
@@ -24,12 +25,13 @@ export default function ProjectCard({
   description,
   image,
   href,
-  type,
+  rera,
   location,
   status,
   imagePriority = false,
 }: ProjectCardProps) {
   const [imgSrc, setImgSrc] = useState(image || FALLBACK_IMAGE);
+  const reraLabel = rera?.trim();
 
   return (
     <Link
@@ -47,11 +49,13 @@ export default function ProjectCard({
           referrerPolicy="no-referrer"
           onError={() => setImgSrc(FALLBACK_IMAGE)}
         />
-        <div className="absolute top-3 left-3 flex gap-2">
-          <span className="bg-theme-bg px-2 py-1 text-xs font-bold uppercase text-theme-on-bg">
-            {type}
-          </span>
-        </div>
+        {reraLabel ? (
+          <div className="absolute top-3 left-3 flex max-w-[calc(100%-1.5rem)] gap-2">
+            <span className="bg-theme-bg px-2 py-1 text-[10px] font-bold leading-snug text-theme-on-bg sm:text-xs">
+              RERA: {reraLabel}
+            </span>
+          </div>
+        ) : null}
         <div className="absolute bottom-3 left-3">
           <span className="bg-theme-bg/85 px-2 py-1 text-xs font-semibold uppercase text-theme-on-bg">
             {status}

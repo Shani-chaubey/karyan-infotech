@@ -3,10 +3,12 @@ import { connectMongo } from "@/lib/mongodb";
 import { SiteSettingsModel } from "@/models/SiteSettings";
 import { HomeContentModel } from "@/models/HomeContent";
 import { ProjectPageModel } from "@/models/ProjectPage";
+import { ContentPageModel } from "@/models/ContentPage";
 import { BlogPostModel } from "@/models/BlogPost";
 import { SitePageModel } from "@/models/SitePage";
 import type {
   BlogPostPayload,
+  ContentPagePayload,
   HomePayload,
   HomePresenceBand,
   ProjectPayload,
@@ -19,7 +21,14 @@ import { DEFAULT_HOME_PAYLOAD } from "./defaults/homePayload";
 import { DEFAULT_BLOG_POSTS } from "./defaults/blogPosts";
 import { DEFAULT_SITE_PAGES } from "./defaults/sitePages";
 import { DEFAULT_PROJECT_PAGES } from "./defaults/projectsSeed";
-import { buildDefaultProjectPayload, slugFromProjectHref } from "./projects";
+import type { ProjectsListPayload } from "@/components/site/ProjectsPageContent";
+import {
+  applyProjectListingFields,
+  buildDefaultProjectPayload,
+  slugFromProjectHref,
+  sortProjectsByOrder,
+  type ProjectListingFieldsBySlug,
+} from "./projects";
 
 function defaultProject(slug: string): ProjectPayload | null {
   const row = DEFAULT_PROJECT_PAGES.find((p) => p.slug === slug);
@@ -200,6 +209,99 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPostPayload |
         p.href.endsWith(`/${normalized}`)
     ) ?? null
   );
+}
+
+function mergeProjectsListFromSitePage(
+  raw: Record<string, unknown> | undefined
+): ProjectsListPayload {
+  const fb = DEFAULT_SITE_PAGES.find((p) => p.slug === "projects")!
+    .payload as unknown as ProjectsListPayload;
+  if (!raw || typeof raw !== "object") return fb;
+  const projects = raw.projects;
+  return {
+    headerBgImage:
+      typeof raw.headerBgImage === "string" ? raw.headerBgImage : fb.headerBgImage,
+    headerHeading:
+      typeof raw.headerHeading === "string" ? raw.headerHeading : fb.headerHeading,
+    headerSubheading:
+      typeof raw.headerSubheading === "string" ? raw.headerSubheading : fb.headerSubheading,
+    eyebrow: typeof raw.eyebrow === "string" ? raw.eyebrow : fb.eyebrow,
+    title: typeof raw.title === "string" ? raw.title : fb.title,
+    subtitle: typeof raw.subtitle === "string" ? raw.subtitle : fb.subtitle,
+    projects:
+      Array.isArray(projects) && projects.length
+        ? (projects as ProjectsListPayload["projects"])
+        : fb.projects,
+  };
+}
+
+/** Projects listing for homepage and /projects — sorted by `order` from project detail pages. */
+export async function getProjectsListPayload(): Promise<ProjectsListPayload> {
+  const doc = await getSitePage("projects");
+  const payload = mergeProjectsListFromSitePage(
+    doc?.payload as Record<string, unknown> | undefined
+  );
+
+  try {
+    await connectMongo();
+    const docs = await ProjectPageModel.find().lean();
+    const fieldsBySlug: ProjectListingFieldsBySlug = new Map();
+    for (const row of docs) {
+      const pl = row.payload as ProjectPayload | undefined;
+      if (!pl) continue;
+      const entry: { order?: number; rera?: string } = {};
+      if (typeof pl.order === "number" && Number.isFinite(pl.order)) {
+        entry.order = pl.order;
+      }
+      if (typeof pl.rera === "string") entry.rera = pl.rera;
+      if (entry.order !== undefined || entry.rera !== undefined) {
+        fieldsBySlug.set(row.slug, entry);
+      }
+    }
+    return { ...payload, projects: applyProjectListingFields(payload.projects, fieldsBySlug) };
+  } catch {
+    return { ...payload, projects: sortProjectsByOrder(payload.projects) };
+  }
+}
+
+function mapContentPageDoc(doc: {
+  slug: string;
+  title: string;
+  body?: string;
+  metaTitle: string;
+  metaDescription: string;
+  seo?: unknown;
+}): ContentPagePayload {
+  return {
+    slug: doc.slug,
+    title: doc.title,
+    body: doc.body ?? "",
+    metaTitle: doc.metaTitle,
+    metaDescription: doc.metaDescription,
+    seo: (doc.seo as ContentPagePayload["seo"]) ?? undefined,
+  };
+}
+
+export async function getContentPages(): Promise<ContentPagePayload[]> {
+  try {
+    await connectMongo();
+    const rows = await ContentPageModel.find().sort({ title: 1 }).lean();
+    return rows.map(mapContentPageDoc);
+  } catch {
+    return [];
+  }
+}
+
+export async function getContentPageBySlug(slug: string): Promise<ContentPagePayload | null> {
+  const normalized = slug.trim().toLowerCase();
+  try {
+    await connectMongo();
+    const doc = await ContentPageModel.findOne({ slug: normalized }).lean();
+    if (doc) return mapContentPageDoc(doc);
+  } catch {
+    /* fall through */
+  }
+  return null;
 }
 
 export async function getSitePage(slug: string): Promise<{

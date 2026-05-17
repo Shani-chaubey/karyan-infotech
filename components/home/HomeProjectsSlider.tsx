@@ -35,11 +35,13 @@ function PortfolioStackCard({
           referrerPolicy="no-referrer"
           onError={() => setImgSrc(FALLBACK_IMAGE)}
         />
-        <div className="absolute left-3 top-3 flex flex-wrap gap-2 sm:left-4 sm:top-4">
-          <span className="rounded-full bg-theme-bg/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-theme-on-bg backdrop-blur">
-            {project.type}
-          </span>
-        </div>
+        {project.rera?.trim() ? (
+          <div className="absolute left-3 top-3 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-2 sm:left-4 sm:top-4">
+            <span className="rounded-full bg-theme-bg/90 px-3 py-1 text-[10px] font-bold leading-snug text-theme-on-bg backdrop-blur">
+              RERA: {project.rera.trim()}
+            </span>
+          </div>
+        ) : null}
         <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4">
           <span className="rounded-full bg-theme-bg/85 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-theme-on-bg backdrop-blur">
             {project.status}

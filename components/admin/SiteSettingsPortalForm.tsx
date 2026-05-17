@@ -1019,7 +1019,7 @@ export default function SiteSettingsPortalForm() {
                 }
               >
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <CmsField label="Label" hint="e.g. Instagram">
+                  <CmsField label="Label" hint="Used for accessibility; brand icon is shown on the site.">
                     <CmsInput
                       value={s.label}
                       onChange={(e) =>
@@ -1044,6 +1044,21 @@ export default function SiteSettingsPortalForm() {
                     />
                   </CmsField>
                 </div>
+                <CmsField
+                  label="Custom icon (optional)"
+                  hint="Leave empty to use the built-in brand icon from the label (Facebook, Instagram, etc.)."
+                >
+                  <CmsImageUpload
+                    value={s.iconSrc ?? ""}
+                    onChange={(url) =>
+                      patch((d) => {
+                        const social = [...d.footer.social];
+                        social[i] = { ...social[i], iconSrc: url || undefined };
+                        return { ...d, footer: { ...d.footer, social } };
+                      })
+                    }
+                  />
+                </CmsField>
               </CmsItemCard>
             ))}
             <CmsGhostButton
