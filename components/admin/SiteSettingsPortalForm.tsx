@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Globe, ImageIcon, LayoutGrid, Menu } from "lucide-react";
+import { Cookie, Globe, ImageIcon, LayoutGrid, Menu } from "lucide-react";
 import type { SiteSettingsBundle } from "@/lib/cms/types";
 import { DEFAULT_SITE_SETTINGS } from "@/lib/cms/defaults/siteSettings";
 import {
@@ -38,9 +38,18 @@ export default function SiteSettingsPortalForm() {
         const themeColors = j.themeColors ?? {};
         const pageHeader = j.pageHeader ?? {};
         const enquiryFloatPromo = j.enquiryFloatPromo ?? {};
+        const cookieConsent = j.cookieConsent ?? {};
         const merged = deepMerge(
           DEFAULT_SITE_SETTINGS as unknown as Record<string, unknown>,
-          { nav, footer, projectInterestOptions, themeColors, pageHeader, enquiryFloatPromo } as Record<string, unknown>
+          {
+            nav,
+            footer,
+            projectInterestOptions,
+            themeColors,
+            pageHeader,
+            enquiryFloatPromo,
+            cookieConsent,
+          } as Record<string, unknown>
         );
         setData(merged as SiteSettingsBundle);
       })
@@ -397,6 +406,85 @@ export default function SiteSettingsPortalForm() {
                     enquiryFloatPromo: { ...d.enquiryFloatPromo, imageAlt: e.target.value },
                   }))
                 }
+              />
+            </CmsField>
+          </div>
+        </CmsSection>
+      </CmsGroup>
+
+      <CmsGroup
+        icon={<Cookie className="h-4 w-4" />}
+        title="Disclaimer & cookie notice"
+        description="Bottom-left banner with accept or close; choice is remembered for 7 days."
+      >
+        <CmsSection
+          title="Cookie / disclaimer banner"
+          description="Shown on public pages until the visitor accepts or closes. Max width 400px, bottom-left."
+          where="Public site — fixed bottom-left card (not shown in admin)"
+          defaultOpen
+        >
+          <div className="flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+            <label className="flex cursor-pointer items-center gap-2 font-medium text-slate-800">
+              <input
+                type="checkbox"
+                checked={data.cookieConsent.enabled}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    cookieConsent: { ...d.cookieConsent, enabled: e.target.checked },
+                  }))
+                }
+                className="h-4 w-4 rounded border-slate-300"
+              />
+              Show on public site
+            </label>
+            <span className="text-xs text-slate-500">Consent stored in browser for 7 days</span>
+          </div>
+          <CmsField label="Heading">
+            <CmsInput
+              value={data.cookieConsent.heading}
+              onChange={(e) =>
+                patch((d) => ({
+                  ...d,
+                  cookieConsent: { ...d.cookieConsent, heading: e.target.value },
+                }))
+              }
+            />
+          </CmsField>
+          <CmsField label="Description">
+            <CmsTextarea
+              value={data.cookieConsent.description}
+              onChange={(e) =>
+                patch((d) => ({
+                  ...d,
+                  cookieConsent: { ...d.cookieConsent, description: e.target.value },
+                }))
+              }
+            />
+          </CmsField>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <CmsField label="Accept button label">
+              <CmsInput
+                value={data.cookieConsent.acceptLabel ?? ""}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    cookieConsent: { ...d.cookieConsent, acceptLabel: e.target.value },
+                  }))
+                }
+                placeholder="Accept"
+              />
+            </CmsField>
+            <CmsField label="Close button label">
+              <CmsInput
+                value={data.cookieConsent.closeLabel ?? ""}
+                onChange={(e) =>
+                  patch((d) => ({
+                    ...d,
+                    cookieConsent: { ...d.cookieConsent, closeLabel: e.target.value },
+                  }))
+                }
+                placeholder="Close"
               />
             </CmsField>
           </div>

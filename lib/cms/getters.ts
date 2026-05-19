@@ -46,13 +46,19 @@ async function loadSiteSettingsFromDb(): Promise<SiteSettingsBundle> {
       const hr = raw.pageHeader;
       const tr = raw.themeColors;
       const defPromo = DEFAULT_SITE_SETTINGS.enquiryFloatPromo;
+      const defConsent = DEFAULT_SITE_SETTINGS.cookieConsent;
       const defInterest = DEFAULT_SITE_SETTINGS.projectInterestOptions;
       const defHeader = DEFAULT_SITE_SETTINGS.pageHeader;
       const defTheme = DEFAULT_SITE_SETTINGS.themeColors;
+      const cc = raw.cookieConsent;
       const enquiryFloatPromo: SiteSettingsBundle["enquiryFloatPromo"] =
         pr && typeof pr === "object" && !Array.isArray(pr)
           ? { ...defPromo, ...(pr as Partial<typeof defPromo>) }
           : defPromo;
+      const cookieConsent: SiteSettingsBundle["cookieConsent"] =
+        cc && typeof cc === "object" && !Array.isArray(cc)
+          ? { ...defConsent, ...(cc as Partial<typeof defConsent>) }
+          : defConsent;
       const pageHeader: SiteSettingsBundle["pageHeader"] =
         hr && typeof hr === "object" && !Array.isArray(hr)
           ? { ...defHeader, ...(hr as Partial<typeof defHeader>) }
@@ -89,6 +95,7 @@ async function loadSiteSettingsFromDb(): Promise<SiteSettingsBundle> {
         themeColors,
         pageHeader,
         enquiryFloatPromo,
+        cookieConsent,
       };
     }
   } catch {

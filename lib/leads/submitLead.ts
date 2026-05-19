@@ -15,10 +15,19 @@ export type LeadInput = {
   mobile: string;
   project?: string;
   message?: string;
+  preferredDate?: string;
   pagePath?: string;
 };
 
-const MAX_LEN = { name: 200, email: 320, mobile: 80, project: 120, message: 8000, pagePath: 500 };
+const MAX_LEN = {
+  name: 200,
+  email: 320,
+  mobile: 80,
+  project: 120,
+  message: 8000,
+  preferredDate: 32,
+  pagePath: 500,
+};
 const ADMIN_RECIPIENTS = [
   "sales@globalrealtygroup.in",
   "amit.soam@globalrealtygroup.in",
@@ -96,6 +105,8 @@ async function sendToLeadApi(lead: {
   mobile: string;
   formType: string;
   project?: string;
+  preferredDate?: string;
+  message?: string;
 }) {
   const apiUrl = getLeadApiUrl();
   if (!isLeadApiEnabled()) {
@@ -103,12 +114,16 @@ async function sendToLeadApi(lead: {
     return;
   }
 
+  const remarkParts = [`Lead from ${lead.formType} Form - karyan website`];
+  if (lead.preferredDate) remarkParts.push(`Preferred visit date: ${lead.preferredDate}`);
+  if (lead.message) remarkParts.push(lead.message);
+
   const body = new URLSearchParams({
     Name: lead.name,
     ProjectName: getLeadProjectName(lead.project),
     City: "Gzb",
     Location: "NCR",
-    Remark: `Lead from ${lead.formType} Form - karyan website`,
+    Remark: remarkParts.join(" | "),
     Source: "karyan website",
     Email: lead.email,
     Mobile: lead.mobile,
@@ -131,6 +146,7 @@ async function sendEmails(lead: {
   mobile: string;
   project: string;
   message: string;
+  preferredDate: string;
   formType: string;
 }) {
   const transporter = getEmailTransporter();
@@ -143,6 +159,7 @@ async function sendEmails(lead: {
   const mobile = escapeHtml(lead.mobile);
   const project = escapeHtml(lead.project || "General");
   const message = escapeHtml(lead.message || "N/A");
+  const preferredDate = escapeHtml(lead.preferredDate || "N/A");
   const formType = escapeHtml(lead.formType);
 
   const adminEmailPromise = transporter.sendMail({
@@ -177,6 +194,7 @@ async function sendEmails(lead: {
                         <p style="margin:0 0 8px 0;font-size:14px;"><strong>Mobile:</strong> ${mobile}</p>
                         <p style="margin:0 0 8px 0;font-size:14px;"><strong>Email:</strong> ${email}</p>
                         <p style="margin:0 0 8px 0;font-size:14px;"><strong>Project:</strong> ${project}</p>
+                        <p style="margin:0 0 8px 0;font-size:14px;"><strong>Preferred visit date:</strong> ${preferredDate}</p>
                         <p style="margin:0 0 8px 0;font-size:14px;"><strong>Message:</strong> ${message}</p>
                         <p style="margin:0;font-size:13px;color:#6b7280;"><strong>Date:</strong> ${new Date().toLocaleString()}</p>
                       </td>
@@ -266,6 +284,7 @@ export function sanitizeLeadInput(body: Record<string, unknown>): LeadInput {
     mobile: trim(body.mobile, MAX_LEN.mobile),
     project: trim(body.project, MAX_LEN.project),
     message: trim(body.message, MAX_LEN.message),
+    preferredDate: trim(body.preferredDate, MAX_LEN.preferredDate),
     pagePath: trim(body.pagePath, MAX_LEN.pagePath),
   };
 }
@@ -283,6 +302,7 @@ export async function submitLead(rawLead: LeadInput) {
     mobile: rawLead.mobile,
     project: rawLead.project ?? "",
     message: rawLead.message ?? "",
+    preferredDate: rawLead.preferredDate ?? "",
     pagePath: rawLead.pagePath ?? "",
   });
 
@@ -294,6 +314,8 @@ export async function submitLead(rawLead: LeadInput) {
       mobile: rawLead.mobile,
       formType,
       project: rawLead.project,
+      preferredDate: rawLead.preferredDate,
+      message: rawLead.message,
     }),
     sendEmails({
       name: rawLead.name,
@@ -301,6 +323,7 @@ export async function submitLead(rawLead: LeadInput) {
       mobile: rawLead.mobile,
       project: rawLead.project ?? "",
       message: rawLead.message ?? "",
+      preferredDate: rawLead.preferredDate ?? "",
       formType,
     }),
   ];

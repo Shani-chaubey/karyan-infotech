@@ -13,6 +13,8 @@ const LeadSubmissionSchema = new Schema(
     mobile: { type: String, required: true, trim: true },
     project: { type: String, default: "" },
     message: { type: String, default: "" },
+    /** Preferred visit date from enquiry modal (Book a site visit tab). */
+    preferredDate: { type: String, default: "" },
     /** Optional path where the user submitted (e.g. /contact). */
     pagePath: { type: String, default: "" },
   },

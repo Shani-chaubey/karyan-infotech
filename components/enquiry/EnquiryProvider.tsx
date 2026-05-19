@@ -15,6 +15,8 @@ import type { SiteProjectInterestOption } from "@/lib/cms/types";
 export type OpenEnquiryOptions = {
   /** Matches ContactForm / modal select values: trevana, citywalk, square, avenue-iv, other */
   project?: string;
+  /** Do not move focus into the modal (e.g. opened from pointer hover). */
+  skipAutofocus?: boolean;
 };
 
 type EnquiryContextValue = {
@@ -47,9 +49,11 @@ export function EnquiryProvider({
 }) {
   const [isOpen, setOpen] = useState(false);
   const [defaultProject, setDefaultProject] = useState("");
+  const [skipAutofocus, setSkipAutofocus] = useState(false);
 
   const openEnquiry = useCallback((opts?: OpenEnquiryOptions) => {
     setDefaultProject(opts?.project ?? "");
+    setSkipAutofocus(opts?.skipAutofocus ?? false);
     setOpen(true);
   }, []);
 
@@ -76,6 +80,7 @@ export function EnquiryProvider({
         isOpen={isOpen}
         onClose={closeEnquiry}
         defaultProject={defaultProject}
+        skipAutofocus={skipAutofocus}
         logoSrc={brandLogoSrc}
         logoAlt={brandLogoAlt}
         projectOptions={projectOptions}
@@ -89,17 +94,28 @@ export function EnquiryTrigger({
   project,
   className = "",
   children,
+  openOnHover = false,
 }: {
   project?: string;
   className?: string;
   children: ReactNode;
+  /** Opens the modal on pointer hover (click still works for touch/keyboard). */
+  openOnHover?: boolean;
 }) {
-  const { openEnquiry } = useEnquiry();
+  const { openEnquiry, isOpen } = useEnquiry();
+
+  const projectOpts = project ? { project } : undefined;
+  const handleOpen = () => openEnquiry(projectOpts);
+  const handleOpenFromHover = () =>
+    openEnquiry({ ...projectOpts, skipAutofocus: true });
+
   return (
     <button
       type="button"
       className={className}
-      onClick={() => openEnquiry(project ? { project } : undefined)}
+      onClick={handleOpen}
+      onMouseEnter={openOnHover && !isOpen ? handleOpenFromHover : undefined}
+      onFocus={openOnHover && !isOpen ? handleOpen : undefined}
     >
       {children}
     </button>

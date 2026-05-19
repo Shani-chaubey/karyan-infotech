@@ -61,7 +61,7 @@ export default async function AdminLeadsPage() {
         </p>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-stone-200 bg-white shadow-[0_24px_60px_-40px_rgba(15,23,42,0.4)]">
-          <table className="min-w-[1020px] w-full border-collapse text-left text-sm">
+          <table className="min-w-[1120px] w-full border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-stone-200 bg-gradient-to-b from-stone-50 to-stone-100/90 text-xs font-bold uppercase tracking-wider text-stone-500">
                 <th className="whitespace-nowrap px-4 py-3">When (UTC)</th>
@@ -70,6 +70,7 @@ export default async function AdminLeadsPage() {
                 <th className="whitespace-nowrap px-4 py-3">Email</th>
                 <th className="whitespace-nowrap px-4 py-3">Mobile</th>
                 <th className="whitespace-nowrap px-4 py-3">Project</th>
+                <th className="whitespace-nowrap px-4 py-3">Visit date</th>
                 <th className="min-w-[220px] px-4 py-3">Message</th>
                 <th className="whitespace-nowrap px-4 py-3">Page</th>
               </tr>
@@ -104,6 +105,9 @@ export default async function AdminLeadsPage() {
                     </a>
                   </td>
                   <td className="px-4 py-3 text-stone-600">{row.project || "—"}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-stone-600">
+                    {row.preferredDate || "—"}
+                  </td>
                   <td className="max-w-[260px] px-4 py-3 text-stone-600">
                     <span className="line-clamp-4 whitespace-pre-wrap" title={row.message}>
                       {row.message || "—"}

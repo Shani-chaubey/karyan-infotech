@@ -124,10 +124,10 @@ export default function NavbarClient({
                           key={type}
                           href={typeHref(type)}
                           onClick={() => setDeskProjectsOpen(false)}
-                          className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-theme-fg transition hover:bg-lux-cream"
+                          className="flex capitalize items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-theme-fg transition hover:bg-lux-cream"
                         >
                           <Landmark className="h-4 w-4 shrink-0 text-lux-gold-dim" />
-                          {type}
+                          {type} Projects
                         </Link>
                       ))}
                     </div>

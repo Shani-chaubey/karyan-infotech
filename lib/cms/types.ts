@@ -73,6 +73,15 @@ export type SiteEnquiryFloatPromo = {
   imageAlt: string;
 };
 
+/** Bottom-left disclaimer / cookie notice with accept or dismiss. */
+export type SiteCookieConsent = {
+  enabled: boolean;
+  heading: string;
+  description: string;
+  acceptLabel?: string;
+  closeLabel?: string;
+};
+
 export type SiteThemeColors = {
   luxNavy: string;
   luxNavyMid: string;
@@ -113,6 +122,7 @@ export type SiteSettingsBundle = {
   themeColors: SiteThemeColors;
   pageHeader: SitePageHeaderDefaults;
   enquiryFloatPromo: SiteEnquiryFloatPromo;
+  cookieConsent: SiteCookieConsent;
 };
 
 export type HomeCapability = { title: string; text: string; icon: string };
@@ -251,6 +261,12 @@ export type ProjectPayload = {
     body: string;
     badges?: { icon: string; text: string }[];
   };
+  /** Location map section — shown when embed URL is set. */
+  mapSectionEyebrow?: string;
+  mapSectionTitle?: string;
+  mapIframeSrc?: string;
+  /** Accessible title for the embedded map iframe. */
+  mapTitle?: string;
   sidebarFormTitle: string;
   cta: {
     title: string;

@@ -10,11 +10,24 @@ export async function GET() {
   if (denied) return denied;
   await connectMongo();
   const doc = await SiteSettingsModel.findOne({ key: "default" }).lean();
-  if (!doc) return NextResponse.json({ nav: null, footer: null, projectInterestOptions: null, themeColors: null, pageHeader: null, enquiryFloatPromo: null });
+  if (!doc)
+    return NextResponse.json({
+      nav: null,
+      footer: null,
+      projectInterestOptions: null,
+      themeColors: null,
+      pageHeader: null,
+      enquiryFloatPromo: null,
+      cookieConsent: null,
+    });
   const promo =
     doc.enquiryFloatPromo && typeof doc.enquiryFloatPromo === "object"
       ? { ...DEFAULT_SITE_SETTINGS.enquiryFloatPromo, ...(doc.enquiryFloatPromo as object) }
       : DEFAULT_SITE_SETTINGS.enquiryFloatPromo;
+  const cookieConsent =
+    doc.cookieConsent && typeof doc.cookieConsent === "object"
+      ? { ...DEFAULT_SITE_SETTINGS.cookieConsent, ...(doc.cookieConsent as object) }
+      : DEFAULT_SITE_SETTINGS.cookieConsent;
   const pageHeader =
     doc.pageHeader && typeof doc.pageHeader === "object"
       ? { ...DEFAULT_SITE_SETTINGS.pageHeader, ...(doc.pageHeader as object) }
@@ -34,7 +47,15 @@ export async function GET() {
     doc.themeColors && typeof doc.themeColors === "object"
       ? { ...DEFAULT_SITE_SETTINGS.themeColors, ...(doc.themeColors as object) }
       : DEFAULT_SITE_SETTINGS.themeColors;
-  return NextResponse.json({ nav: doc.nav, footer: doc.footer, projectInterestOptions, themeColors, pageHeader, enquiryFloatPromo: promo });
+  return NextResponse.json({
+    nav: doc.nav,
+    footer: doc.footer,
+    projectInterestOptions,
+    themeColors,
+    pageHeader,
+    enquiryFloatPromo: promo,
+    cookieConsent,
+  });
 }
 
 export async function PUT(req: Request) {
@@ -48,6 +69,10 @@ export async function PUT(req: Request) {
     body.enquiryFloatPromo && typeof body.enquiryFloatPromo === "object"
       ? { ...DEFAULT_SITE_SETTINGS.enquiryFloatPromo, ...body.enquiryFloatPromo }
       : DEFAULT_SITE_SETTINGS.enquiryFloatPromo;
+  const cookieConsent =
+    body.cookieConsent && typeof body.cookieConsent === "object"
+      ? { ...DEFAULT_SITE_SETTINGS.cookieConsent, ...body.cookieConsent }
+      : DEFAULT_SITE_SETTINGS.cookieConsent;
   const pageHeader =
     body.pageHeader && typeof body.pageHeader === "object"
       ? { ...DEFAULT_SITE_SETTINGS.pageHeader, ...body.pageHeader }
@@ -70,7 +95,18 @@ export async function PUT(req: Request) {
   await connectMongo();
   await SiteSettingsModel.findOneAndUpdate(
     { key: "default" },
-    { $set: { key: "default", nav: body.nav, footer: body.footer, projectInterestOptions, themeColors, pageHeader, enquiryFloatPromo } },
+    {
+      $set: {
+        key: "default",
+        nav: body.nav,
+        footer: body.footer,
+        projectInterestOptions,
+        themeColors,
+        pageHeader,
+        enquiryFloatPromo,
+        cookieConsent,
+      },
+    },
     { upsert: true }
   );
   revalidateTag("site-settings", "max");

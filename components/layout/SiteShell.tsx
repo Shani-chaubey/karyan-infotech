@@ -4,6 +4,7 @@ import AosProvider from "@/components/layout/AosProvider";
 import CallNowFab from "@/components/layout/CallNowFab";
 import WhatsAppFab from "@/components/layout/WhatsAppFab";
 import EnquiryFloatPromo from "@/components/layout/EnquiryFloatPromo";
+import CookieConsentBanner from "@/components/layout/CookieConsentBanner";
 import NavbarClient from "@/components/layout/NavbarClient";
 import FooterClient from "@/components/layout/FooterClient";
 import type { SiteThemeColors } from "@/lib/cms/types";
@@ -72,6 +73,7 @@ export default async function SiteShell({
           />
           {/* <CallNowFab href={settings.nav.topBar.phoneHref} /> */}
           <EnquiryFloatPromo promo={settings.enquiryFloatPromo} />
+          <CookieConsentBanner config={settings.cookieConsent} />
         </div>
       </EnquiryProvider>
     </AosProvider>

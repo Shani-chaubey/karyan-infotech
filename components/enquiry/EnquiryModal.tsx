@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { X, Send, CheckCircle2 } from "lucide-react";
 import SiteBrandLogo from "@/components/layout/SiteBrandLogo";
@@ -23,6 +23,7 @@ type FormState = {
   email: string;
   mobile: string;
   project: string;
+  preferredDate: string;
   message: string;
 };
 
@@ -31,8 +32,13 @@ const initialForm: FormState = {
   email: "",
   mobile: "",
   project: "",
+  preferredDate: "",
   message: "",
 };
+
+function todayIsoDate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 const TAB_CONFIG: Record<
   EnquiryTab,
@@ -62,6 +68,7 @@ export default function EnquiryModal({
   isOpen,
   onClose,
   defaultProject = "",
+  skipAutofocus = false,
   logoSrc,
   logoAlt,
   projectOptions = PROJECT_OPTIONS_FALLBACK,
@@ -69,12 +76,12 @@ export default function EnquiryModal({
   isOpen: boolean;
   onClose: () => void;
   defaultProject?: string;
+  skipAutofocus?: boolean;
   logoSrc?: string;
   logoAlt?: string;
   projectOptions?: SiteProjectInterestOption[];
 }) {
   const panelId = useId();
-  const closeRef = useRef<HTMLButtonElement>(null);
   const [activeTab, setActiveTab] = useState<EnquiryTab>("agent");
   const [form, setForm] = useState<FormState>(initialForm);
   const [submitted, setSubmitted] = useState(false);
@@ -91,9 +98,12 @@ export default function EnquiryModal({
       setSubmitted(false);
       setErrors({});
     });
-    const t = window.setTimeout(() => closeRef.current?.focus(), 50);
+    if (skipAutofocus) return;
+    const t = window.setTimeout(() => {
+      document.getElementById("enquiry-name")?.focus({ preventScroll: true });
+    }, 50);
     return () => window.clearTimeout(t);
-  }, [isOpen, defaultProject]);
+  }, [isOpen, defaultProject, skipAutofocus]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -128,6 +138,9 @@ export default function EnquiryModal({
     if (!/^\d{10}$/.test(mobile)) {
       nextErrors.mobile = "Phone number must be exactly 10 digits.";
     }
+    if (activeTab === "site_visit" && !form.preferredDate) {
+      nextErrors.preferredDate = "Please choose your preferred visit date.";
+    }
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -149,6 +162,7 @@ export default function EnquiryModal({
         email: form.email.trim(),
         mobile: form.mobile.trim(),
         project: form.project,
+        preferredDate: activeTab === "site_visit" ? form.preferredDate : "",
         message,
         pagePath: typeof window !== "undefined" ? window.location.pathname : "",
       });
@@ -206,10 +220,9 @@ export default function EnquiryModal({
               <p className="mt-0.5 text-xs text-stone-600 sm:text-sm">{tabMeta.subtitle}</p>
             </div>
             <button
-              ref={closeRef}
               type="button"
               onClick={handleClose}
-              className="shrink-0 rounded-xl border border-stone-200/80 p-2 text-stone-500 transition hover:border-lux-gold/40 hover:bg-lux-cream hover:text-lux-navy"
+              className="shrink-0 rounded-xl border border-stone-200/80 p-2 text-stone-500 outline-none transition hover:border-lux-gold/40 hover:bg-lux-cream hover:text-lux-navy focus-visible:ring-2 focus-visible:ring-lux-gold/50 focus-visible:ring-offset-2"
               aria-label="Close"
             >
               <X className="h-5 w-5" />
@@ -229,7 +242,13 @@ export default function EnquiryModal({
                   type="button"
                   role="tab"
                   aria-selected={isActive}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => {
+                    setActiveTab(tab);
+                    if (tab === "agent") {
+                      setForm((prev) => ({ ...prev, preferredDate: "" }));
+                      setErrors((prev) => ({ ...prev, preferredDate: undefined }));
+                    }
+                  }}
                   className={`flex-1 rounded-md px-2 py-2 text-center text-[11px] font-semibold leading-snug transition sm:px-2.5 sm:text-xs ${
                     isActive
                       ? "bg-white text-lux-navy shadow-sm ring-1 ring-stone-200/90"
@@ -346,6 +365,27 @@ export default function EnquiryModal({
                   </select>
                 </div>
               </div>
+
+              {activeTab === "site_visit" ? (
+                <div>
+                  <label htmlFor="enquiry-preferred-date" className={labelClass}>
+                    Preferred visit date *
+                  </label>
+                  <input
+                    id="enquiry-preferred-date"
+                    name="preferredDate"
+                    type="date"
+                    required
+                    min={todayIsoDate()}
+                    value={form.preferredDate}
+                    onChange={handleChange}
+                    className={fieldClass}
+                  />
+                  {errors.preferredDate ? (
+                    <p className="mt-1 text-xs text-red-500">{errors.preferredDate}</p>
+                  ) : null}
+                </div>
+              ) : null}
 
               <div>
                 <label htmlFor="enquiry-message" className={labelClass}>

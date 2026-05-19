@@ -129,23 +129,18 @@ export default function FooterClient({
         </div>
 
         <div className="mt-4 flex flex-col gap-6 border-t border-theme-bg-soft pt-8 text-base leading-relaxed text-theme-on-bg-subtle lg:gap-4">
-          <div className="min-w-0 flex-1 space-y-3">
-            {footer.disclaimerExtra ? (
-              <p className="max-w-3xl text-xs">{footer.disclaimerExtra}</p>
-            ) : null}
-          </div>
-          <div className="text-xs flex shrink-0 gap-1 items-center w-full">
-            <p>
+          <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-2 text-xs text-theme-on-bg-subtle">
+            <p className="shrink-0">
               © {year} {footer.legalLine}
             </p>
-            <span className=" flex items-center gap-1 text-theme-on-bg-subtle">
-              Designed and developed by
+            <span className="inline-flex items-center gap-1.5">
+              <span className="whitespace-nowrap">Designed and developed by</span>
               <Image
                 src="/images/sysneticindialogo.png"
                 alt="Sysnetic India — Serves your purpose better"
-                width={160}
-                height={40}
-                className="h-9 w-auto max-w-[min(100%,220px)] object-contain object-left opacity-95 transition-opacity hover:opacity-100 sm:h-10 lg:object-right"
+                width={72}
+                height={18}
+                className="h-4 w-auto max-w-[88px] object-contain object-left opacity-90 transition-opacity hover:opacity-100 sm:h-[18px] sm:max-w-[96px]"
               />
             </span>
           </div>

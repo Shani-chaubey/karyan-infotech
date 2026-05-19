@@ -39,6 +39,7 @@ async function main() {
         themeColors: DEFAULT_SITE_SETTINGS.themeColors,
         pageHeader: DEFAULT_SITE_SETTINGS.pageHeader,
         enquiryFloatPromo: DEFAULT_SITE_SETTINGS.enquiryFloatPromo,
+        cookieConsent: DEFAULT_SITE_SETTINGS.cookieConsent,
       },
     },
     { upsert: true }

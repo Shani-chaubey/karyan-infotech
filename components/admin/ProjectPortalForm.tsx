@@ -1203,6 +1203,46 @@ export default function ProjectPortalForm({ slug }: { slug: string }) {
         </CmsSection>
 
         <CmsSection
+          title="Location map section"
+          description="Map block in the main left column (same style as gallery and floor plans)."
+          where="Project page — left column, after floor plans"
+          defaultOpen={false}
+        >
+          <CmsField label="Section eyebrow">
+            <CmsInput
+              value={data.mapSectionEyebrow ?? ""}
+              onChange={(e) => patch((d) => ({ ...d, mapSectionEyebrow: e.target.value }))}
+              placeholder="Location"
+            />
+          </CmsField>
+          <CmsField label="Section heading">
+            <CmsInput
+              value={data.mapSectionTitle ?? ""}
+              onChange={(e) => patch((d) => ({ ...d, mapSectionTitle: e.target.value }))}
+              placeholder="Project location"
+            />
+          </CmsField>
+          <CmsField
+            label="Map embed URL"
+            hint='Paste the full "embed" URL from Google Maps (starts with https://www.google.com/maps/embed). Leave empty to hide this section.'
+          >
+            <CmsTextarea
+              value={data.mapIframeSrc ?? ""}
+              onChange={(e) => patch((d) => ({ ...d, mapIframeSrc: e.target.value }))}
+              className="min-h-[100px] font-mono text-xs"
+              placeholder="https://www.google.com/maps/embed?pb=..."
+            />
+          </CmsField>
+          <CmsField label="Map iframe title (accessibility)">
+            <CmsInput
+              value={data.mapTitle ?? ""}
+              onChange={(e) => patch((d) => ({ ...d, mapTitle: e.target.value }))}
+              placeholder={`Map — ${data.header.title}`}
+            />
+          </CmsField>
+        </CmsSection>
+
+        <CmsSection
           title="Sidebar enquiry form title"
           description="Heading shown above the short enquiry form."
           where="Project page — sticky sidebar on desktop"

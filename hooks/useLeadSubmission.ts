@@ -15,6 +15,7 @@ type LeadPayload = {
   mobile: string;
   project?: string;
   message?: string;
+  preferredDate?: string;
   pagePath?: string;
 };
 

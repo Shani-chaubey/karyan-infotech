@@ -41,9 +41,16 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
     leasingBox,
     specs,
     locationSidebar,
+    mapSectionTitle,
+    mapIframeSrc,
+    mapTitle,
     sidebarFormTitle,
     cta,
   } = data;
+
+  const mapSrc = mapIframeSrc?.trim() ?? "";
+  const mapSectionHeading = mapSectionTitle?.trim() || "Project location";
+  const mapLabel = mapTitle?.trim() || `Map — ${header.title}`;
 
   return (
     <>
@@ -214,7 +221,25 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
                 </>
               ) : null}
 
-             
+              {mapSrc ? (
+                <>
+                  <h3 className="mb-5 mt-10 text-xl font-bold text-[#1a1a2e]">
+                    {mapSectionHeading}
+                  </h3>
+                  <div className="overflow-hidden rounded-sm border border-stone-200/90 bg-white shadow-sm">
+                    <iframe
+                      src={mapSrc}
+                      width="100%"
+                      height="360"
+                      className="block w-full border-0"
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title={mapLabel}
+                    />
+                  </div>
+                </>
+              ) : null}
 
               {videoSection?.videoUrl?.trim() ? (
                 <>
@@ -311,6 +336,7 @@ export default function ProjectPageView({ data }: { data: ProjectPayload }) {
               </div>
             </div>
           </div>
+
         </div>
       </section>
 

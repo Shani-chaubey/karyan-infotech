@@ -98,4 +98,12 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsBundle = {
     imageSrc: "",
     imageAlt: "Enquire about our projects",
   },
+  cookieConsent: {
+    enabled: true,
+    heading: "Disclaimer & cookies",
+    description:
+      "This website is for information only. By continuing, you agree to our use of cookies for basic site functionality and analytics. Project details are subject to change and final agreements.",
+    acceptLabel: "Accept",
+    closeLabel: "Close",
+  },
 };

@@ -79,6 +79,7 @@ export default function SplitContactSection({ data }: { data: HomePayload["split
               <EnquiryTrigger
                 key={`${btn.label}-${i}`}
                 project={btn.project?.trim() || undefined}
+                openOnHover
                 className={i === 0 ? PRIMARY_BTN : SECONDARY_BTN}
               >
                 {btn.label}

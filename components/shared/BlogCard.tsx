@@ -34,17 +34,17 @@ export default function BlogCard({ title, excerpt, date, category, href, image }
           onError={() => setImgSrc(FALLBACK_IMAGE)}
         />
         <div className="absolute top-3 left-3">
-          <span
-            className="text-xs font-bold uppercase px-2.5 py-1 text-white"
-            style={{ background: "#F7B90F" }}
-          >
+          <span className="text-xs font-bold uppercase px-2.5 py-1 text-white bg-[linear-gradient(135deg,#a07c3a,#c6a96a)]">
             {category}
           </span>
         </div>
       </div>
 
       <div className="p-5">
-        <div className="flex items-center gap-1.5 text-xs mb-2" style={{ color: "#999" }}>
+        <div
+          className="flex items-center gap-1.5 text-xs mb-2"
+          style={{ color: "#999" }}
+        >
           <Calendar className="w-3.5 h-3.5" />
           {date}
         </div>
@@ -54,13 +54,16 @@ export default function BlogCard({ title, excerpt, date, category, href, image }
         >
           <Link href={href}>{title}</Link>
         </h3>
-        <p className="text-sm leading-relaxed line-clamp-3 mb-4" style={{ color: "#5e646a" }}>
+        <p
+          className="text-sm leading-relaxed line-clamp-3 mb-4"
+          style={{ color: "#5e646a" }}
+        >
           {plainExcerpt}
         </p>
         <Link
           href={href}
           className="text-xs font-bold uppercase tracking-wider hover:opacity-80 transition-opacity"
-          style={{ color: "#F7B90F" }}
+          style={{ color: "#a88544" }}
         >
           Read More →
         </Link>
